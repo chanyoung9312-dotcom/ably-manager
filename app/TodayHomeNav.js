@@ -50,6 +50,16 @@ export default function TodayHomeNav(){
         });
         const intro=main.querySelector('[data-home-intro]');
         if(intro)intro.style.display='none';
+        let home=main.querySelector('[data-tool-home]');
+        if(!home){
+          home=document.createElement('a');
+          home.dataset.toolHome='true';
+          home.href='/';
+          home.textContent='← OARS Manager';
+          home.style.cssText='display:inline-block;color:#c4c4cc;text-decoration:none;margin-bottom:8px';
+          main.prepend(home);
+        }
+        home.style.display='inline-block';
         original?.call(b,e);
       };
     }
