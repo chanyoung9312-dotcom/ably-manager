@@ -1,85 +1,18 @@
+import {GoogleAuth} from 'google-auth-library';
+
+const SHEET_ID='1tL1u65uuALC6Xky0CbUbPkSX7pZd_twl2Wpy0AYg8eU';
 const SEOUL={latitude:37.5665,longitude:126.9780};
+const txt=v=>String(v??'').trim();
+const num=v=>{const n=Number(txt(v).replace(/[^0-9.-]/g,''));return Number.isFinite(n)?n:0};
+const norm=s=>txt(s).replace(/\s+/g,'').toLowerCase();
+const parseDate=v=>{const s=txt(v);let m=s.match(/^(\d{2})(\d{2})(\d{2})$/);if(m)return new Date(2000+Number(m[1]),Number(m[2])-1,Number(m[3]));m=s.match(/^(\d{4})[-./](\d{1,2})[-./](\d{1,2})/);return m?new Date(+m[1],+m[2]-1,+m[3]):null};
+const fmt=n=>Number.isFinite(n)?Math.round(n).toLocaleString('ko-KR'):'-';
 
-async function getWeather(){
-  const u=new URL('https://api.open-meteo.com/v1/forecast');
-  u.searchParams.set('latitude',SEOUL.latitude);
-  u.searchParams.set('longitude',SEOUL.longitude);
-  u.searchParams.set('timezone','Asia/Seoul');
-  u.searchParams.set('current','temperature_2m,apparent_temperature,precipitation,weather_code');
-  u.searchParams.set('daily','temperature_2m_max,temperature_2m_min,precipitation_probability_max');
-  u.searchParams.set('forecast_days','7');
-  const r=await fetch(u,{cache:'no-store'});
-  if(!r.ok)throw new Error(`날씨 ${r.status}`);
-  return r.json();
-}
+async function weather(){try{const u=new URL('https://api.open-meteo.com/v1/forecast');u.searchParams.set('latitude',SEOUL.latitude);u.searchParams.set('longitude',SEOUL.longitude);u.searchParams.set('timezone','Asia/Seoul');u.searchParams.set('current','temperature_2m,apparent_temperature');u.searchParams.set('daily','temperature_2m_max,temperature_2m_min,precipitation_probability_max');u.searchParams.set('forecast_days','7');const r=await fetch(u,{cache:'no-store'});return r.ok?await r.json():null}catch{return null}}
+async function mdRows(){try{const raw=process.env.GOOGLE_SERVICE_ACCOUNT_JSON;if(!raw)return[];const credentials=JSON.parse(raw);const auth=new GoogleAuth({credentials,scopes:['https://www.googleapis.com/auth/spreadsheets.readonly']});const client=await auth.getClient();const token=await client.getAccessToken();const r=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent('MD!A1:Z3000')}`,{headers:{Authorization:`Bearer ${token.token||token}`},cache:'no-store'});if(!r.ok)return[];const a=(await r.json()).values||[];let hi=a.findIndex(row=>row.some(c=>norm(c).includes('업로드날짜'))&&row.some(c=>norm(c).includes('상품명')));if(hi<0)hi=0;const h=a[hi]||[];const find=(...names)=>h.findIndex(x=>names.some(n=>norm(x).includes(norm(n))));const ix={date:find('업로드날짜'),product:find('상품명'),md:find('md'),cost:find('타오바오가격'),market:find('신상마켓'),marketPrice:find('신상마켓가격'),size:find('사이즈'),color:find('색상'),sale:find('판매가격'),margin:find('판매마진'),discount:find('할인가격'),discountMargin:find('할인가격마진')};return a.slice(hi+1).map((r,i)=>({date:ix.date>=0?txt(r[ix.date]):'',product:ix.product>=0?txt(r[ix.product]):'',md:ix.md>=0?txt(r[ix.md]):'',cost:ix.cost>=0?num(r[ix.cost]):0,market:ix.market>=0?txt(r[ix.market]):'',marketPrice:ix.marketPrice>=0?num(r[ix.marketPrice]):0,size:ix.size>=0?txt(r[ix.size]):'',color:ix.color>=0?txt(r[ix.color]):'',sale:ix.sale>=0?num(r[ix.sale]):0,margin:ix.margin>=0?num(r[ix.margin]):0,discount:ix.discount>=0?num(r[ix.discount]):0,discountMargin:ix.discountMargin>=0?num(r[ix.discountMargin]):0,row:hi+i+2})).filter(x=>x.product||x.date)}catch(e){console.error('MD read',e);return[]}}
+function category(name){const s=txt(name);for(const [k,words] of [['원피스',['원피스','드레스']],['상의',['가디건','니트','티셔츠','블라우스','셔츠','탑','나시','홀터넥']],['스커트',['스커트','치마']],['팬츠',['팬츠','바지','슬랙스','데님']],['아우터',['자켓','재킷','점퍼','코트','후드집업']],['세트',['세트','셋업']]])if(words.some(w=>s.includes(w)))return k;return '기타'}
+function topCats(rows){const m={};for(const x of rows)m[category(x.product)]=(m[category(x.product)]||0)+1;return Object.entries(m).sort((a,b)=>b[1]-a[1])}
+function avg(rows,k){const a=rows.map(x=>x[k]).filter(x=>x>0);return a.length?a.reduce((s,n)=>s+n,0)/a.length:0}
+function signalProducts(signals,title){return (signals||[]).find(x=>x.title===title)?.products||[]}
 
-function weatherSummary(w){
-  const d=w.daily||{},days=(d.time||[]).map((date,i)=>({date,max:d.temperature_2m_max?.[i],min:d.temperature_2m_min?.[i],rain:d.precipitation_probability_max?.[i]}));
-  return {location:'서울 기준',current:w.current||{},forecast:days};
-}
-
-function fallback(x,w){
-  const m=x.market||{},orderDown=m.q30<m.p30,uploadUp=m.md30>m.mdPrev30;
-  return {
-    observation:orderDown&&uploadUp?`최근 30일 주문은 ${m.p30??'-'}개에서 ${m.q30??'-'}개로 줄었고, 같은 기간 신상품 업로드는 ${m.mdPrev30??'-'}개에서 ${m.md30??'-'}개로 늘었습니다. 현재 데이터에서는 등록량과 주문 반응이 반대로 움직이고 있어 단순 업로드 부족으로 보기 어렵습니다.`:orderDown?`최근 30일 주문이 ${m.p30??'-'}개에서 ${m.q30??'-'}개로 감소했습니다. 우선 특정 상품의 하락인지 기존 주력상품을 포함한 마켓 전반의 하락인지 분리해 볼 필요가 있습니다.`:'최근 주문과 신상품 업로드 흐름에서 한 가지 원인으로 설명할 만큼 뚜렷한 신호는 아직 부족합니다.',
-    direction:'다음 업로드에서는 수량 자체를 늘리기보다 최근 7~14일 실제 주문이 발생한 상품들의 공통 요소를 찾고, 그와 비슷한 카테고리·핏·무드·가격대 상품을 소규모로 추가 테스트하세요. 테스트 결과 주문이 반복되는 상품군만 빠르게 확장하는 방식이 현재 무재고 구조와 잘 맞습니다.',
-    caution:'이 방향이 맞으려면 최근 신상품의 반응이 기존 상품보다 실제로 약하다는 근거가 필요합니다. 기존 주력상품까지 함께 하락했다면 신상품 선택보다 계절 전환·노출 변화·주력상품 수명 문제가 더 큰 원인일 수 있으므로 별도로 확인해야 합니다.',
-    weather:`서울 기준 현재 ${w.current?.temperature_2m??'-'}℃, 체감 ${w.current?.apparent_temperature??'-'}℃입니다. 날씨는 상품 구성 판단의 보조 근거이며 주문 감소의 원인으로 단독 해석하지 않습니다.`,
-    ai:false
-  };
-}
-
-export async function POST(req){
-  try{
-    const input=await req.json();
-    const weather=weatherSummary(await getWeather());
-    const token=process.env.AI_GATEWAY_API_KEY||process.env.VERCEL_OIDC_TOKEN;
-    if(!token)return Response.json(fallback(input,weather));
-    const prompt=`너는 여성 패션 이커머스 쇼핑몰 OARS의 데이터 기반 MD 분석가다. 최종 판단은 사람이 한다. 사용자의 생각에 맞장구치지 말고 데이터와 반대되는 신호가 있으면 적극적으로 지적한다.
-
-운영 특성: 20대 초중반 여성 타깃, 중국 도매 상품을 무재고로 먼저 등록하고 주문 반응이 확인되면 소량 재고를 검토한다. 일반 사입몰처럼 시즌 재고를 미리 쌓을 필요는 없지만 고객 수요의 계절/날씨 타이밍과 상품 등록 타이밍은 중요하다. 주문 1건을 재고매입 신호로 단정하지 않는다.
-
-가장 중요한 출력 원칙: observation, direction, caution은 서로 같은 말을 바꿔 쓰면 안 된다. 세 필드는 각각 완전히 다른 직무를 맡는다.
-
-1) observation = 사실/진단 전용
-- '무슨 일이 벌어졌는가'만 설명한다.
-- 반드시 입력에 있는 구체적인 비교 숫자를 우선 사용한다.
-- 주문, 업로드, 상품별 반응, 취소/반품 중 의미 있는 변화 사이의 관계를 설명한다.
-- 행동 제안이나 '하세요/검토하세요' 같은 문장을 넣지 않는다.
-
-2) direction = 행동/실험 전용
-- observation을 반복하거나 숫자를 다시 요약하지 않는다.
-- '그래서 지금 무엇을 테스트할 것인가'를 말한다.
-- 추상적인 '폭넓게 테스트', '확인 필요'만 쓰지 말고 데이터가 허용하는 범위에서 1~3개의 구체적인 다음 행동을 제시한다.
-- 가능하면 최근 반응 상품/MD 상품명의 카테고리, 핏, 무드, 계절성, 가격대 등의 공통점을 이용해 어떤 계열을 더 테스트하거나 줄일지 제안한다.
-- 무재고 구조이므로 대량 사입보다 등록 테스트 → 주문 반복 확인 → 유사상품 확장을 우선한다.
-
-3) caution = 반증/실패조건 전용
-- observation과 direction을 다시 설명하지 않는다.
-- direction이 틀릴 수 있는 데이터, 대안 가설, 아직 확인되지 않은 전제를 지적한다.
-- 가능하면 '어떤 데이터가 나오면 현재 방향을 수정해야 하는지'까지 말한다.
-- 날씨/계절을 만능 원인으로 사용하지 않는다.
-
-4) weather = 날씨/시즌 전용
-- 서울 현재 기온과 7일 예보를 상품 계절성 관점에서 해석한다.
-- 단순 기온 낭독이 아니라 지금 입기 쉬운 두께/카테고리와 너무 이르거나 늦을 수 있는 상품을 짧게 설명한다.
-- 날씨는 보조 판단요소이며 주문 변화의 원인으로 확정하지 않는다.
-
-공통 분석 원칙:
-- 주문 반응, 최근/이전 7·14·30일 흐름, 주문 발생일, MD 시트 신상품 업로드 수와 최근 상품명, 재고/취소/반품 신호, 현재 날짜, 서울 7일 날씨를 종합한다.
-- MD 상품명에서 카테고리와 계절성(반팔/긴팔/니트/가디건/원피스/스커트/레이어드 등)을 읽는다.
-- 상관관계를 원인으로 확정하지 않는다. 근거가 약하면 명시한다.
-- 숫자는 입력 데이터에 있는 것만 사용한다. 데이터에 없는 조회수, 노출량, 전환율 등을 사실처럼 만들지 않는다.
-- 세 필드에 같은 핵심 문장을 반복하지 않는다. 각 필드가 새 정보를 추가해야 한다.
-
-데이터:
-${JSON.stringify({date:input.date,market:input.market,signals:input.signals,mdRecent:input.mdRecent,weather})}
-
-반드시 JSON만 반환한다. 형식: {"observation":"구체적 숫자 중심의 사실/진단 2~4문장","direction":"중복 없는 구체적 행동/실험 2~4문장","caution":"현재 방향을 반박할 수 있는 신호와 실패조건 1~3문장","weather":"날씨와 상품 계절성의 실용적 해석 1~2문장"}`;
-    const r=await fetch('https://ai-gateway.vercel.sh/v1/responses',{method:'POST',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({model:'openai/gpt-5.6-sol',input:prompt,max_output_tokens:1400})});
-    if(!r.ok){console.error('AI Gateway',r.status,await r.text());return Response.json(fallback(input,weather));}
-    const j=await r.json();
-    const text=j.output_text||j.output?.flatMap(x=>x.content||[]).map(x=>x.text||'').join('')||'';
-    try{const parsed=JSON.parse(text.replace(/^```json\s*|\s*```$/g,''));return Response.json({...parsed,ai:true,weatherData:weather})}catch{return Response.json(fallback(input,weather))}
-  }catch(e){console.error(e);return Response.json({error:e.message||'OARS 분석 실패'},{status:500})}
-}
+export async function POST(req){try{const input=await req.json(),m=input.market||{},w=await weather(),all=await mdRows(),now=new Date(),d30=new Date(now);d30.setDate(d30.getDate()-29);const recent=all.filter(x=>{const d=parseDate(x.date);return d&&d>=d30&&d<=now});const cats=topCats(recent),catText=cats.slice(0,3).map(([k,v])=>`${k} ${v}개`).join(' · ')||'분류 가능한 상품 없음';const saleAvg=avg(recent,'sale'),marginAvg=avg(recent,'margin'),discountAvg=avg(recent,'discount'),discMarginAvg=avg(recent,'discountMargin');const rise=signalProducts(input.signals,'최근 반응 상승'),fresh=signalProducts(input.signals,'신규 반응 감지'),steady=signalProducts(input.signals,'반응 지속'),slow=signalProducts(input.signals,'반응 둔화'),stopped=signalProducts(input.signals,'반응 멈춤');const hot=[...rise,...steady,...fresh].filter((x,i,a)=>a.findIndex(y=>(y.productNo||y.name)===(x.productNo||x.name))===i).slice(0,4);const weak=[...slow,...stopped].filter((x,i,a)=>a.findIndex(y=>(y.productNo||y.name)===(x.productNo||x.name))===i).slice(0,4);const hotText=hot.length?hot.map(x=>`${x.name} (7일 ${x.q7||0}개/30일 ${x.q30||0}개)`).join(', '):'뚜렷한 상승·지속 상품 없음';const weakText=weak.length?weak.map(x=>`${x.name} (7일 ${x.q7||0}개/30일 ${x.q30||0}개)`).join(', '):'뚜렷한 둔화 상품 없음';const order=`7일 ${m.p7??'-'}→${m.q7??'-'}개, 14일 ${m.p14??'-'}→${m.q14??'-'}개, 30일 ${m.p30??'-'}→${m.q30??'-'}개`;const upload=`7일 ${m.mdPrev7??'-'}→${m.md7??'-'}개, 14일 ${m.mdPrev14??'-'}→${m.md14??'-'}개, 30일 ${m.mdPrev30??'-'}→${m.md30??'-'}개`;const observation=`주문 반응은 ${order}입니다. 주문 발생일도 최근 7일 ${m.days7??'-'}일(이전 ${m.prevDays7??'-'}일), 최근 30일 ${m.days30??'-'}일(이전 ${m.prevDays30??'-'}일)이라 주문 수뿐 아니라 주문이 발생하는 빈도까지 같이 봐야 합니다.\n\nMD 시트 업로드는 ${upload}입니다. 최근 30일 MD 등록 ${recent.length}건의 구성은 ${catText} 순이며${saleAvg?`, 평균 판매가 약 ${fmt(saleAvg)}원`:''}${marginAvg?`, 평균 판매마진 약 ${fmt(marginAvg)}원`:''}입니다. 업로드 수가 늘었는데 주문이 줄었다면 현재 데이터만으로는 ‘상품 수 부족’을 주원인으로 보기 어렵습니다.`;const direction=`지금은 업로드 개수를 더 늘리는 것보다 ‘반응이 나온 상품의 공통점’을 다음 소싱에 복제하는 쪽이 데이터상 확인하기 쉽습니다. 현재 반응 신호 상품은 ${hotText}입니다. 이 상품들의 카테고리·핏·기장·소재·가격대를 MD 시트의 신규 후보와 비교해 유사 상품을 소규모 등록 테스트하고, 주문이 서로 다른 날짜에 반복될 때만 재고 검토 단계로 넘기는 방식이 현재 무재고 운영과 맞습니다.\n\n반대로 최근 둔화/정지 신호는 ${weakText}입니다. 같은 계열을 계속 추가하고 있다면 신규 업로드 구성에서 비중을 잠시 줄이고, 반응 상품 계열과 교차 테스트하는 편이 결과를 비교하기 쉽습니다.${discountAvg?` 최근 등록 상품 평균 할인가 약 ${fmt(discountAvg)}원`:''}${discMarginAvg?`, 할인 기준 평균 마진 약 ${fmt(discMarginAvg)}원`:''}도 함께 보면서 가격을 무리하게 낮추는 방식은 피하는 게 좋습니다.`;const caution=`이 분석은 주문·MD·재고·취소/반품 기록으로 확인 가능한 범위입니다. 에이블리 노출수·클릭수·전환율 데이터가 없으므로 주문 감소가 상품 선택 때문이라고 확정할 수는 없습니다. 특히 기존 주력상품과 신상품이 동시에 약해졌다면 상품 구성 외에 노출 변화나 계절 전환 가능성도 남습니다. 다음 판단에서는 ‘최근 등록 상품이 실제 주문으로 이어졌는지’를 상품번호 기준으로 연결해 신상품 반응률을 따로 보는 것이 가장 중요한 다음 단계입니다.`;const cur=w?.current||{},daily=w?.daily||{},max=(daily.temperature_2m_max||[]).slice(0,7),min=(daily.temperature_2m_min||[]).slice(0,7),hi=max.length?Math.max(...max):null,lo=min.length?Math.min(...min):null;const weatherText=`서울 기준 현재 ${cur.temperature_2m??'-'}℃, 체감 ${cur.apparent_temperature??'-'}℃${hi!=null&&lo!=null?`, 향후 7일 예보 범위는 대략 ${lo.toFixed(0)}~${hi.toFixed(0)}℃`:''}입니다. 날씨는 주문 감소 원인으로 단정하지 않고, MD 시트에서 가을용 긴팔·니트·가디건·레이어드류 비중을 조절할 때 보조 기준으로만 사용합니다.`;return Response.json({observation,direction,caution,weather:weatherText,ai:false,source:'rule-based+md-sheet',mdStats:{recent30:recent.length,categories:cats.slice(0,5),avgSale:saleAvg,avgMargin:marginAvg}})}catch(e){console.error(e);return Response.json({error:e.message||'OARS 분석 실패'},{status:500})}}
