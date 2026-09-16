@@ -1,3 +1,4 @@
 import './globals.css';
-export const metadata={title:'Ably Manager',description:'에이블리 주문·출고 관리'};
-export default function RootLayout({children}){return <html lang="ko"><body>{children}</body></html>}
+import TodayHomeNav from './TodayHomeNav';
+export const metadata={title:'OARS Manager',description:'오어즈 쇼핑몰 운영 관리'};
+export default function RootLayout({children}){return <html lang="ko"><body><TodayHomeNav/>{children}</body></html>}
