@@ -318,8 +318,12 @@ export default function Page() {
   }
   return (
     <main className="wrap">
-      <h1>OARS Manager</h1>
-      <p className="sub">오어즈 쇼핑몰 운영 관리</p>
+      {mode !== "home" && (
+        <>
+          <h1>OARS Manager</h1>
+          <p className="sub">오어즈 쇼핑몰 운영 관리</p>
+        </>
+      )}
       <div className="actions" style={{ marginBottom: 18 }}>
         <button onClick={() => (location.href = "/")}>MD 총분석</button>
         <button onClick={() => (location.href = "/product-reaction")}>

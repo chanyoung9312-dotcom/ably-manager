@@ -212,3 +212,45 @@ details p {
     font-size: 19px;
   }
 }
+
+
+/* Root operator screens use one dark theme so mobile browser theme does not
+   produce dark text on dark cards. */
+body.oars-root-page {
+  background: #15191b;
+  color: #f3f4f6;
+}
+body.oars-root-page .wrap,
+body.oars-root-page .md-report {
+  color: #f3f4f6;
+}
+body.oars-root-page .sub {
+  color: #aeb5b8;
+}
+body.oars-root-page .card,
+body.oars-root-page .md-section {
+  background: #191d1f;
+  color: #f3f4f6;
+  border-color: #343a3d;
+}
+body.oars-root-page .msg {
+  background: #22282a;
+  color: #f3f4f6;
+}
+body.oars-root-page input,
+body.oars-root-page select,
+body.oars-root-page textarea {
+  background: #111516;
+  color: #f3f4f6;
+  border: 1px solid #3a4043;
+}
+body.oars-root-page input::placeholder,
+body.oars-root-page textarea::placeholder {
+  color: #858f93;
+}
+body.oars-root-page .md-report a {
+  color: #e6ebff;
+}
+body.oars-root-page [role="alert"] {
+  color: #ffb4b4;
+}
