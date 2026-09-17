@@ -104,12 +104,18 @@ try {
   await page.getByRole("heading", { name: "오늘 할 일", exact: true }).waitFor();
   await page.getByRole("heading", { name: "오늘 확인할 상품", exact: true }).waitFor();
   await page.screenshot({ path: evidence + "/md-mobile.png", fullPage: true });
-  await page.getByRole("button", { name: "문자 도우미", exact: true }).click();
+  await Promise.all([
+    page.waitForURL(base + "/?tool=sms"),
+    page.getByRole("button", { name: "문자 도우미", exact: true }).click(),
+  ]);
   await page.getByRole("button", { name: "카페24 주문 불러오기", exact: true }).click();
   await page.getByRole("button", { name: "배송준비", exact: true }).first().click();
   assert.deepEqual(prepareBody.orderItemCodes, ["item1"]);
   assert.equal(await page.getByRole("button", { name: "배송준비", exact: true }).count(), 1);
-  await page.getByRole("button", { name: "송장 매칭", exact: true }).click();
+  await Promise.all([
+    page.waitForURL(base + "/?tool=tracking"),
+    page.getByRole("button", { name: "송장 매칭", exact: true }).click(),
+  ]);
   await page.getByRole("button", { name: "우체국 배송 주문 불러오기", exact: true }).click();
   await page.locator("textarea").fill("1234567890123 테스트고객");
   await page.getByRole("button", { name: "등기번호 자동 매칭" }).click();
@@ -133,13 +139,16 @@ try {
   const download = await downloadPromise;
   const exported = XLSX.read(await readFile(await download.path()), { type: "buffer" }).Sheets["배송 중 관리"];
   assert.equal(exported.D2.v, "1234567890123"); assert.equal(exported.E2.f, "1+1"); assert.equal(exported.D3.v, "9999999999999");
-  await page.getByRole("button", { name: "MD 총분석", exact: true }).click();
+  await Promise.all([
+    page.waitForURL(base + "/"),
+    page.getByRole("button", { name: "MD 총분석", exact: true }).click(),
+  ]);
   await page.unroute("**/api/oars-analysis");
   await page.route("**/api/oars-analysis", (r) => r.fulfill({ status: 502, json: { error: "모의 API 실패" } }));
   await page.getByRole("button", { name: "새로고침", exact: true }).click();
   await page.getByRole("alert").filter({ hasText: "모의 API 실패" }).waitFor();
   assert.deepEqual(errors, []);
-  console.log("PASS: 8 routes × 2 viewports, operator-first home, auth/CSRF, single-item prepare, ambiguous matching, failed/successful tracking, Excel preservation, API error UX; no page errors.");
+  console.log("PASS: 8 routes × 2 viewports, operator-first home, auth/CSRF, query navigation, single-item prepare, ambiguous matching, failed/successful tracking, Excel preservation, API error UX; no page errors.");
 } finally {
   if (browser) await browser.close();
   server.kill("SIGTERM");

@@ -41,7 +41,6 @@ export default function Reactions() {
     ];
   return (
     <main className="md-report">
-      <a href="/">← OARS Manager</a>
       <div className="row">
         <h1>상품 반응</h1>
         <button onClick={load} disabled={loading}>

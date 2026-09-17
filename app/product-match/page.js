@@ -105,9 +105,6 @@ export default function ProductMatch() {
         color: "#f4f4f5",
       }}
     >
-      <a href="/" style={{ color: "#a1a1aa", textDecoration: "none" }}>
-        ← OARS Manager
-      </a>
       <h1 style={{ marginBottom: 6 }}>상품번호 자동 매칭</h1>
       <p style={{ color: "#a1a1aa", marginTop: 0 }}>
         에이블리 상품목록과 MD 시트를 비교해 ‘상품번호’ 바로 아래 빈칸만
