@@ -1,6 +1,24 @@
-import {GoogleAuth} from 'google-auth-library';
-const SHEET_ID='1tL1u65uuALC6Xky0CbUbPkSX7pZd_twl2Wpy0AYg8eU';
-const clean=v=>String(v??'').trim();
-const phone=v=>clean(v).replace(/[^0-9]/g,'').replace(/^(01\d)(\d{3,4})(\d{4})$/,'$1-$2-$3');
-function splitAddress(v){const s=clean(v).replace(/\s+/g,' ');const m=s.match(/^(.+?(?:로|길)\s*\d+(?:-\d+)?)(?:,?\s+(.*))?$/);if(m)return[m[1],m[2]||'.'];return[s,'.'];}
-export async function GET(){try{const raw=process.env.GOOGLE_SERVICE_ACCOUNT_JSON;if(!raw)return Response.json({error:'Google 서비스 계정 환경변수가 없습니다.'},{status:500});const credentials=JSON.parse(raw);const auth=new GoogleAuth({credentials,scopes:['https://www.googleapis.com/auth/spreadsheets']});const client=await auth.getClient();const token=await client.getAccessToken();const range=encodeURIComponent("'에이블리 주문'!A1:AI1000");const res=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}`,{headers:{Authorization:`Bearer ${token.token||token}`},cache:'no-store'});if(!res.ok)throw new Error(`Google Sheets ${res.status}`);const values=(await res.json()).values||[],rows=[];for(let i=1;i<values.length;i++){const r=values[i]||[];if(clean(r[7])!=='우체국 배송'||clean(r[31]).includes('취소'))continue;const full=clean(r[29]),name=clean(r[26]);if(!name||!full)continue;const[address,detail]=splitAddress(full);rows.push({id:`${i+1}-${clean(r[9])}`,rowNumber:i+1,orderNo:clean(r[10]||r[4]),productOrderNo:clean(r[9]),name,phone:phone(r[27]),zip:clean(r[28]),address,detail,memo:clean(r[30]),shipDate:clean(r[5]),paymentDate:clean(r[8]),productName:clean(r[12]),optionInfo:clean(r[15]),qty:clean(r[16]),buyerName:clean(r[23]),buyerPhone:phone(r[24]),salesChannel:clean(r[25])||'에이블리',orderStatus:clean(r[31]),shippingType:clean(r[32]),solutionCode:clean(r[34])});}return Response.json({rows,count:rows.length,updatedAt:new Date().toISOString()},{headers:{'Cache-Control':'no-store'}});}catch(e){console.error(e);return Response.json({error:'Google 주문시트를 불러오지 못했습니다.'},{status:500});}}
+import { secure } from "../../../lib/access.mjs";
+import { sheetHeaders, readSheet } from "../../../lib/sheets.mjs";
+import { postalRows, claimIds } from "../../../lib/shipping.mjs";
+async function handleGET() {
+  try {
+    const headers = await sheetHeaders();
+    const [orders, claims] = await Promise.all([
+      readSheet("에이블리 주문", "A:AS", headers),
+      readSheet("취소 반품", "A:BA", headers),
+    ]);
+    const rows = postalRows(orders, { blocked: claimIds(claims) });
+    return Response.json(
+      { rows, count: rows.length, updatedAt: new Date().toISOString() },
+      { headers: { "Cache-Control": "private, no-store" } },
+    );
+  } catch (e) {
+    return Response.json(
+      { error: e.message || "발송 주문 조회 실패" },
+      { status: 502 },
+    );
+  }
+}
+
+export const GET = secure(handleGET);

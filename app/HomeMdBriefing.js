@@ -1,6 +1,279 @@
-'use client';
-import {useEffect,useMemo,useState} from 'react';
-import {usePathname} from 'next/navigation';
-const d=s=>{const x=new Date(`${s}T00:00:00`);return isNaN(x)?null:x},key=x=>x.productNo||`name:${x.product||''}`;
-const money=n=>`${Math.round(n||0).toLocaleString('ko-KR')}원`;
-export default function HomeMdBriefing(){const path=usePathname(),[data,setData]=useState(null),[loading,setLoading]=useState(true),[error,setError]=useState('');async function load(){setLoading(true);try{const r=await fetch('/api/dashboard-data',{cache:'no-store'}),j=await r.json();if(!r.ok)throw new Error(j.error||'분석 데이터를 불러오지 못했습니다.');setData(j);setError('')}catch(e){setError(e.message)}finally{setLoading(false)}}useEffect(()=>{if(path==='/')load()},[path]);const report=useMemo(()=>{if(!data)return null;const now=new Date(),ago=n=>{const x=new Date(now);x.setDate(x.getDate()-n);return x},q=(k,a,b)=>data.orders.filter(x=>key(x)===k&&d(x.date)>=a&&d(x.date)<=b).reduce((s,x)=>s+(x.qty||1),0),all=(a,b)=>data.orders.filter(x=>d(x.date)>=a&&d(x.date)<=b),sum=a=>a.reduce((s,x)=>s+(x.sales||x.salePrice||0)*(x.qty||1),0),r7=all(ago(6),now),p7=all(ago(13),ago(7)),r30=all(ago(29),now),m=new Map();for(const o of data.orders){const k=key(o),x=m.get(k)||{key:k,name:o.product||'상품명 없음',productNo:o.productNo||'',dates:[],total:0};x.total+=o.qty||1;x.dates.push(o.date);m.set(k,x)}const inv=new Map();for(const x of data.inventory||[])inv.set(x.productNo||`name:${x.product}`,(inv.get(x.productNo||`name:${x.product}`)||0)+(x.qty||0));const cancel=new Map();for(const x of data.cancels||[])cancel.set(key(x),(cancel.get(key(x))||0)+(x.qty||1));const rows=[...m.values()].map(x=>{const q7=q(x.key,ago(6),now),p=q(x.key,ago(13),ago(7)),q30=q(x.key,ago(29),now),days30=new Set(x.dates.filter(z=>d(z)>=ago(29))).size,stock=inv.get(x.key)||0,cancels=cancel.get(x.key)||0;let grade='B',speed='❓ 데이터 부족',buy='⚪ 무재고 유지',reason='반복 판매 확인 전까지 관찰';if(q7>=2&&days30>=3){grade='S';speed=q7>p?'🔥 판매 가속':'➡️ 판매 유지';buy=stock<=q7?'🟠 5~10개 확보 고려':'🔴 주력상품 재고 운영 고려';reason=`최근 7일 ${q7}개 · 최근 30일 ${days30}일에 주문 발생`;}else if(q7>=2||q7>p){grade='A';speed='🔥 판매 가속';buy='🟡 3~5개 테스트 사입';reason=`최근 7일 ${q7}개 · 이전 7일 ${p}개`;}else if(q30>=2&&q7===0){grade='C';speed='📉 판매 둔화';buy='⚪ 무재고 유지';reason=`최근 30일 ${q30}개였지만 최근 7일 주문 없음`;}return{...x,q7,p7:p,q30,days30,stock,cancels,grade,speed,buy,reason}}).sort((a,b)=>b.q7-a.q7||b.q30-a.q30);const top=rows.filter(x=>x.grade==='S').slice(0,5),growth=rows.filter(x=>x.grade==='A').slice(0,5),problem=rows.filter(x=>x.grade==='C'||x.cancels>0).slice(0,5),buy=rows.filter(x=>x.grade==='S'||x.grade==='A').slice(0,5);const sales7=sum(r7),prev=sum(p7),change=prev?Math.round((sales7-prev)/prev*100):null;let cause=change===null?'이전 기간 매출 데이터가 부족해 증감률 판단은 보류합니다.':change<0?`최근 7일 매출이 이전 7일보다 ${Math.abs(change)}% 낮습니다. 주력상품 둔화와 신규 성장상품 부족 여부를 우선 확인해야 합니다.`:`최근 7일 매출이 이전 7일보다 ${change}% 높습니다. 판매 가속 상품이 상승을 이어가는지 확인해야 합니다.`;const actions=[...buy.slice(0,3).map(x=>`${x.name} — ${x.buy}`),...problem.slice(0,2).map(x=>`${x.name} — 취소·판매둔화 점검`)].slice(0,5);return{sales7,prev,change,orders7:r7.reduce((s,x)=>s+(x.qty||1),0),orders30:r30.reduce((s,x)=>s+(x.qty||1),0),top,growth,problem,buy,rows,cause,actions}},[data]);if(path!=='/')return null;const box={background:'#111315',border:'1px solid #34383d',borderRadius:18,padding:20};const list=(title,arr,detail)=><section style={{...box,marginTop:12}}><h2 style={{margin:'0 0 12px',fontSize:19}}>{title}</h2>{arr.length?arr.map(x=><div key={x.key} style={{padding:'11px 0',borderTop:'1px solid #292c30'}}><b>{x.grade}급 · {x.name}</b><div style={{color:'#a1a1aa',fontSize:13,marginTop:5}}>{detail(x)}</div></div>):<div style={{color:'#71717a'}}>현재 해당 상품이 없습니다.</div>}</section>;return <div style={{background:'#090a0b',color:'#f4f4f5',padding:'24px 18px 34px'}}><div style={{maxWidth:1000,margin:'auto'}}><div style={{display:'flex',justifyContent:'space-between',gap:12,alignItems:'end'}}><div><div style={{color:'#a1a1aa',fontSize:13}}>OARS DAILY REPORT</div><h1 style={{margin:'6px 0'}}>오늘의 MD 총분석</h1><p style={{margin:0,color:'#a1a1aa'}}>주문 · 재고 · 취소 · 상품반응을 연결한 실행 중심 브리핑</p></div><button onClick={load} disabled={loading}>{loading?'분석 중':'새로고침'}</button></div>{error&&<section style={{...box,marginTop:18,color:'#fb7185'}}>{error}</section>}{loading&&!error&&<section style={{...box,marginTop:18,color:'#a1a1aa'}}>오늘의 데이터를 분석하는 중...</section>}{report&&!loading&&<><section style={{...box,marginTop:18}}><h2 style={{marginTop:0}}>📊 현재 매출 상태</h2><div style={{display:'grid',gridTemplateColumns:'repeat(3,minmax(0,1fr))',gap:10}}><div><small>최근 7일 매출</small><strong style={{display:'block',fontSize:20}}>{money(report.sales7)}</strong></div><div><small>최근 7일 판매</small><strong style={{display:'block',fontSize:20}}>{report.orders7}개</strong></div><div><small>최근 30일 판매</small><strong style={{display:'block',fontSize:20}}>{report.orders30}개</strong></div></div><p style={{marginBottom:0,lineHeight:1.6}}><b>📈 이전 기간 대비:</b> {report.change===null?'비교 데이터 부족':`${report.change>=0?'+':''}${report.change}%`} · 이전 7일 {money(report.prev)}</p></section>{list('🏆 잘 팔리는 상품 TOP',report.top,x=>`${x.speed} · ${x.reason} · 현재재고 ${x.stock}개`)}{list('🌱 성장 가능 상품',report.growth,x=>`${x.speed} · ${x.reason}`)}{list('⚠️ 문제 상품',report.problem,x=>`${x.reason}${x.cancels?` · 취소/반품 기록 ${x.cancels}개`:''}`)}{list('📦 사입 추천 상품',report.buy,x=>`${x.buy} · ${x.reason} · 현재재고 ${x.stock}개`)}{list('⏳ 아직 기다려야 할 상품',report.rows.filter(x=>x.grade==='B').slice(0,5),x=>`⚪ 무재고 유지 · ${x.reason}`)}{list('🛑 추가 사입 비추천 상품',report.rows.filter(x=>x.grade==='C').slice(0,5),x=>`${x.speed} · ${x.reason}`)}<section style={{...box,marginTop:12}}><h2>🔍 매출 변화 원인</h2><p style={{lineHeight:1.7}}>{report.cause}</p><h2>🛒 다음 소싱 방향</h2><p style={{lineHeight:1.7}}>S·A급에서 반복 반응이 확인되는 상품군을 우선 확장합니다. 현재 데이터에 없는 핏·소재·디자인 특징은 추정하지 않고, 상품 상세 데이터가 연결되는 범위에서 공통점을 추가 분석합니다.</p></section><section style={{...box,marginTop:12}}><h2>📋 상품별 액션 리스트 · 🎯 오늘 해야 할 일 TOP 5</h2>{report.actions.length?report.actions.map((x,i)=><p key={x} style={{margin:'10px 0'}}><b>{i<2?'🔴 오늘 해야 함':'🟡 이번 주'}</b> {x}</p>):<p style={{color:'#71717a'}}>우선 액션을 만들 만큼의 반응 데이터가 없습니다.</p>}</section><section style={{...box,marginTop:12,border:'1px solid #686d75'}}><h2 style={{marginTop:0}}>MD 결론</h2><p style={{lineHeight:1.75,marginBottom:0}}>{report.buy.length?`${report.buy[0].name}을(를) 최우선 반응 상품으로 보고 ${report.buy[0].buy.replace(/^[^ ]+ /,'')}합니다. 성장 상품은 소량 테스트 사입에 한정하고, 반복 주문이 확인되지 않은 상품은 무재고를 유지합니다. 다음 소싱은 현재 S·A급 상품과 실제 데이터로 확인되는 인접 상품군을 중심으로 확장합니다.`:'현재는 적극 사입보다 무재고 테스트를 유지하면서 반복 주문이 확인되는 상품을 기다리는 구간입니다.'}</p></section></>}</div></div>}
+"use client";
+import { useEffect, useState } from "react";
+const won = (n) => `${Math.round(n || 0).toLocaleString("ko-KR")}원`;
+function Product({ p }) {
+  return (
+    <article className="md-product">
+      <b>
+        {p.grade}급 · {p.name || "상품명 미확인"}
+      </b>
+      <small>
+        {p.productNo || "상품번호 연결 필요"} · {p.stage} · {p.speed}
+      </small>
+      <p>{p.reason}</p>
+      <p>
+        <strong>
+          {p.decision} · {p.buy}
+        </strong>
+        <br />
+        {p.timing} · {p.observe}
+      </p>
+      <small>
+        재고 {p.stock === null ? "미확인" : `${p.stock}개`} · 등록일{" "}
+        {p.registeredAt || "미확인"} · 최근 유효 주문일 {p.last || "없음"} ·
+        평균 주문일 간격{" "}
+        {p.meanGap === null ? "계산 불가" : `${p.meanGap.toFixed(1)}일`}
+      </small>
+      <details>
+        <summary>7/14/30일 근거와 사입 수량</summary>
+        <div className="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>기간</th>
+                <th>주문 반응</th>
+                <th>순판매</th>
+                <th>이전 순판매</th>
+                <th>비교</th>
+              </tr>
+            </thead>
+            <tbody>
+              {p.windows.map((w) => (
+                <tr key={w.days}>
+                  <td>{w.days}일</td>
+                  <td>{w.current.qty}개</td>
+                  <td>{w.current.net}개</td>
+                  <td>{w.previous.net}개</td>
+                  <td>{w.comparable ? "동일 기간" : "수집 범위 미확인"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p>
+          최근 30일 취소·반품 {p.cancels}개 · 주문 하루 집중도{" "}
+          {(p.concentration * 100).toFixed(0)}%. 순판매에는 미확정 클레임이 남아
+          있으며 사입 판단에서는 제외합니다.
+        </p>
+        {p.quantities ? (
+          <p>
+            보수적 {p.quantities.conservative}개 / 추천{" "}
+            {p.quantities.recommended}개 / 공격적 {p.quantities.aggressive}개
+            <br />
+            최근 7·14일 중 낮은 일평균 × (공급기간 + 관찰기간) − (현재재고 +
+            입고예정 − 예약재고). 상품 합계 시나리오이며 옵션
+            배분·원가·예산·계절성 확인 후 발주하세요.
+          </p>
+        ) : (
+          <p>사입 수량 보류: 수요 지속성과 공급·재고 조건을 먼저 확인합니다.</p>
+        )}
+        {p.missing.length > 0 && <p>필요한 정보: {p.missing.join(" / ")}</p>}
+      </details>
+    </article>
+  );
+}
+export default function HomeMdBriefing() {
+  const [report, setReport] = useState(null),
+    [loading, setLoading] = useState(true),
+    [error, setError] = useState("");
+  async function load() {
+    setLoading(true);
+    setError("");
+    try {
+      const r = await fetch("/api/oars-analysis", { cache: "no-store" });
+      const j = await r.json();
+      if (!r.ok) throw Error(j.error || "분석 실패");
+      setReport(j.report);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+  useEffect(() => {
+    load();
+  }, []);
+  const group = (title, arr) => (
+    <section className="md-section">
+      <h2>{title}</h2>
+      {arr.length ? (
+        arr.slice(0, 5).map((p) => <Product key={p.key} p={p} />)
+      ) : (
+        <p>현재 근거가 충분한 상품이 없습니다.</p>
+      )}
+    </section>
+  );
+  const rows = report?.rows || [],
+    buy = rows.filter((p) => p.decision === "사입 검토"),
+    watch = rows.filter((p) => p.decision === "관찰"),
+    stop = rows.filter((p) => p.decision === "추가 사입 중단"),
+    risks = rows.filter((p) => p.claims.length || p.speed.includes("둔화")),
+    seven = report?.trends[0];
+  return (
+    <div className="md-report">
+      <header className="row">
+        <div>
+          <small>OARS DAILY REPORT</small>
+          <h1>오늘의 MD 총분석</h1>
+          <p>주문 반응과 취소·반품 차감 판매를 나누어 판단합니다.</p>
+        </div>
+        <button onClick={load} disabled={loading}>
+          {loading ? "분석 중" : "새로고침"}
+        </button>
+      </header>
+      {error && (
+        <p role="alert">
+          {error}
+          {report ? " · 아래는 마지막 성공 조회 데이터입니다." : ""}
+        </p>
+      )}
+      {loading && !report && (
+        <p role="status">주문·재고·MD 데이터를 읽고 있습니다.</p>
+      )}
+      {report && (
+        <>
+          <small>
+            한국 날짜 {report.today} · 조회{" "}
+            {new Date(report.updatedAt).toLocaleString("ko-KR", {
+              timeZone: "Asia/Seoul",
+            })}{" "}
+            · 당일은 진행 중입니다.
+          </small>
+          <details className="md-section" open={report.warnings.length > 0}>
+            <summary>
+              데이터 점검 {report.warnings.length}건 · 분석 기준
+            </summary>
+            <p>
+              매출은 판매가{" "}
+              {report.salesMode === "unit" ? "단가 × 수량" : "행 합계"}{" "}
+              기준입니다. 결제액·배송비·정산금과 다를 수 있습니다. 클레임은
+              완료·수량이 확인된 건만 원주문 결제일에 차감합니다.
+            </p>
+            <p>
+              재고는 시트 스냅샷입니다. 반품 입고·검수가 확인되지 않으면 재고로
+              더하지 않습니다. 노출 정보가 없어 무판매 상품을 D급으로 단정하지
+              않습니다.
+            </p>
+            {report.warnings.map((w, i) => (
+              <p key={i}>{w}</p>
+            ))}
+          </details>
+          <section className="md-section">
+            <h2>1. 📊 현재 매출 상태</h2>
+            <div className="md-kpis">
+              <div>
+                7일 주문매출<b>{won(seven.current.sales)}</b>
+              </div>
+              <div>
+                7일 잠정 순매출<b>{won(seven.current.netSales)}</b>
+              </div>
+              <div>
+                주문 / 순판매
+                <b>
+                  {seven.current.qty} / {seven.current.net}개
+                </b>
+              </div>
+              <div>
+                고유 주문<b>{seven.current.orderCount}건</b>
+              </div>
+            </div>
+          </section>
+          <section className="md-section">
+            <h2>2. 📈 이전 기간 대비 변화</h2>
+            {report.trends.map((t) => (
+              <p key={t.days}>
+                최근 {t.days}일 순판매 {t.current.net}개 / 이전 {t.days}일{" "}
+                {t.previous.net}개 ·{" "}
+                {!t.comparable
+                  ? "수집 범위 확인 전 판단 보류"
+                  : t.change === null
+                    ? "이전 순판매 0개, 증감률 계산 불가"
+                    : `${t.change.toFixed(1)}%`}
+              </p>
+            ))}
+          </section>
+          {group(
+            "3. 🏆 잘 팔리는 상품 TOP",
+            rows.filter((p) => p.grade === "S"),
+          )}
+          {group(
+            "4. 🌱 성장 가능 상품",
+            rows.filter((p) => p.grade === "A"),
+          )}
+          {group("5. ⚠️ 점검이 필요한 상품", risks)}
+          {group("6. 📦 사입 검토 상품", buy)}
+          {group("7. ⏳ 아직 기다려야 할 상품", watch)}
+          {group("8. 🛑 추가 사입 비추천 상품", stop)}
+          <section className="md-section">
+            <h2>9. 🔍 매출 변화 원인</h2>
+            <p>
+              주문수량과 취소·반품 차감은 확인할 수 있습니다. 노출·클릭·가격
+              변경·배송 안내 이력이 없어 매출 변화의 원인을 확정할 수 없습니다.
+              취소 사유를 먼저 확인하고, 배송지연 취소를 상품 경쟁력 하락과
+              구별하세요.
+            </p>
+            <h2>10. 🛒 다음 소싱 방향</h2>
+            <p>
+              반복 유효 주문이 확인된 상품의 실제 사진·옵션·가격을 비교해 인접
+              상품을 테스트합니다. 현재 연결된 데이터만으로 핏·소재·디자인
+              공통점을 단정하지 않습니다.
+            </p>
+          </section>
+          <section className="md-section">
+            <h2>11. 📋 상품별 액션 리스트</h2>
+            {rows.slice(0, 10).map((p) => (
+              <p key={p.key}>
+                <b>{p.name}</b> → {p.decision} ·{" "}
+                {p.missing.length ? p.missing.join(", ") : p.observe}
+              </p>
+            ))}
+            {rows.length > 10 && (
+              <details>
+                <summary>나머지 {rows.length - 10}개 상품 액션 보기</summary>
+                {rows.slice(10).map((p) => (
+                  <p key={p.key}>
+                    <b>{p.name}</b> → {p.decision} ·{" "}
+                    {p.missing.length ? p.missing.join(", ") : p.observe}
+                  </p>
+                ))}
+              </details>
+            )}
+          </section>
+          <section className="md-section">
+            <h2>12. 🎯 오늘 해야 할 일 TOP 5</h2>
+            {[
+              ...(report.warnings.length
+                ? ["🔴 오늘: 데이터 점검 항목부터 확인"]
+                : []),
+              ...buy
+                .slice(0, 2)
+                .map((p) => `🔴 오늘: ${p.name} — ${p.buy} · 공급조건 확인`),
+              ...risks
+                .slice(0, 1)
+                .map(
+                  (p) => `🟡 이번 주: ${p.name} — 클레임 사유·잔여재고 확인`,
+                ),
+              ...watch
+                .slice(0, 2)
+                .map((p) => `🟢 관찰: ${p.name} — ${p.observe}`),
+            ]
+              .slice(0, 5)
+              .map((a, i) => (
+                <p key={i}>{a}</p>
+              ))}
+          </section>
+          <section className="md-section">
+            <h2>MD 결론</h2>
+            <p>
+              {buy.length
+                ? `${buy[0].name}부터 사입 조건을 검토하세요. 제시 수량은 시나리오이므로 옵션·원가·공급일정을 확인한 뒤 실행합니다.`
+                : "현재는 사입을 확정할 근거가 부족합니다. 무재고 테스트를 유지하고 반복 유효 주문과 재고·공급 조건을 먼저 확인하세요."}{" "}
+              다음 소싱은 반복 판매 상품에서 사진과 데이터로 확인되는 특징을
+              기준으로 확장합니다.
+            </p>
+          </section>
+        </>
+      )}
+    </div>
+  );
+}
