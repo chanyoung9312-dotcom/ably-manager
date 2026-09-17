@@ -4,6 +4,13 @@ import fs from "node:fs";
 
 const nav = fs.readFileSync(new URL("../app/TodayHomeNav.js", import.meta.url), "utf8");
 const layout = fs.readFileSync(new URL("../app/layout.js", import.meta.url), "utf8");
+const home = fs.readFileSync(new URL("../app/page.js", import.meta.url), "utf8");
+const featurePages = [
+  "../app/products/page.js",
+  "../app/product-reaction/page.js",
+  "../app/product-match/page.js",
+  "../app/analysis/page.js",
+].map((path) => fs.readFileSync(new URL(path, import.meta.url), "utf8"));
 
 test("global navigation always exposes a direct home action", () => {
   assert.match(nav, /← 홈/);
@@ -19,4 +26,21 @@ test("root layout mounts the global navigation on every route", () => {
 test("mobile layout keeps the home action visible", () => {
   assert.match(nav, /\.oars-home\{[^}]*white-space:nowrap/);
   assert.doesNotMatch(nav, /\.oars-home\{[^}]*display:none/);
+});
+
+test("query tool navigation resolves sms, post, and tracking modes", () => {
+  assert.match(nav, /\["주문·배송", "\/\?tool=sms"\]/);
+  assert.match(nav, /\["우체국 엑셀", "\/\?tool=post"\]/);
+  assert.match(nav, /\["송장 매칭", "\/\?tool=tracking"\]/);
+  assert.match(nav, /window\.location\.assign\(href\)/);
+  assert.match(home, /\["sms", "post", "tracking"\]\.includes\(tool\)/);
+  assert.match(home, /location\.href = "\/\?tool=sms"/);
+  assert.match(home, /location\.href = "\/\?tool=post"/);
+  assert.match(home, /location\.href = "\/\?tool=tracking"/);
+});
+
+test("feature pages rely on the single global home action", () => {
+  for (const page of featurePages) {
+    assert.doesNotMatch(page, /← OARS Manager/);
+  }
 });
