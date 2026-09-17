@@ -20,3 +20,18 @@ test("MD와 재고 화면 역할을 분리하고 취소 유형을 표시한다",
   assert.match(nav, /사입 판단/);
   assert.match(nav, /재고 현황/);
 });
+
+test("홈 우선 상품은 숫자와 판단, 다음 확인을 시각적으로 분리한다", async () => {
+  const home = await readFile(new URL("../app/HomeMdBriefing.js", import.meta.url), "utf8");
+
+  assert.match(home, /className="metric-grid"/);
+  assert.match(home, />주문 반응</);
+  assert.match(home, />실제 판매</);
+  assert.match(home, />현재 재고</);
+  assert.match(home, /className="decision-box"/);
+  assert.match(home, />현재 판단</);
+  assert.match(home, /className="next-box"/);
+  assert.match(home, />다음 확인</);
+  assert.match(home, />판단 근거 자세히 보기</);
+  assert.doesNotMatch(home, /className="numbers"/);
+});
