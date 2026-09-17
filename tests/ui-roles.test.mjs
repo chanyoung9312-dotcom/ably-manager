@@ -21,19 +21,21 @@ test("MD와 재고 화면 역할을 분리하고 취소 유형을 표시한다",
   assert.match(nav, /재고 현황/);
 });
 
-test("홈 우선 상품은 숫자와 판단, 다음 확인을 시각적으로 분리한다", async () => {
+test("홈은 오늘 처리할 업무 순서와 우선 상품만 보여준다", async () => {
   const home = await readFile(new URL("../app/HomeMdBriefing.js", import.meta.url), "utf8");
 
-  assert.match(home, /className="metric-grid"/);
-  assert.match(home, />주문 반응</);
-  assert.match(home, />실제 판매</);
-  assert.match(home, />현재 재고</);
-  assert.match(home, /className="decision-box"/);
-  assert.match(home, />현재 판단</);
-  assert.match(home, /className="next-box"/);
-  assert.match(home, />다음 확인</);
-  assert.match(home, />판단 근거 자세히 보기</);
-  assert.doesNotMatch(home, /className="numbers"/);
+  assert.match(home, /aria-label="오늘 업무 순서"/);
+  assert.match(home, />주문 확인</);
+  assert.match(home, />출고 준비</);
+  assert.match(home, />사입 확인</);
+  assert.match(home, />매출 확인</);
+  assert.match(home, /filter\(\(p\)=>\(p\.q30\|\|0\)>0\)/);
+  assert.match(home, />최근 주문</);
+  assert.match(home, />오늘 할 일</);
+  assert.match(home, />전체 사입 판단 보기 →</);
+  assert.doesNotMatch(home, /판단 근거 자세히 보기/);
+  assert.doesNotMatch(home, /나머지 상품/);
+  assert.doesNotMatch(home, /상품 판단 현황/);
 });
 
 
