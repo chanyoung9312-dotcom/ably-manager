@@ -35,3 +35,13 @@ test("홈 우선 상품은 숫자와 판단, 다음 확인을 시각적으로 �
   assert.match(home, />판단 근거 자세히 보기</);
   assert.doesNotMatch(home, /className="numbers"/);
 });
+
+
+test("사입 판단은 최근 30일 판매 상품만 보여주고 최근 판매일을 표시한다", async () => {
+  const analysis = await readFile(new URL("../app/analysis/page.js", import.meta.url), "utf8");
+
+  assert.match(analysis, /filter\(\(row\) => \(row\.q30 \|\| 0\) > 0\)/);
+  assert.match(analysis, />최근 판매일</);
+  assert.doesNotMatch(analysis, />판매된 날짜</);
+  assert.doesNotMatch(analysis, /<b>\{rows\.length\}개<\/b>/);
+});
