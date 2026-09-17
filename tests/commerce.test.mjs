@@ -470,3 +470,192 @@ test("malformed explicit claim quantity is not defaulted to one", () => {
   assert.equal(d.orders[0].eligibleQty, 0);
   assert.equal(d.cancels.length, 0);
 });
+
+// Both products independently satisfy every procurement requirement.
+const scopedLedger = ({
+  extra = [],
+  claims = [["상품주문번호"]],
+  inventory = [],
+  md = [],
+} = {}) => {
+  const source = repeated();
+  const orders = ["p1", "p2"].flatMap((id) =>
+    source.orders.map((o) => {
+      const r = row(`${id}-${o.productOrder}`, 1, "배송완료", o.date);
+      r[3] = id;
+      return r;
+    }),
+  );
+  const d = ledger(
+    [...orders, ...extra],
+    claims,
+    [
+      ih,
+      ["p1", "원피스", "red", "S", 0],
+      ["p2", "원피스", "red", "S", 0],
+      ...inventory,
+    ],
+    md,
+  );
+  d.coverageStart = source.coverageStart;
+  if (!md.length)
+    d.mdProducts = ["p1", "p2"].map((productNo) => ({
+      ...source.mdProducts[0],
+      productNo,
+    }));
+  return d;
+};
+const scopedResult = (d) =>
+  Object.fromEntries(analyze(d, { today }).rows.map((p) => [p.productNo, p]));
+const onlyP1Blocked = (d) => {
+  const result = scopedResult(d);
+  assert.equal(result.p1.decision, "관찰");
+  assert.equal(result.p1.quantities, null);
+  assert.ok(
+    result.p1.missing.some((m) => m.startsWith("해당 상품 오류 해소:")),
+  );
+  assert.equal(result.p2.decision, "사입 검토");
+  assert.ok(result.p2.quantities.recommended > 0);
+  assert.deepEqual(result.p2.issues, []);
+};
+for (const [name, mutate] of [
+  [
+    "invalid quantity excluded from ledger",
+    (r) => {
+      r[5] = 0;
+    },
+  ],
+  [
+    "invalid date excluded from analysis",
+    (r) => {
+      r[0] = "bad-date";
+    },
+  ],
+  [
+    "invalid sale price",
+    (r) => {
+      r[6] = "bad-price";
+    },
+  ],
+  [
+    "unknown order state",
+    (r) => {
+      r[7] = "unknown";
+    },
+  ],
+])
+  test(`MD scopes ${name} to its product`, () => {
+    const r = row("bad");
+    mutate(r);
+    onlyP1Blocked(scopedLedger({ extra: [r] }));
+  });
+test("MD scopes quarantined conflicting orders, including every disputed product ID", () => {
+  const a = row("conflict"),
+    b = [...a];
+  b[7] = "배송완료";
+  onlyP1Blocked(scopedLedger({ extra: [a, b] }));
+  b[3] = "p2";
+  const d = scopedLedger({ extra: [a, b] });
+  assert.deepEqual(d.issues[0].productNos, ["p1", "p2"]);
+  for (const p of Object.values(scopedResult(d))) {
+    assert.equal(p.decision, "관찰");
+    assert.equal(p.quantities, null);
+  }
+});
+test("MD scopes invalid and duplicate inventory to its product", () => {
+  for (const quantity of ["bad", 0])
+    onlyP1Blocked(
+      scopedLedger({ inventory: [["p1", "원피스", "red", "S", quantity]] }),
+    );
+});
+test("MD scopes invalid and conflicting claims to the original product", () => {
+  const header = ["상품주문번호", "주문상태", "취소수량"];
+  for (const claims of [
+    [header, ["p1-po0", "취소완료", "bad"]],
+    [header, ["p1-po0", "취소완료", 1], ["p1-po0", "반품완료", 1]],
+  ])
+    onlyP1Blocked(scopedLedger({ claims }));
+});
+test("MD scopes unmatched claims with a product ID; unknown ownership blocks the ledger", () => {
+  onlyP1Blocked(
+    scopedLedger({
+      claims: [
+        ["상품주문번호", "상품번호"],
+        ["orphan", "p1"],
+      ],
+    }),
+  );
+  const d = scopedLedger({ claims: [["상품주문번호"], ["orphan"]] });
+  assert.equal(d.issues[0].scope, "ledger");
+  for (const p of Object.values(scopedResult(d))) {
+    assert.equal(p.decision, "관찰");
+    assert.equal(p.quantities, null);
+    assert.ok(p.missing.some((m) => m.startsWith("원장 전체 오류 해소:")));
+  }
+});
+test("MD cannot localize a malformed order without a product identity", () => {
+  const r = row("unidentified", 0);
+  r[3] = "";
+  for (const p of Object.values(scopedResult(scopedLedger({ extra: [r] })))) {
+    assert.equal(p.decision, "관찰");
+    assert.equal(p.quantities, null);
+  }
+});
+test("MD scopes conflicting card fields to the card's product", () => {
+  const fields = [
+    "상품명",
+    "상품번호",
+    "상품등록일",
+    "공급처배송기간",
+    "입고예정수량",
+    "예약재고",
+    "공급처배송기간",
+  ];
+  const md = [
+    [...fields, ...fields],
+    [
+      "원피스",
+      "p1",
+      "2026-08-01",
+      7,
+      0,
+      0,
+      9,
+      "원피스",
+      "p2",
+      "2026-08-01",
+      7,
+      0,
+      0,
+      7,
+    ],
+  ];
+  onlyP1Blocked(scopedLedger({ md }));
+});
+test("MD informational warnings and exact duplicate removal never block procurement", () => {
+  const r = row("duplicate", 1, "배송완료");
+  const d = scopedLedger({ extra: [r, [...r]] });
+  d.warnings.push("과거 오류 해소 완료: 추가 확인 필요 없음");
+  assert.deepEqual(d.issues, []);
+  for (const p of Object.values(scopedResult(d)))
+    assert.equal(p.decision, "사입 검토");
+});
+
+test("MD retains product ownership for claims of quarantined original orders", () => {
+  const malformed = row("bad-original", 0);
+  onlyP1Blocked(
+    scopedLedger({
+      extra: [malformed],
+      claims: [["상품주문번호"], ["bad-original"]],
+    }),
+  );
+  const a = row("conflicted-original"),
+    b = [...a];
+  b[7] = "배송완료";
+  onlyP1Blocked(
+    scopedLedger({
+      extra: [a, b],
+      claims: [["상품주문번호"], ["conflicted-original"]],
+    }),
+  );
+});
