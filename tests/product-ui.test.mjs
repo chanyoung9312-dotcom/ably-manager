@@ -16,11 +16,12 @@ test("상품 반응 화면은 상태·핵심 수치·할 일 중심으로 구성
   assert.doesNotMatch(reaction, />미확정 클레임</);
 });
 
-test("상품별 판매 화면은 긴 표 대신 카드형 핵심 정보만 먼저 보여준다", () => {
-  assert.match(products, />상품별 판매 현황</);
-  assert.match(products, />다음 할 일</);
-  assert.match(products, />상세 보기</);
+test("재고 화면은 사입 판단과 분리해 수량·옵션 관리에 집중한다", () => {
+  assert.match(products, />재고 현황</);
+  assert.match(products, />현재 재고</);
+  assert.match(products, />옵션별 재고 보기</);
+  assert.match(products, />재고 여유</);
   assert.doesNotMatch(products, /<table>/);
-  assert.doesNotMatch(products, /"순판매 누계"/);
-  assert.doesNotMatch(products, /"MD 판단"/);
+  assert.doesNotMatch(products, />사입 검토</);
+  assert.doesNotMatch(products, />추가 주문 중단</);
 });

@@ -5,8 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 const menu = [
   ["주문·배송", "/?tool=sms"],
   ["매출", "/dashboard"],
-  ["MD", "/analysis"],
-  ["재고", "/products"],
+  ["사입 판단", "/analysis"],
+  ["재고 현황", "/products"],
   ["상품번호 매칭", "/product-match"],
   ["우체국 엑셀", "/?tool=post"],
   ["송장 매칭", "/?tool=tracking"],
