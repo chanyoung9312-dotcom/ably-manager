@@ -36,7 +36,6 @@ export default function Products() {
     );
   return (
     <main className="md-report">
-      <a href="/">← OARS Manager</a>
       <div className="row">
         <h1>상품별 판매분석</h1>
         <button disabled={loading} onClick={load}>
