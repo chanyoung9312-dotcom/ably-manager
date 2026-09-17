@@ -144,7 +144,6 @@ function Group({ title, description, rows }) {
     <section className="md-analysis-section">
       <div className="md-analysis-section-head">
         <div><h2>{title}</h2><p>{description}</p></div>
-        <b>{rows.length}개</b>
       </div>
       {rows.length ? rows.map((row) => <ProductRow key={row.key} row={row} />) : <p className="md-analysis-empty">해당 상품이 없습니다.</p>}
     </section>
