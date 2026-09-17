@@ -77,8 +77,8 @@ export default function Page() {
     [ablyFileName, setAblyFileName] = useState(""),
     [writing, setWriting] = useState(false);
   useEffect(() => {
-    if (new URLSearchParams(location.search).get("tool") === "sms")
-      setMode("sms");
+    const tool = new URLSearchParams(location.search).get("tool");
+    setMode(["sms", "post", "tracking"].includes(tool) ? tool : "home");
   }, []);
   async function loadFile(e) {
     const f = e.target.files?.[0];
@@ -321,7 +321,7 @@ export default function Page() {
       <h1>OARS Manager</h1>
       <p className="sub">오어즈 쇼핑몰 운영 관리</p>
       <div className="actions" style={{ marginBottom: 18 }}>
-        <button onClick={() => setMode("home")}>MD 총분석</button>
+        <button onClick={() => (location.href = "/")}>MD 총분석</button>
         <button onClick={() => (location.href = "/product-reaction")}>
           상품 반응
         </button>
@@ -334,9 +334,9 @@ export default function Page() {
         <button onClick={() => (location.href = "/products")}>
           상품별 판매분석
         </button>
-        <button onClick={() => setMode("sms")}>문자 도우미</button>
-        <button onClick={() => setMode("post")}>우체국 엑셀 만들기</button>
-        <button onClick={() => setMode("tracking")}>송장 매칭</button>
+        <button onClick={() => (location.href = "/?tool=sms")}>문자 도우미</button>
+        <button onClick={() => (location.href = "/?tool=post")}>우체국 엑셀 만들기</button>
+        <button onClick={() => (location.href = "/?tool=tracking")}>송장 매칭</button>
       </div>
       {mode === "home" ? (
         <HomeMdBriefing />
