@@ -26,7 +26,7 @@ export default function HomeMdBriefing(){
   async function load(){setLoading(true);setError("");try{const r=await fetch("/api/oars-analysis",{cache:"no-store"}),j=await r.json();if(!r.ok)throw Error(j.error||"분석 실패");setReport(j.report)}catch(e){setError(e.message)}finally{setLoading(false)}}
   useEffect(()=>{load()},[]);
   if(loading&&!report)return <div className="md-report"><p>오늘 운영 데이터를 정리하고 있습니다.</p></div>;
-  if(!report)return <div className="md-report"><p>{error||"데이터를 불러오지 못했습니다."}</p></div>;
+  if(!report)return <div className="md-report"><p role="alert">{error||"데이터를 불러오지 못했습니다."}</p><button onClick={load} disabled={loading}>{loading?"확인 중":"새로고침"}</button></div>;
   const rows=report.rows||[], buy=rows.filter(p=>p.decision==="사입 검토"), watch=rows.filter(p=>p.decision==="관찰"), stop=rows.filter(p=>p.decision==="추가 사입 중단"), seven=report.trends?.find(t=>t.days===7)?.current||{};
   const priority=[...buy,...watch].slice(0,3);
   return <div className="md-report operator-home">
