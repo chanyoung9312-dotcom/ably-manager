@@ -1,4 +1,291 @@
-'use client';
-import {useEffect,useMemo,useState} from 'react';
-const won=v=>`${Math.round(v||0).toLocaleString('ko-KR')}원`,month=d=>String(d||'').slice(0,7);
-export default function Dashboard(){const[data,setData]=useState(null),[error,setError]=useState(''),[loading,setLoading]=useState(true),[selected,setSelected]=useState('all');async function load(){setLoading(true);setError('');try{const r=await fetch('/api/dashboard-data',{cache:'no-store'}),d=await r.json();if(!r.ok)throw new Error(d.error||'불러오기 실패');setData(d)}catch(e){setError(e.message)}finally{setLoading(false)}}useEffect(()=>{load()},[]);const v=useMemo(()=>{if(!data)return null;const months=[...new Set(data.orders.map(x=>month(x.date)).filter(Boolean))].sort().reverse(),ok=x=>selected==='all'||month(x.date)===selected,orders=data.orders.filter(ok),cancels=data.cancels.filter(ok),before=cancels.filter(x=>x.type==='before'),after=cancels.filter(x=>x.type==='after'),returns=cancels.filter(x=>x.type==='return'),sum=a=>a.reduce((s,x)=>s+(x.sales??((x.salePrice||0)*(x.qty||1))),0),gross=sum(orders),deduct=sum(cancels);const rows=months.map(m=>{const oo=data.orders.filter(x=>month(x.date)===m),cc=data.cancels.filter(x=>month(x.date)===m),g=sum(oo),c=sum(cc);return{m,g,c,n:g-c,count:oo.reduce((s,x)=>s+(x.qty||1),0)}});return{months,orders,cancels,before,after,returns,gross,deduct,net:gross-deduct,sum,rows}},[data,selected]);const box={border:'1px solid #e8e8e8',borderRadius:16,padding:18,background:'#fff'};return <main style={{maxWidth:1180,margin:'auto',padding:'28px 18px 70px',fontFamily:'sans-serif'}}><div style={{display:'flex',justifyContent:'space-between',gap:16,alignItems:'center',flexWrap:'wrap'}}><div><a href="/" style={{color:'#777',textDecoration:'none'}}>← OARS Manager</a><h1 style={{margin:'10px 0 5px'}}>OARS 매출 대시보드</h1><p style={{color:'#777',margin:0}}>에이블리 주문시트의 판매가 기준 매출과 취소·반품 흐름을 확인합니다.</p></div><button onClick={load} disabled={loading} style={{background:'#171717',color:'#fff',border:0,borderRadius:12,padding:'13px 18px',fontWeight:700}}>{loading?'불러오는 중...':'새로고침'}</button></div>{error&&<div style={{marginTop:20,padding:16,background:'#fff1f1',borderRadius:12,color:'#a33'}}>연결 오류: {error}</div>}{v&&<><div style={{...box,marginTop:20,display:'flex',justifyContent:'space-between',alignItems:'center',gap:12,flexWrap:'wrap'}}><b>기간 선택</b><select value={selected} onChange={e=>setSelected(e.target.value)} style={{padding:10,borderRadius:10,border:'1px solid #ddd'}}><option value="all">전체 기간</option>{v.months.map(m=><option key={m} value={m}>{m.replace('-','년 ')}월</option>)}</select></div><section style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(190px,1fr))',gap:12,marginTop:14}}>{[['총 주문매출',won(v.gross),`${v.orders.reduce((s,x)=>s+(x.qty||1),0)}개`],['최종 실매출',won(v.net),'취소·반품 제외'],['총 취소·반품',won(v.deduct),`${v.cancels.length}건`],['발주 후 취소',won(v.sum(v.after)),`${v.after.length}건 · 재고 위험`]].map(([a,b,c])=><div key={a} style={box}><span style={{color:'#777',fontSize:13}}>{a}</span><strong style={{display:'block',fontSize:23,margin:'8px 0'}}>{b}</strong><small style={{color:'#888'}}>{c}</small></div>)}</section><section style={{...box,marginTop:14}}><h2 style={{marginTop:0}}>월별 매출</h2><div style={{overflowX:'auto'}}><table><thead><tr><th>월</th><th>주문수량</th><th>주문매출</th><th>취소·반품</th><th>실매출</th></tr></thead><tbody>{v.rows.map(r=><tr key={r.m}><td>{r.m}</td><td>{r.count}개</td><td>{won(r.g)}</td><td>{won(r.c)}</td><td><b>{won(r.n)}</b></td></tr>)}</tbody></table></div></section><section style={{...box,marginTop:14}}><h2 style={{marginTop:0}}>취소·반품 구조</h2><p>발주 전 취소 <b>{v.before.length}건 · {won(v.sum(v.before))}</b></p><p>발주 후 취소 <b>{v.after.length}건 · {won(v.sum(v.after))}</b></p><p>배송 후 반품 <b>{v.returns.length}건 · {won(v.sum(v.returns))}</b></p></section></>}<style jsx>{`table{width:100%;border-collapse:collapse;min-width:620px}th,td{padding:12px 8px;border-bottom:1px solid #eee;text-align:right;font-size:14px}th:first-child,td:first-child{text-align:left}select,button{font:inherit}`}</style></main>}
+"use client";
+import { useEffect, useMemo, useState } from "react";
+const won = (v) => `${Math.round(v || 0).toLocaleString("ko-KR")}원`,
+  month = (d) => String(d || "").slice(0, 7);
+export default function Dashboard() {
+  const [data, setData] = useState(null),
+    [error, setError] = useState(""),
+    [loading, setLoading] = useState(true),
+    [selected, setSelected] = useState("all");
+  async function load() {
+    setLoading(true);
+    setError("");
+    try {
+      const r = await fetch("/api/dashboard-data", { cache: "no-store" }),
+        d = await r.json();
+      if (!r.ok) throw new Error(d.error || "불러오기 실패");
+      setData(d);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+  useEffect(() => {
+    load();
+  }, []);
+  const v = useMemo(() => {
+    if (!data) return null;
+    const months = [
+        ...new Set(data.orders.map((x) => month(x.date)).filter(Boolean)),
+      ]
+        .sort()
+        .reverse(),
+      ok = (x) => selected === "all" || month(x.date) === selected,
+      orders = data.orders.filter(ok),
+      cancels = data.cancels.filter(ok),
+      before = cancels.filter((x) => x.type === "before"),
+      after = cancels.filter((x) => x.type === "after"),
+      returns = cancels.filter((x) => x.type === "return"),
+      sum = (a) => a.reduce((s, x) => s + (x.sales ?? 0), 0),
+      gross = sum(orders),
+      deduct = sum(cancels);
+    const rows = months.map((m) => {
+      const oo = data.orders.filter((x) => month(x.date) === m),
+        cc = data.cancels.filter((x) => month(x.date) === m),
+        g = sum(oo),
+        c = sum(cc);
+      return {
+        m,
+        g,
+        c,
+        n: g - c,
+        count: oo.reduce((s, x) => s + (x.qty || 1), 0),
+      };
+    });
+    return {
+      months,
+      orders,
+      cancels,
+      before,
+      after,
+      returns,
+      gross,
+      deduct,
+      net: gross - deduct,
+      sum,
+      rows,
+    };
+  }, [data, selected]);
+  const box = {
+    border: "1px solid #e8e8e8",
+    borderRadius: 16,
+    padding: 18,
+    background: "#fff",
+  };
+  return (
+    <main
+      style={{
+        maxWidth: 1180,
+        margin: "auto",
+        padding: "28px 18px 70px",
+        fontFamily: "sans-serif",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          gap: 16,
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        <div>
+          <a href="/" style={{ color: "#777", textDecoration: "none" }}>
+            ← OARS Manager
+          </a>
+          <h1 style={{ margin: "10px 0 5px" }}>OARS 매출 대시보드</h1>
+          <p style={{ color: "#777", margin: 0 }}>
+            에이블리 주문시트의 판매가 기준 매출과 취소·반품 흐름을 확인합니다.
+          </p>
+        </div>
+        <button
+          onClick={load}
+          disabled={loading}
+          style={{
+            background: "#171717",
+            color: "#fff",
+            border: 0,
+            borderRadius: 12,
+            padding: "13px 18px",
+            fontWeight: 700,
+          }}
+        >
+          {loading ? "불러오는 중..." : "새로고침"}
+        </button>
+      </div>
+      {error && (
+        <div
+          style={{
+            marginTop: 20,
+            padding: 16,
+            background: "#fff1f1",
+            borderRadius: 12,
+            color: "#a33",
+          }}
+        >
+          연결 오류: {error}
+        </div>
+      )}
+      {data?.warnings?.length > 0 && (
+        <details open className="md-section">
+          <summary>데이터 확인 {data.warnings.length}건</summary>
+          {data.warnings.map((w, i) => (
+            <p key={i}>{w}</p>
+          ))}
+        </details>
+      )}
+      {data && (
+        <p>
+          판매가 {data.salesMode === "unit" ? "단가 × 수량" : "행 합계"} 기준 ·
+          원주문 결제일에 완료 클레임 차감 · 진행/미확정 클레임{" "}
+          {data.claims.filter((c) => !c.complete || c.qty === null).length}건 ·
+          정산금과 다릅니다.
+        </p>
+      )}
+      {v && (
+        <>
+          <div
+            style={{
+              ...box,
+              marginTop: 20,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 12,
+              flexWrap: "wrap",
+            }}
+          >
+            <b>기간 선택</b>
+            <select
+              value={selected}
+              onChange={(e) => setSelected(e.target.value)}
+              style={{
+                padding: 10,
+                borderRadius: 10,
+                border: "1px solid #ddd",
+              }}
+            >
+              <option value="all">전체 기간</option>
+              {v.months.map((m) => (
+                <option key={m} value={m}>
+                  {m.replace("-", "년 ")}월
+                </option>
+              ))}
+            </select>
+          </div>
+          <section
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))",
+              gap: 12,
+              marginTop: 14,
+            }}
+          >
+            {[
+              [
+                "총 주문매출",
+                won(v.gross),
+                `${v.orders.reduce((s, x) => s + (x.qty || 1), 0)}개`,
+              ],
+              ["잠정 순매출", won(v.net), "완료 확인된 취소·반품 차감"],
+              ["총 취소·반품", won(v.deduct), `${v.cancels.length}건`],
+              [
+                "발주 후 취소",
+                won(v.sum(v.after)),
+                `${v.after.length}건 · 재고 위험`,
+              ],
+            ].map(([a, b, c]) => (
+              <div key={a} style={box}>
+                <span style={{ color: "#777", fontSize: 13 }}>{a}</span>
+                <strong
+                  style={{ display: "block", fontSize: 23, margin: "8px 0" }}
+                >
+                  {b}
+                </strong>
+                <small style={{ color: "#888" }}>{c}</small>
+              </div>
+            ))}
+          </section>
+          <section style={{ ...box, marginTop: 14 }}>
+            <h2 style={{ marginTop: 0 }}>월별 매출</h2>
+            <div style={{ overflowX: "auto" }}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>월</th>
+                    <th>주문수량</th>
+                    <th>주문매출</th>
+                    <th>취소·반품</th>
+                    <th>순매출</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {v.rows.map((r) => (
+                    <tr key={r.m}>
+                      <td>{r.m}</td>
+                      <td>{r.count}개</td>
+                      <td>{won(r.g)}</td>
+                      <td>{won(r.c)}</td>
+                      <td>
+                        <b>{won(r.n)}</b>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+          <section style={{ ...box, marginTop: 14 }}>
+            <h2 style={{ marginTop: 0 }}>취소·반품 구조</h2>
+            <p>
+              발주 전 취소{" "}
+              <b>
+                {v.before.length}건 · {won(v.sum(v.before))}
+              </b>
+            </p>
+            <p>
+              발주 후 취소{" "}
+              <b>
+                {v.after.length}건 · {won(v.sum(v.after))}
+              </b>
+            </p>
+            <p>
+              발주 시점 미확인{" "}
+              <b>{v.cancels.filter((x) => x.type === "unknown").length}건</b>
+            </p>
+            <p>
+              배송 후 반품{" "}
+              <b>
+                {v.returns.length}건 · {won(v.sum(v.returns))}
+              </b>
+            </p>
+          </section>
+        </>
+      )}
+      <style jsx>{`
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          min-width: 620px;
+        }
+        th,
+        td {
+          padding: 12px 8px;
+          border-bottom: 1px solid #eee;
+          text-align: right;
+          font-size: 14px;
+        }
+        th:first-child,
+        td:first-child {
+          text-align: left;
+        }
+        select,
+        button {
+          font: inherit;
+        }
+      `}</style>
+    </main>
+  );
+}

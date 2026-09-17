@@ -1,14 +1,72 @@
-import {GoogleAuth} from 'google-auth-library';
-const SHEET_ID='1tL1u65uuALC6Xky0CbUbPkSX7pZd_twl2Wpy0AYg8eU';
-const clean=v=>String(v??'').trim();
-const norm=s=>clean(s).toLowerCase().replace(/\[[^\]]*\]|\([^)]*\)/g,' ').replace(/\b\d+\s*colou?r\b/gi,' ').replace(/[^0-9a-z가-힣]+/g,'');
-const tokens=s=>new Set(clean(s).toLowerCase().replace(/\[[^\]]*\]|\([^)]*\)/g,' ').replace(/[^0-9a-z가-힣]+/g,' ').split(/\s+/).filter(x=>x.length>1));
-const sim=(a,b)=>{const A=tokens(a),B=tokens(b);if(!A.size||!B.size)return 0;let hit=0;for(const x of A)if(B.has(x))hit++;return hit/Math.max(A.size,B.size)};
-const colName=n=>{let s='';while(n){n--;s=String.fromCharCode(65+n%26)+s;n=Math.floor(n/26)}return s};
-async function values(token){const q=encodeURIComponent("'MD'!A1:Z5000"),r=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${q}`,{headers:{Authorization:`Bearer ${token}`},cache:'no-store'});if(!r.ok)throw new Error(`MD 시트 읽기 실패 (${r.status})`);return(await r.json()).values||[]}
-function findNear(a,labelRow,labelCol,label){for(let rr=labelRow-1;rr>=Math.max(0,labelRow-14);rr--){const row=a[rr]||[];for(let cc=Math.max(0,labelCol-5);cc<=Math.min(row.length-1,labelCol+5);cc++){if(clean(row[cc])===label){const below=clean((a[rr+1]||[])[cc]),right=clean(row[cc+1]);if(below)return{value:below,row:rr+1,col:cc};if(right)return{value:right,row:rr,col:cc+1}}}}return null}
-function blocks(a){const out=[];for(let r=0;r<a.length;r++){const row=a[r]||[];for(let c=0;c<row.length;c++){if(clean(row[c])!=='상품번호')continue;const p=findNear(a,r,c,'상품명'),d=findNear(a,r,c,'업로드날짜');if(!p?.value)continue;out.push({headerRow:r+1,valueRow:r+2,col:c+1,cell:`${colName(c+1)}${r+2}`,product:p.value,productRow:p.row+1,date:d?.value||'',existing:clean((a[r+1]||[])[c])})}}return out}
-function pick(block,goods){const n=norm(block.product),exact=goods.filter(g=>norm(g.name)===n);if(exact.length===1)return{g:exact[0],status:'확정',score:1,reason:'상품명 정규화 일치'};const scored=goods.map(g=>({g,score:sim(block.product,g.name)})).sort((a,b)=>b.score-a.score),best=scored[0],second=scored[1];if(best&&best.score>=.88&&best.score-(second?.score||0)>=.18)return{...best,status:'확정',reason:'상품명 유사도 높음'};return{g:null,status:'확인 필요',score:best?.score||0,candidate:best?.g?.name||'',candidateNo:best?.g?.productNo||''}}
-export async function POST(req){try{const {goods=[],mode='preview',approved=[]}=await req.json();if(!Array.isArray(goods)||!goods.length)return Response.json({error:'에이블리 상품목록 데이터가 없습니다.'},{status:400});const unique=[...new Map(goods.filter(x=>clean(x.productNo)&&clean(x.name)).map(x=>[clean(x.productNo),{productNo:clean(x.productNo),name:clean(x.name),category:clean(x.category),registeredAt:clean(x.registeredAt)}])).values()];const raw=process.env.GOOGLE_SERVICE_ACCOUNT_JSON;if(!raw)throw new Error('Google 서비스 계정 환경변수가 없습니다.');const auth=new GoogleAuth({credentials:JSON.parse(raw),scopes:['https://www.googleapis.com/auth/spreadsheets']}),client=await auth.getClient(),t=await client.getAccessToken(),token=t.token||t,a=await values(token),bs=blocks(a),results=[];for(const b of bs){if(b.existing){results.push({...b,productNo:b.existing,status:'기존값 유지'});continue}const m=pick(b,unique);if(m.g)results.push({...b,productNo:m.g.productNo,ablyName:m.g.name,category:m.g.category,status:'확정',reason:m.reason,score:m.score});else results.push({...b,status:'확인 필요',candidate:m.candidate,candidateNo:m.candidateNo,score:m.score})}
-let written=0;if(mode==='write'){const allowed=new Set((approved||[]).map(clean)),updates=results.filter(x=>x.status==='확정'&&allowed.has(x.cell)&&!x.existing).map(x=>({range:`'MD'!${x.cell}`,values:[[x.productNo]]}));if(updates.length){const r=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values:batchUpdate`,{method:'POST',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({valueInputOption:'RAW',data:updates})});if(!r.ok)throw new Error(`상품번호 쓰기 실패 (${r.status})`);written=updates.length}}
-return Response.json({mode,total:bs.length,matched:results.filter(x=>x.status==='확정').length,written,existing:results.filter(x=>x.status==='기존값 유지').length,needsReview:results.filter(x=>x.status==='확인 필요').length,results})}catch(e){console.error(e);return Response.json({error:e.message||'상품번호 매칭 실패'},{status:500})}}
+import { secure } from "../../../lib/access.mjs";
+import { createHash } from "node:crypto";
+import { sheetHeaders, readSheet, writeCells } from "../../../lib/sheets.mjs";
+import { matchProducts } from "../../../lib/product-match.mjs";
+const digest = (v) =>
+  createHash("sha256").update(JSON.stringify(v)).digest("hex");
+async function handlePOST(req) {
+  try {
+    const {
+      goods,
+      mode = "preview",
+      approved = [],
+      snapshot,
+    } = await req.json();
+    if (!["preview", "write"].includes(mode) || !Array.isArray(approved))
+      return Response.json({ error: "잘못된 요청" }, { status: 400 });
+    const headers = await sheetHeaders(mode === "write"),
+      values = await readSheet("MD", "A:Z", headers),
+      results = matchProducts(values, goods);
+    let written = 0;
+    if (mode === "write") {
+      if (!snapshot || snapshot !== digest(values))
+        return Response.json(
+          { error: "미리보기 후 MD 시트가 변경되었습니다. 다시 확인하세요." },
+          { status: 409 },
+        );
+      const updates = approved.map((a) => {
+        const p = results.find(
+          (r) =>
+            r.cell === a.cell &&
+            r.productNo === a.productNo &&
+            r.product === a.product &&
+            r.status === "확정",
+        );
+        if (!p) throw new Error("승인 상품과 최신 매칭 결과가 다릅니다.");
+        return { range: `'MD'!${p.cell}`, values: [[p.productNo]] };
+      });
+      if (new Set(updates.map((u) => u.range)).size !== updates.length)
+        throw new Error("중복 승인 셀");
+      if (updates.length) {
+        await writeCells(updates, headers);
+        written = updates.length;
+        const fresh = await readSheet("MD", "A:Z", headers);
+        for (const p of results.filter((r) =>
+          approved.some((a) => a.cell === r.cell),
+        ))
+          if (
+            String(fresh[p.productNoRow - 1]?.[p.productNoCol] || "").trim() !==
+            p.productNo
+          )
+            throw new Error("저장 후 상품번호 재확인 실패. 시트를 확인하세요.");
+      }
+    }
+    return Response.json({
+      snapshot: digest(values),
+      mode,
+      total: results.length,
+      matched: results.filter((x) => x.status === "확정").length,
+      written,
+      existing: results.filter((x) => x.status === "기존값 유지").length,
+      needsReview: results.filter((x) => x.status === "확인 필요").length,
+      results,
+    });
+  } catch (e) {
+    return Response.json(
+      { error: e.message || "상품번호 매칭 실패" },
+      { status: 409 },
+    );
+  }
+}
+
+export const POST = secure(handlePOST);

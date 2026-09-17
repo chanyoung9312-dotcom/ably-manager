@@ -1,5 +1,70 @@
-import {GoogleAuth} from 'google-auth-library';
-const SHEET_ID='1tL1u65uuALC6Xky0CbUbPkSX7pZd_twl2Wpy0AYg8eU';
-const clean=v=>String(v??'').trim();
-async function authHeaders(){const raw=process.env.GOOGLE_SERVICE_ACCOUNT_JSON;if(!raw)throw new Error('Google 서비스 계정 환경변수가 없습니다.');const auth=new GoogleAuth({credentials:JSON.parse(raw),scopes:['https://www.googleapis.com/auth/spreadsheets']});const client=await auth.getClient();const token=await client.getAccessToken();return{Authorization:`Bearer ${token.token||token}`,'Content-Type':'application/json'};}
-export async function POST(req){try{const body=await req.json();const updates=Array.isArray(body.updates)?body.updates:[];if(!updates.length)return Response.json({error:'기입할 송장이 없습니다.'},{status:400});const headers=await authHeaders();const valid=updates.filter(x=>Number(x.rowNumber)>1&&/^\d{10,14}$/.test(clean(x.tracking)));const data=valid.flatMap(x=>[{range:`'에이블리 주문'!G${Number(x.rowNumber)}`,values:[['우체국']]},{range:`'에이블리 주문'!H${Number(x.rowNumber)}`,values:[[clean(x.tracking)]]}]);if(!data.length)return Response.json({error:'유효한 송장이 없습니다.'},{status:400});const res=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values:batchUpdate`,{method:'POST',headers,body:JSON.stringify({valueInputOption:'RAW',data})});if(!res.ok)throw new Error(`Google Sheets ${res.status}`);return Response.json({ok:true,count:valid.length});}catch(e){console.error(e);return Response.json({error:'주문시트 택배사/배송관리 송장번호 자동 기입에 실패했습니다.'},{status:500});}}
+import { secure } from "../../../lib/access.mjs";
+import { sheetHeaders, readSheet, writeCells } from "../../../lib/sheets.mjs";
+import {
+  postalRows,
+  claimIds,
+  planTracking,
+  columnLetter,
+} from "../../../lib/shipping.mjs";
+async function handlePOST(req) {
+  try {
+    const { updates } = await req.json(),
+      headers = await sheetHeaders(true);
+    const [orders, claims] = await Promise.all([
+      readSheet("에이블리 주문", "A:AS", headers),
+      readSheet("취소 반품", "A:BA", headers),
+    ]);
+    const plan = planTracking(
+      updates,
+      postalRows(orders, { includeWritten: true, blocked: claimIds(claims) }),
+    );
+    const changed = plan.filter((x) => !x.unchanged);
+    if (changed.length)
+      await writeCells(
+        changed.flatMap((x) => [
+          {
+            range: `'에이블리 주문'!${columnLetter(x.carrierCol)}${x.rowNumber}`,
+            values: [["우체국"]],
+          },
+          {
+            range: `'에이블리 주문'!${columnLetter(x.shippingCol)}${x.rowNumber}`,
+            values: [[x.tracking]],
+          },
+        ]),
+        headers,
+      );
+    const fresh = postalRows(
+      await readSheet("에이블리 주문", "A:AS", headers),
+      { includeWritten: true },
+    );
+    if (
+      plan.some(
+        (p) =>
+          !fresh.some(
+            (r) =>
+              r.productOrderNo === p.productOrderNo &&
+              r.shipping === p.tracking,
+          ),
+      )
+    )
+      return Response.json(
+        {
+          error:
+            "저장 후 주문·송장 검증 실패. 시트 변경 여부를 직접 확인하세요.",
+        },
+        { status: 409 },
+      );
+    return Response.json({
+      ok: true,
+      count: changed.length,
+      unchanged: plan.length - changed.length,
+    });
+  } catch (e) {
+    return Response.json(
+      { error: e.message || "송장 저장 결과를 확인하세요." },
+      { status: 409 },
+    );
+  }
+}
+
+export const POST = secure(handlePOST);

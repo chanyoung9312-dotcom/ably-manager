@@ -1,17 +1,43 @@
-import {GoogleAuth} from 'google-auth-library';
-const SHEET_ID='1tL1u65uuALC6Xky0CbUbPkSX7pZd_twl2Wpy0AYg8eU',SEOUL={latitude:37.5665,longitude:126.9780};
-const txt=v=>String(v??'').trim(),num=v=>{const n=Number(txt(v).replace(/[^0-9.-]/g,''));return Number.isFinite(n)?n:0},norm=s=>txt(s).replace(/\s+/g,'').toLowerCase();
-const iso=v=>{const s=txt(v),m=s.match(/(20\d{2})[-./](\d{1,2})[-./](\d{1,2})/);if(m)return`${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;const n=s.replace(/[^0-9]/g,'');if(n.length===6&&/^2\d/.test(n))return`20${n.slice(0,2)}-${n.slice(2,4)}-${n.slice(4,6)}`;return''};
-const date=s=>{const x=iso(s);return x?new Date(`${x}T00:00:00`):null},days=(a,b)=>Math.max(0,Math.floor((a-b)/86400000));
-async function weather(){try{const u=new URL('https://api.open-meteo.com/v1/forecast');u.searchParams.set('latitude',SEOUL.latitude);u.searchParams.set('longitude',SEOUL.longitude);u.searchParams.set('timezone','Asia/Seoul');u.searchParams.set('current','temperature_2m,apparent_temperature');u.searchParams.set('daily','temperature_2m_max,temperature_2m_min');u.searchParams.set('forecast_days','7');const r=await fetch(u,{cache:'no-store'});return r.ok?await r.json():null}catch{return null}}
-async function sheets(){const raw=process.env.GOOGLE_SERVICE_ACCOUNT_JSON;if(!raw)return{md:[],orders:[]};const auth=new GoogleAuth({credentials:JSON.parse(raw),scopes:['https://www.googleapis.com/auth/spreadsheets.readonly']}),client=await auth.getClient(),t=await client.getAccessToken(),token=t.token||t;async function get(name,range){const r=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(`'${name}'!${range}`)}`,{headers:{Authorization:`Bearer ${token}`},cache:'no-store'});return r.ok?(await r.json()).values||[]:[]}return{md:await get('MD','A1:Z5000'),orders:await get('에이블리 주문','A1:AI3000')}}
-function mdRows(a){const out=[];for(let r=0;r<a.length;r++){const row=a[r]||[];for(let c=0;c<row.length;c++){if(txt(row[c])!=='상품명')continue;const product=txt((a[r+1]||[])[c])||txt(row[c+1]);if(!product||product==='상품명')continue;let end=Math.min(a.length,r+18);for(let rr=r+2;rr<end;rr++)if((a[rr]||[]).some(v=>txt(v)==='상품명')){end=rr;break}const b={date:'',product,productNo:'',salePrice:0,row:r+2};for(let rr=Math.max(0,r-3);rr<end;rr++){const x=a[rr]||[];for(let cc=0;cc<x.length;cc++){const lab=txt(x[cc]);if(!['업로드날짜','상품번호','판매 가격','판매가격'].includes(lab))continue;let v=txt((a[rr+1]||[])[cc]);if(!v&&cc+1<x.length)v=txt(x[cc+1]);if(lab==='업로드날짜')b.date=iso(v);else if(lab==='상품번호')b.productNo=v;else b.salePrice=num(v)}}if(b.date||b.productNo)out.push(b);r=Math.max(r,end-2);break}}return out}
-function orderRows(a){const h=a[0]||[],ix=n=>h.indexOf(n),I={date:ix('결제일'),no:ix('상품번호'),qty:ix('수량')};return a.slice(1).map(r=>({date:iso(r[I.date]),productNo:txt(r[I.no]),qty:num(r[I.qty])||1})).filter(x=>x.date&&x.productNo)}
-function category(name){const s=txt(name);for(const[k,words]of[['원피스',['원피스','드레스']],['상의',['가디건','니트','티셔츠','블라우스','셔츠','탑','나시','홀터넥']],['스커트',['스커트','치마']],['팬츠',['팬츠','바지','슬랙스','데님']],['아우터',['자켓','재킷','점퍼','코트','후드집업']],['세트',['세트','셋업']]])if(words.some(w=>s.includes(w)))return k;return'기타'}
-const sig=(s,t)=>(s||[]).find(x=>x.title===t)?.products||[],uniq=a=>a.filter((x,i,z)=>z.findIndex(y=>(y.productNo||y.name)===(x.productNo||x.name))===i),chg=(n,p)=>p?Math.round((n-p)/p*100):null,mark=d=>d===null?'비교 불가':d<0?`▼ ${Math.abs(d)}%`:d>0?`▲ ${Math.abs(d)}%`:'→ 변동 없음',short=s=>txt(s).length>38?txt(s).slice(0,38)+'…':txt(s);
-const stageLines=a=>a.length?a.slice(0,5).map(x=>`• ${short(x.product)} | 업로드 ${x.age}일 경과 · 주문 ${x.qty}개${x.firstDays!==null?` · 업로드 ${x.firstDays}일 만에 첫 주문`:''}`).join('\n'):'• 해당 상품 없음';
-export async function POST(req){try{const input=await req.json(),m=input.market||{},w=await weather(),raw=await sheets(),md=mdRows(raw.md),orders=orderRows(raw.orders),now=date(input.date)||new Date(),from30=new Date(now);from30.setDate(from30.getDate()-29);const recent=md.filter(x=>date(x.date)&&date(x.date)>=from30&&date(x.date)<=now),linked=recent.filter(x=>x.productNo),unlinked=recent.filter(x=>!x.productNo),orderMap=new Map();for(const o of orders){const d=date(o.date);if(!d)continue;const arr=orderMap.get(o.productNo)||[];arr.push({...o,d});orderMap.set(o.productNo,arr)}const perf=linked.map(x=>{const up=date(x.date),os=(orderMap.get(x.productNo)||[]).filter(o=>o.d>=up).sort((a,b)=>a.d-b.d),qty=os.reduce((s,o)=>s+o.qty,0),first=os[0],firstDays=first?days(first.d,up):null,age=days(now,up),orderDays=new Set(os.map(o=>o.date)).size;let stage='관찰 중';if(qty>0&&orderDays>=2)stage='반복 반응';else if(qty>0)stage='초기 반응';else if(age>=14)stage='반응 없음';return{...x,qty,responded:qty>0,firstDays,age,orderDays,stage}}),responded=perf.filter(x=>x.responded),rate=linked.length?responded.length/linked.length*100:0,stages={관찰중:perf.filter(x=>x.stage==='관찰 중'),초기반응:perf.filter(x=>x.stage==='초기 반응'),반복반응:perf.filter(x=>x.stage==='반복 반응'),반응없음:perf.filter(x=>x.stage==='반응 없음')},cm={};for(const x of recent){const c=category(x.product),r=cm[c]||{total:0,linked:0,responded:0};r.total++;if(x.productNo){r.linked++;if(perf.find(p=>p.productNo===x.productNo)?.responded)r.responded++}cm[c]=r}const cats=Object.entries(cm).sort((a,b)=>b[1].total-a[1].total),d7=chg(m.q7,m.p7),d14=chg(m.q14,m.p14),d30v=chg(m.q30,m.p30),md7=chg(m.md7,m.mdPrev7),md14=chg(m.md14,m.mdPrev14),md30=chg(m.md30,m.mdPrev30);
-const observation=`주문 반응\n• 최근 7일 주문량  | 이전 7일 ${m.p7}개 → 최근 7일 ${m.q7}개 (${mark(d7)})\n• 최근 14일 주문량 | 이전 14일 ${m.p14}개 → 최근 14일 ${m.q14}개 (${mark(d14)})\n• 최근 30일 주문량 | 이전 30일 ${m.p30}개 → 최근 30일 ${m.q30}개 (${mark(d30v)})\n\n신상품 업로드\n• 최근 7일 업로드 수  | 이전 7일 ${m.mdPrev7}개 → 최근 7일 ${m.md7}개 (${mark(md7)})\n• 최근 14일 업로드 수 | 이전 14일 ${m.mdPrev14}개 → 최근 14일 ${m.md14}개 (${mark(md14)})\n• 최근 30일 업로드 수 | 이전 30일 ${m.mdPrev30}개 → 최근 30일 ${m.md30}개 (${mark(md30)})\n\n신상품 → 실제 주문 연결 · 최근 30일 등록 기준\n• 등록 상품 ${recent.length}개\n• 실제 등록 완료 상품 ${linked.length}개\n• 등록 상품 중 주문 발생 ${responded.length}개 / ${linked.length}개 (${rate.toFixed(1)}%)\n\n신상품 현재 단계\n• 신규 관찰 ${stages.관찰중.length}개 | 등록 14일 미만 · 아직 주문 없음\n• 첫 주문 확인 ${stages.초기반응.length}개 | 첫 주문 발생 · 추가 주문 관찰 중\n• 반복 주문 확인 ${stages.반복반응.length}개 | 서로 다른 날짜에 2회 이상 주문 반응 확인\n• 14일 무주문 ${stages.반응없음.length}개 | 등록 14일 이상 · 아직 주문 없음\n\n카테고리별 신상품 반응\n${cats.slice(0,6).map(([k,v])=>`• ${k} | 등록 ${v.linked}개 · 주문 반응 ${v.responded}개`).join('\n')||'• 분류 가능한 신상품 데이터가 없습니다.'}`;
-const direction=`반복 주문 확인 신상품\n${stageLines(stages.반복반응.sort((a,b)=>b.qty-a.qty))}\n\n첫 주문 확인 신상품\n${stageLines(stages.초기반응.sort((a,b)=>b.qty-a.qty))}\n\n신규 관찰 신상품\n${stageLines(stages.관찰중.sort((a,b)=>b.age-a.age))}\n\n14일 무주문 신상품\n${stageLines(stages.반응없음.sort((a,b)=>b.age-a.age))}\n\n다음 소싱에서 확인할 것\n• 반복 주문 확인 상품의 카테고리·핏·기장·소재·가격대 공통점을 신규 후보와 비교\n• 첫 주문 확인 상품은 추가 주문이 다른 날짜에 발생하는지 관찰\n• 신규 관찰 상품은 등록 기간이 짧으므로 성급하게 실패로 분류하지 않음\n• 14일 무주문 계열이 신규 업로드에서 반복되고 있다면 해당 계열 비중을 점검`;
-const caution=`분석 기준\n• ‘반복 주문 확인’은 주문 수량이 아니라 서로 다른 날짜에 2회 이상 주문 반응이 확인된 상품입니다.\n• ‘14일 무주문’은 임시 기준으로 등록 후 14일 이상 주문이 없는 경우입니다. 판매량이 더 쌓이면 이 기간은 조정할 수 있습니다.\n• MD 시트에 상품번호가 없는 상품은 아직 에이블리에 등록되지 않은 상품으로 간주해 반응 분석에서 제외합니다.\n• 주문 1건만으로 재고 확보 신호로 판단하지 않습니다.`;
-const cur=w?.current||{},mx=(w?.daily?.temperature_2m_max||[]).slice(0,7),mn=(w?.daily?.temperature_2m_min||[]).slice(0,7),hi=mx.length?Math.max(...mx):null,lo=mn.length?Math.min(...mn):null;const weatherText=`서울 현재 기온 ${cur.temperature_2m??'-'}℃ · 체감 ${cur.apparent_temperature??'-'}℃${hi!=null&&lo!=null?`\n향후 7일 예상 기온 범위 약 ${lo.toFixed(0)}~${hi.toFixed(0)}℃`:''}\n날씨는 주문 감소 원인으로 단정하지 않고 계절 상품 전환 시점을 보는 보조 지표로 사용합니다.`;return Response.json({observation,direction,caution,weather:weatherText,ai:false,source:'rule-based+md-order-link',newProduct:{registered:recent.length,linked:linked.length,unlinked:unlinked.length,responded:responded.length,responseRate:rate,watch:stages.관찰중.length,initial:stages.초기반응.length,repeat:stages.반복반응.length,noResponse:stages.반응없음.length}})}catch(e){return Response.json({error:e.message||'OARS 분석 실패'},{status:500})}}
+import { secure } from "../../../lib/access.mjs";
+import { loadDashboard } from "../../../lib/dashboard.mjs";
+import { analyze } from "../../../lib/md.mjs";
+export const dynamic = "force-dynamic";
+async function handleGET() {
+  try {
+    const report = analyze(await loadDashboard());
+    return Response.json(
+      {
+        report,
+        source: "rule-based-shared-ledger",
+        ai: false,
+        observation: report.trends
+          .map(
+            (t) =>
+              `${t.days}일 주문 ${t.current.qty}개 / 순판매 ${t.current.net}개`,
+          )
+          .join("\n"),
+        direction:
+          report.rows
+            .filter((p) => p.decision === "사입 검토")
+            .map((p) => `${p.name}: ${p.buy}`)
+            .join("\n") || "사입 근거 확인 전 관찰",
+        caution: report.warnings.join("\n"),
+        weather: "날씨는 이 분석의 판단 근거에 사용하지 않습니다.",
+      },
+      { headers: { "Cache-Control": "private, no-store" } },
+    );
+  } catch (e) {
+    return Response.json(
+      { error: e.message || "MD 분석 실패" },
+      { status: 502 },
+    );
+  }
+}
+// Ignore client-supplied totals and dates: always compute from one authoritative snapshot.
+async function handlePOST() {
+  return handleGET();
+}
+
+export const GET = secure(handleGET);
+
+export const POST = secure(handlePOST);

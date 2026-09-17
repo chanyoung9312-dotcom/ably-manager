@@ -1,11 +1,17 @@
-import {GoogleAuth} from 'google-auth-library';
-const SHEET_ID='1tL1u65uuALC6Xky0CbUbPkSX7pZd_twl2Wpy0AYg8eU';
-const clean=v=>String(v??'').trim(),num=v=>Number(clean(v).replace(/[^0-9.-]/g,''))||0;
-const iso=v=>{const s=clean(v),m=s.match(/(20\d{2})-(\d{1,2})-(\d{1,2})/);if(m)return`${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;const n=s.replace(/[^0-9]/g,'');if(n.length===6&&/^2\d/.test(n))return`20${n.slice(0,2)}-${n.slice(2,4)}-${n.slice(4,6)}`;if(n.length===8&&/^20/.test(n))return`${n.slice(0,4)}-${n.slice(4,6)}-${n.slice(6,8)}`;return''};
-async function sheet(token,name,range){const q=encodeURIComponent(`'${name}'!${range}`),r=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${q}`,{headers:{Authorization:`Bearer ${token}`},cache:'no-store'});if(!r.ok)throw new Error(`${name}: Google Sheets ${r.status}`);return(await r.json()).values||[]}
-function mdRows(a){const out=[];for(let r=0;r<a.length;r++){const row=a[r]||[];for(let c=0;c<row.length;c++){if(clean(row[c])!=='상품명')continue;const product=clean((a[r+1]||[])[c])||clean(row[c+1]);if(!product||product==='상품명')continue;let end=Math.min(a.length,r+18);for(let rr=r+2;rr<end;rr++)if((a[rr]||[]).some(v=>clean(v)==='상품명')){end=rr;break}const b={date:'',product,productNo:'',md:'',taobaoLink:'',cost:0,market:'',marketPrice:0,size:'',color:'',salePrice:0,margin:0,discountPrice:0,discountMargin:0,row:r+2};const labels={업로드날짜:'date',md:'md','타오바오/vvic 링크':'taobaoLink','타오바오 링크':'taobaoLink','타오바오 가격':'cost','신상 마켓':'market','신상 마켓 가격':'marketPrice','사이즈':'size','색상':'color','판매 가격':'salePrice','판매가격':'salePrice','판매 마진':'margin','판매마진':'margin','할인 가격':'discountPrice','할인가격':'discountPrice','할인 가격 마진':'discountMargin','할인가격마진':'discountMargin','상품번호':'productNo'};for(let rr=Math.max(0,r-3);rr<end;rr++){const x=a[rr]||[];for(let cc=0;cc<x.length;cc++){const lab=clean(x[cc]),k=labels[lab];if(!k)continue;let v=clean((a[rr+1]||[])[cc]);if(!v&&cc+1<x.length)v=clean(x[cc+1]);if(k==='date')b.date=iso(v);else if(['cost','marketPrice','salePrice','margin','discountPrice','discountMargin'].includes(k))b[k]=num(v);else if(v&&v!==lab)b[k]=v}}if(b.productNo||b.date||b.salePrice)out.push(b);r=Math.max(r,end-2);break}}return out}
-export async function GET(){try{const raw=process.env.GOOGLE_SERVICE_ACCOUNT_JSON;if(!raw)throw new Error('Google 서비스 계정 환경변수가 없습니다.');const auth=new GoogleAuth({credentials:JSON.parse(raw),scopes:['https://www.googleapis.com/auth/spreadsheets.readonly']}),client=await auth.getClient(),t=await client.getAccessToken(),token=t.token||t,[ov,cv,iv,mv]=await Promise.all([sheet(token,'에이블리 주문','A1:AI3000'),sheet(token,'취소 반품','A1:AQ3000'),sheet(token,'재고 현황','A1:E3000'),sheet(token,'MD','A1:Z5000')]);
-const h=ov[0]||[],idx=n=>h.indexOf(n),I={date:idx('결제일'),po:idx('상품주문번호'),order:idx('주문번호'),productNo:idx('상품번호'),product:idx('상품명'),qty:idx('수량'),sale:idx('판매가'),paid:idx('결제액'),status:idx('주문상태')};const orders=[];const byPo=new Map();for(let i=1;i<ov.length;i++){const r=ov[i]||[],po=clean(r[I.po]),product=clean(r[I.product]),date=iso(r[I.date]);if(!po&&!product&&!date)continue;const qty=num(r[I.qty])||1,salePrice=num(r[I.sale]),o={row:i+1,date,productOrder:po,orderNo:clean(r[I.order]),productNo:clean(r[I.productNo]),product,qty,salePrice,paid:num(r[I.paid]),sales:salePrice,status:clean(r[I.status])};orders.push(o);if(po&&!byPo.has(po))byPo.set(po,o)}
-const ids=new Set(byPo.keys()),seen=new Map();for(let i=1;i<cv.length;i++){const r=cv[i]||[],reason=clean(r[1]),returnFields=[r[2],r[3],r[4],r[5]].some(v=>clean(v)&&clean(v)!=='-'),explicitReturn=r.some(v=>clean(v)==='반품'),cancelSignal=reason.includes('취소')||r.some(v=>clean(v).includes('구매자취소')||clean(v).includes('고객 취소')||clean(v).includes('배송지연'));if(!returnFields&&!explicitReturn&&!cancelSignal)continue;const po=r.map(clean).find(v=>ids.has(v));if(!po)continue;const o=byPo.get(po);let type='before',g=clean(r[6]);if(returnFields||explicitReturn)type='return';else if(g&&g!=='-'&&g!=='취소')type='after';const cancelSalePrice=num(r[19])||o.salePrice,rank={before:1,after:2,return:3},old=seen.get(po);if(!old||rank[type]>rank[old.type])seen.set(po,{...o,salePrice:cancelSalePrice,sales:cancelSalePrice,reason:reason||'취소',type})}const cancels=[...seen.values()];
-const inventory=[];let lastProductNo='',lastProduct='',lastColor='';for(let i=1;i<iv.length;i++){const r=iv[i]||[];if(clean(r[0]))lastProductNo=clean(r[0]);if(clean(r[1]))lastProduct=clean(r[1]);if(clean(r[2]))lastColor=clean(r[2]);const size=clean(r[3]),qty=num(r[4]);if(!lastProductNo||(!size&&!clean(r[4])))continue;inventory.push({productNo:lastProductNo,product:lastProduct,color:lastColor,size,qty,row:i+1})}
-const mdProducts=mdRows(mv),mdUploads=mdProducts.filter(x=>x.date).map(x=>({...x}));return Response.json({orders,cancels,inventory,mdUploads,mdProducts,updatedAt:new Date().toISOString()},{headers:{'Cache-Control':'no-store'}})}catch(e){console.error(e);return Response.json({error:e.message||'대시보드 데이터를 불러오지 못했습니다.'},{status:500})}}
+import { secure } from "../../../lib/access.mjs";
+import { loadDashboard } from "../../../lib/dashboard.mjs";
+export const dynamic = "force-dynamic";
+async function handleGET() {
+  try {
+    return Response.json(await loadDashboard(), {
+      headers: { "Cache-Control": "private, no-store" },
+    });
+  } catch (e) {
+    return Response.json(
+      { error: e.message || "데이터 조회 실패" },
+      { status: 502 },
+    );
+  }
+}
+
+export const GET = secure(handleGET);
