@@ -44,20 +44,23 @@ test("취소 반품 시트의 발주일 기준으로 발주 전·후 취소를 �
       ["after", "after"],
     ],
   );
-  // 주문상태가 아직 취소 완료가 아니어도 취소 현황에는 남아야 한다.
   assert.equal(result.cancels.length, 0);
 });
 
-test("매출 화면은 전체 취소 현황을 표시하고 확정 건만 실매출에서 차감한다", () => {
+test("매출 화면은 취소를 하나로 합치고 취소 반품 시트 매칭 건을 표시한다", () => {
   const source = fs.readFileSync(
     new URL("../app/dashboard/page.js", import.meta.url),
     "utf8",
   );
   assert.match(source, /const claims = \(data\.claims \|\| \[\]\)\.filter\(inPeriod\)/);
-  assert.match(source, /const confirmed = \(data\.cancels \|\| \[\]\)\.filter\(inPeriod\)/);
-  assert.match(source, />기간</);
-  assert.match(source, />매출 현황</);
+  assert.match(source, /const cancel = claims\.filter\(isCancellationClaim\)/);
+  assert.match(source, /const returns = claims\.filter\(\(item\) => !isCancellationClaim\(item\)\)/);
+  assert.match(source, />취소</);
+  assert.match(source, />반품</);
   assert.match(source, />실매출</);
+  assert.match(source, /취소·반품 시트와 원주문이 매칭된 건/);
+  assert.doesNotMatch(source, />발주 전 취소</);
+  assert.doesNotMatch(source, />발주 후 취소</);
   assert.doesNotMatch(source, />볼 기간</);
   assert.doesNotMatch(source, />매출 흐름</);
   assert.doesNotMatch(source, />최종 판매</);

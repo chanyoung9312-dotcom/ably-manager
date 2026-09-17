@@ -20,7 +20,8 @@ test("재고 화면은 사입 판단과 분리해 수량·옵션 관리에 집�
   assert.match(products, />재고 현황</);
   assert.match(products, />현재 재고</);
   assert.match(products, />옵션별 재고 보기</);
-  assert.match(products, />재고 여유</);
+  assert.doesNotMatch(products, />재고 여유</);
+  assert.doesNotMatch(products, /<div className="inventory-list-head"><h2>상품 재고<\/h2><span>/);
   assert.doesNotMatch(products, /<table>/);
   assert.doesNotMatch(products, />사입 검토</);
   assert.doesNotMatch(products, />추가 주문 중단</);
