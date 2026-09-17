@@ -6,9 +6,10 @@ const digits=v=>text(v).replace(/\D/g,'');
 const phone=v=>digits(v).replace(/^(01\d)(\d{3,4})(\d{4})$/,'$1-$2-$3');
 const TEMPLATE_KEY='ably-manager-sms-template';
 const DEFAULT_TEMPLATE=`안녕하세요 {수취인명} 고객님\n\n고객님께서 주문하신 {상품명} 상품은 저희 주문량이 밀려 저희 업체로 공급되는 시간이 지체되어 곧바로 배송이 어려워 안내드립니다. \n\n배송 기간은 영업일 기준으로 3일~7일 정도 소요될 수도 있는 것으로 확인됩니다. 배송현황은 CJ대한통운으로 등록되어있을텐데 실제 배송은 우체국택배로 진행됩니다!\n\n문자 확인 후 답변 해주시면 배송 진행, 혹은 취소 진행으로 도와드리겠습니다\n\n감사합니다!!`;
-// Cafe24 order_status: N10=상품준비중(결제 완료 신규 주문), N20=배송준비중.
-// 기존에는 N20이 아닌 모든 상태(배송중/배송완료/취소 등)를 신규 주문으로 잡아 오래된 주문까지 섞였다.
-const NEW_CODES=new Set(['N10']);
+// Cafe24 order_status: N02=주문접수중(외부마켓 주문 포함), N10=상품준비중, N20=배송준비중.
+// 결제된 외부마켓 주문은 N10 전 단계인 N02로 들어올 수 있으므로 둘 다 신규 주문으로 표시한다.
+// N00(입금전)과 취소/반품/배송중 이후 상태는 신규 주문에서 제외한다.
+const NEW_CODES=new Set(['N02','N10']);
 const PREPARE_CODES=new Set(['N20','prepare']);
 
 function message(template,r){return template.replaceAll('{수취인명}',r.name||'고객').replaceAll('{상품명}',r.product||'주문 상품').replaceAll('{옵션}',r.option||'').replaceAll('{수량}',r.qty||'1');}
