@@ -1,37 +1,25 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 
-const decisionLabel = (row) =>
-  row.decision === "사입 검토"
-    ? "사입 검토"
-    : row.decision === "추가 사입 중단"
-      ? "추가 주문 중단"
-      : "조금 더 보기";
+function stockState(row) {
+  if (row.stock === null) return { key: "check", label: "재고 확인 필요" };
+  if (row.stock === 0) return { key: "out", label: "품절" };
+  if (row.stockDays !== null && row.stockDays < 7) return { key: "low", label: "재고 적음" };
+  return { key: "ok", label: "재고 있음" };
+}
 
-const easyCheck = (text = "") => {
-  if (text.includes("오류 해소")) return "데이터 오류 확인";
-  if (text.includes("실제 등록일") || text === "등록일 확인") return "상품 등록일 확인";
-  if (text.includes("최근 30일 주문 수집 범위")) return "최근 30일 주문 집계 확인";
-  if (text.includes("옵션별 현재 재고")) return "옵션별 재고 확인";
-  if (text.includes("진행 중 취소·반품")) return "취소/반품 진행 상태 확인";
-  if (text.includes("공급기간·입고예정·예약재고")) return "입고 일정과 입고 수량 확인";
-  if (text.includes("중복 MD 상품번호")) return "중복 상품번호 확인";
-  return text.replaceAll("클레임", "취소/반품").replaceAll("MD ", "");
-};
-
-function nextAction(row) {
-  const first = (row.missing || []).map(easyCheck).find(Boolean);
-  if (first) return first;
-  if (row.decision === "사입 검토") return "사입 수량 검토";
-  if (row.decision === "추가 사입 중단") return "현재 재고 먼저 소진";
-  if ((row.q30 || 0) > 0 && (row.days30 || 0) < 3) return "다른 날짜 주문 더 확인";
-  return "판매 흐름 계속 확인";
+function stockAction(row) {
+  if (row.stock === null) return "옵션별 재고 수량 확인";
+  if (row.stock === 0) return "재입고 여부 확인";
+  if (row.stockDays !== null && row.stockDays < 7) return "재고 소진 전 추가 입고 가능 여부 확인";
+  return "현재 재고 유지";
 }
 
 export default function Products() {
   const [report, setReport] = useState(null);
   const [query, setQuery] = useState("");
-  const [sort, setSort] = useState("recent");
+  const [sort, setSort] = useState("stock");
+  const [filter, setFilter] = useState("all");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -52,108 +40,115 @@ export default function Products() {
 
   useEffect(() => { load(); }, []);
 
+  const allRows = report?.rows || [];
   const rows = useMemo(() => {
-    const filtered = (report?.rows || []).filter((row) =>
-      `${row.name} ${row.productNo}`.toLowerCase().includes(query.toLowerCase()),
-    );
-    return [...filtered].sort((a, b) =>
-      sort === "orders"
-        ? (b.total || 0) - (a.total || 0)
-        : sort === "stock"
-          ? (b.stock ?? -1) - (a.stock ?? -1)
-          : (b.q7 || 0) - (a.q7 || 0) || (b.q30 || 0) - (a.q30 || 0),
-    );
-  }, [report, query, sort]);
+    const filtered = allRows.filter((row) => {
+      const matchesQuery = `${row.name} ${row.productNo}`.toLowerCase().includes(query.toLowerCase());
+      if (!matchesQuery) return false;
+      const state = stockState(row).key;
+      if (filter === "all") return true;
+      if (filter === "in") return row.stock !== null && row.stock > 0;
+      return state === filter;
+    });
+    return [...filtered].sort((a, b) => {
+      if (sort === "sales") return (b.q30 || 0) - (a.q30 || 0);
+      if (sort === "name") return String(a.name || "").localeCompare(String(b.name || ""), "ko");
+      return (b.stock ?? -1) - (a.stock ?? -1);
+    });
+  }, [allRows, query, sort, filter]);
 
-  const totalProducts = report?.rows?.length || 0;
-  const soldRecently = (report?.rows || []).filter((row) => (row.q30 || 0) > 0).length;
-  const stockUnknown = (report?.rows || []).filter((row) => row.stock === null).length;
+  const registered = allRows.filter((row) => (row.options || []).length > 0).length;
+  const totalStock = allRows.reduce((sum, row) => sum + (row.stock ?? 0), 0);
+  const unknown = allRows.filter((row) => row.stock === null).length;
+  const low = allRows.filter((row) => row.stock !== null && row.stock > 0 && row.stockDays !== null && row.stockDays < 7).length;
 
   return (
-    <main className="products-page">
-      <header className="page-head">
+    <main className="inventory-page">
+      <header className="inventory-head">
         <div>
-          <small>상품별 판매 · 재고 · 현재 상태</small>
-          <h1>상품별 판매 현황</h1>
-          <p>긴 표 대신 필요한 숫자와 다음 행동만 먼저 보여줍니다.</p>
+          <small>수량과 옵션만 관리하는 화면</small>
+          <h1>재고 현황</h1>
+          <p>사입 판단은 빼고, 지금 가진 재고와 옵션별 수량만 빠르게 확인합니다.</p>
         </div>
         <button disabled={loading} onClick={load}>{loading ? "불러오는 중" : "새로고침"}</button>
       </header>
 
       {error && <p role="alert">{error} · 마지막으로 불러온 데이터를 보여주고 있습니다.</p>}
 
-      <section className="top-stats">
-        <div><span>전체 상품</span><b>{totalProducts}개</b></div>
-        <div><span>최근 30일 판매 있음</span><b>{soldRecently}개</b></div>
-        <div><span>재고 확인 필요</span><b>{stockUnknown}개</b></div>
+      <section className="inventory-stats" aria-label="재고 요약">
+        <div><span>재고 등록 상품</span><b>{registered}개</b></div>
+        <div><span>전체 보유 재고</span><b>{totalStock}개</b></div>
+        <div><span>재고 확인 필요</span><b>{unknown}개</b></div>
+        <div><span>7일 안에 부족 예상</span><b>{low}개</b></div>
       </section>
 
-      <section className="toolbar">
-        <label>
+      <section className="inventory-toolbar">
+        <label className="search-box">
           <span>상품 검색</span>
           <input aria-label="상품 검색" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="상품명 또는 상품번호" />
         </label>
         <label>
           <span>정렬</span>
           <select aria-label="정렬" value={sort} onChange={(e) => setSort(e.target.value)}>
-            <option value="recent">최근 판매 많은 순</option>
-            <option value="orders">전체 주문 많은 순</option>
             <option value="stock">재고 많은 순</option>
+            <option value="sales">최근 30일 판매 많은 순</option>
+            <option value="name">상품명 순</option>
           </select>
         </label>
       </section>
 
-      <section className="product-list">
-        <div className="list-head"><h2>상품 목록</h2><span>{rows.length}개</span></div>
+      <nav className="stock-filters" aria-label="재고 상태 필터">
+        {[["all", "전체"], ["in", "재고 있음"], ["out", "품절"], ["low", "재고 적음"], ["check", "확인 필요"]].map(([value, label]) => (
+          <button key={value} className={filter === value ? "active" : ""} onClick={() => setFilter(value)}>{label}</button>
+        ))}
+      </nav>
+
+      <section className="inventory-list">
+        <div className="inventory-list-head"><h2>상품 재고</h2><span>{rows.length}개</span></div>
         {rows.length ? rows.map((row) => {
-          const checks = (row.missing || []).map(easyCheck).filter(Boolean);
+          const state = stockState(row);
+          const options = row.options || [];
           return (
-            <article className="product-row" key={row.key}>
-              <div className="product-title">
+            <article className="inventory-row" key={row.key}>
+              <div className="inventory-title">
                 <div>
                   <small>{row.productNo ? `상품번호 ${row.productNo}` : "상품번호 확인 필요"}</small>
-                  <h3>{row.name}</h3>
+                  <h3>{row.name || "상품명 확인 필요"}</h3>
                 </div>
-                <span className={`status ${row.decision === "사입 검토" ? "buy" : row.decision === "추가 사입 중단" ? "stop" : "watch"}`}>{decisionLabel(row)}</span>
+                <span className={`stock-badge ${state.key}`}>{state.label}</span>
               </div>
 
-              <div className="metrics">
-                <div><span>최근 7일</span><b>{row.q7 || 0}개</b><small>판매</small></div>
-                <div><span>최근 30일</span><b>{row.q30 || 0}개</b><small>판매</small></div>
-                <div><span>전체 주문</span><b>{row.total || 0}개</b><small>누적</small></div>
-                <div><span>현재 재고</span><b>{row.stock === null ? "확인 필요" : `${row.stock}개`}</b><small>옵션 합계</small></div>
+              <div className="inventory-metrics">
+                <div className="stock-main"><span>현재 재고</span><b>{row.stock === null ? "확인 필요" : `${row.stock}개`}</b></div>
+                <div><span>옵션</span><b>{options.length}개</b></div>
+                <div><span>최근 30일 판매</span><b>{row.q30 || 0}개</b></div>
+                <div><span>재고 여유</span><b>{row.stockDays === null ? "계산 불가" : `${row.stockDays.toFixed(1)}일`}</b></div>
               </div>
 
-              <div className="next-action"><span>다음 할 일</span><b>{nextAction(row)}</b></div>
+              <div className="inventory-action"><span>재고 확인</span><b>{stockAction(row)}</b></div>
 
               <details>
-                <summary>상세 보기</summary>
-                <div className="detail-grid">
-                  <p><span>최근 14일 판매</span><b>{row.q14 || 0}개</b></p>
-                  <p><span>전체 실제 판매</span><b>{row.netTotal || 0}개</b></p>
-                  <p><span>판매가 발생한 날</span><b>{row.days30 || 0}일</b></p>
-                  <p><span>최근 30일 취소/반품</span><b>{row.cancels || 0}개</b></p>
-                </div>
-                {(row.options || []).length > 0 && (
-                  <div className="detail-block">
-                    <b>옵션별 재고</b>
-                    <div className="option-list">{row.options.map((option, i) => <span key={i}>{option.color || "색상 미확인"} · {option.size || "사이즈 미확인"} · {option.qty === null ? "재고 확인 필요" : `${option.qty}개`}{option.invalid ? " · 점검 필요" : ""}</span>)}</div>
+                <summary>옵션별 재고 보기</summary>
+                {options.length > 0 ? (
+                  <div className="option-grid">
+                    {options.map((option, i) => (
+                      <div className={option.invalid || option.qty === null ? "option-card check" : option.qty === 0 ? "option-card out" : "option-card"} key={`${option.color}-${option.size}-${i}`}>
+                        <span>{option.color || "색상 미확인"} · {option.size || "사이즈 미확인"}</span>
+                        <b>{option.qty === null ? "확인 필요" : `${option.qty}개`}</b>
+                      </div>
+                    ))}
                   </div>
-                )}
-                {checks.length > 0 && (
-                  <div className="detail-block">
-                    <b>확인할 항목</b>
-                    <ul>{[...new Set(checks)].map((item) => <li key={item}>{item}</li>)}</ul>
-                  </div>
+                ) : (
+                  <p className="no-options">등록된 옵션 재고가 없습니다.</p>
                 )}
               </details>
             </article>
           );
-        }) : <p className="empty">검색 결과가 없습니다.</p>}
+        }) : <p className="empty">조건에 맞는 상품이 없습니다.</p>}
       </section>
 
       <style jsx>{`
-        .products-page{max-width:1080px;margin:auto;padding:26px 18px 70px;color:inherit}.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}.page-head small,.page-head p{color:#aeb5b8}.page-head h1{font-size:34px;margin:5px 0}.page-head p{margin:0}.page-head button{padding:11px 16px;border-radius:12px}.top-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0 14px}.top-stats div{border:1px solid #343a3d;border-radius:15px;padding:16px;background:#191d1f;display:flex;flex-direction:column;gap:4px}.top-stats span{color:#aeb5b8;font-size:13px}.top-stats b{font-size:24px}.toolbar{display:grid;grid-template-columns:1fr 220px;gap:10px;margin-bottom:14px}.toolbar label{display:flex;flex-direction:column;gap:6px}.toolbar label>span{font-size:12px;color:#aeb5b8}.toolbar input,.toolbar select{width:100%;min-height:46px;padding:0 13px;border-radius:11px;border:1px solid #3a4043;background:#191d1f;color:inherit}.product-list{border:1px solid #343a3d;border-radius:18px;background:#191d1f;padding:18px}.list-head{display:flex;justify-content:space-between;align-items:center;padding:2px 2px 14px;border-bottom:1px solid #303638}.list-head h2{margin:0;font-size:21px}.list-head span{font-weight:800}.product-row{padding:20px 2px;border-bottom:1px solid #303638}.product-row:last-child{border-bottom:0}.product-title{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}.product-title small{color:#929b9f}.product-title h3{margin:5px 0 0;font-size:18px;line-height:1.45}.status{border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800;white-space:nowrap}.status.buy{background:#294936}.status.watch{background:#4a4025}.status.stop{background:#493032}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:15px 0}.metrics>div{background:#22282a;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:3px}.metrics span,.metrics small{color:#aeb5b8;font-size:12px}.metrics b{font-size:19px}.next-action{display:flex;justify-content:space-between;gap:12px;padding:13px 14px;border:1px solid #303638;border-radius:12px;background:#171b1c}.next-action span{color:#aeb5b8}.product-row details{margin-top:12px}.product-row summary{cursor:pointer;font-weight:800}.detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.detail-grid p{margin:0;padding:11px;border-radius:11px;background:#22282a;display:flex;flex-direction:column;gap:3px}.detail-grid span{font-size:12px;color:#aeb5b8}.detail-block{margin-top:12px;padding:13px;border-radius:11px;background:#202527}.detail-block ul{margin:8px 0 0;padding-left:20px}.option-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.option-list span{background:#272d2f;border-radius:9px;padding:7px 9px;font-size:13px}.empty{color:#aeb5b8;padding:16px 2px;margin:0}@media(max-width:760px){.top-stats{grid-template-columns:1fr 1fr}.toolbar{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}.product-title{flex-direction:column}.detail-grid{grid-template-columns:1fr 1fr}.page-head h1{font-size:28px}.product-list{padding:15px}}@media(max-width:440px){.top-stats{grid-template-columns:1fr}.detail-grid{grid-template-columns:1fr}.next-action{flex-direction:column;gap:4px}}
+        .inventory-page{max-width:1080px;margin:auto;padding:26px 18px 70px;color:inherit}.inventory-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}.inventory-head small,.inventory-head p{color:#aeb5b8}.inventory-head h1{font-size:34px;margin:5px 0}.inventory-head p{margin:0}.inventory-head button{padding:11px 16px;border-radius:12px}.inventory-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:24px 0 14px}.inventory-stats div{border:1px solid #343a3d;border-radius:15px;padding:16px;background:#191d1f;display:flex;flex-direction:column;gap:4px}.inventory-stats span{color:#aeb5b8;font-size:13px}.inventory-stats b{font-size:24px}.inventory-toolbar{display:grid;grid-template-columns:1fr 230px;gap:10px}.inventory-toolbar label{display:flex;flex-direction:column;gap:6px}.inventory-toolbar label>span{font-size:12px;color:#aeb5b8}.inventory-toolbar input,.inventory-toolbar select{width:100%;min-height:46px;padding:0 13px;border-radius:11px;border:1px solid #3a4043;background:#191d1f;color:inherit}.stock-filters{display:flex;gap:8px;overflow-x:auto;padding:12px 0}.stock-filters button{white-space:nowrap;background:#22282a;border:1px solid #343a3d;color:inherit}.stock-filters button.active{background:#f3f4f6;color:#16191b;border-color:#f3f4f6}.inventory-list{border:1px solid #343a3d;border-radius:18px;background:#191d1f;padding:18px}.inventory-list-head{display:flex;justify-content:space-between;align-items:center;padding:2px 2px 14px;border-bottom:1px solid #303638}.inventory-list-head h2{margin:0;font-size:21px}.inventory-list-head span{font-weight:800}.inventory-row{padding:20px 2px;border-bottom:1px solid #303638}.inventory-row:last-child{border-bottom:0}.inventory-title{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}.inventory-title small{color:#929b9f}.inventory-title h3{margin:5px 0 0;font-size:18px;line-height:1.45}.stock-badge{border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800;white-space:nowrap;background:#294936}.stock-badge.out{background:#493032}.stock-badge.low{background:#4a4025}.stock-badge.check{background:#3a3f42}.inventory-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:15px 0}.inventory-metrics>div{background:#22282a;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:3px}.inventory-metrics .stock-main{background:#252d29}.inventory-metrics span{color:#aeb5b8;font-size:12px}.inventory-metrics b{font-size:19px}.inventory-action{display:flex;justify-content:space-between;gap:12px;padding:13px 14px;border:1px solid #303638;border-radius:12px;background:#171b1c}.inventory-action span{color:#aeb5b8}.inventory-row details{margin-top:12px}.inventory-row summary{cursor:pointer;font-weight:800}.option-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-top:12px}.option-card{padding:11px 12px;border-radius:11px;background:#22282a;display:flex;justify-content:space-between;gap:10px}.option-card span{font-size:13px;color:#c2c8ca}.option-card.out{background:#37272a}.option-card.check{background:#303437}.no-options,.empty{color:#aeb5b8}.empty{padding:16px 2px;margin:0}@media(max-width:760px){.inventory-stats{grid-template-columns:1fr 1fr}.inventory-toolbar{grid-template-columns:1fr}.inventory-metrics{grid-template-columns:1fr 1fr}.inventory-title{flex-direction:column}.inventory-head h1{font-size:28px}.inventory-list{padding:15px}}@media(max-width:440px){.inventory-stats{grid-template-columns:1fr}.inventory-action{flex-direction:column;gap:4px}.option-grid{grid-template-columns:1fr}}
       `}</style>
     </main>
   );
