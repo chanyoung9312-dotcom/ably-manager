@@ -47,3 +47,15 @@ test("사입 판단은 최근 30일 판매 상품만 보여주고 최근 판매�
   assert.doesNotMatch(analysis, />판매된 날짜</);
   assert.doesNotMatch(analysis, /<b>\{rows\.length\}개<\/b>/);
 });
+
+
+test("루트 운영 화면은 모바일에서도 다크 카드와 글자 대비를 유지한다", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  assert.match(css, /body\.oars-root-page\s*\{/);
+  assert.match(css, /background:\s*#15191b/);
+  assert.match(css, /body\.oars-root-page \.md-report/);
+  assert.match(css, /color:\s*#f3f4f6/);
+  assert.match(css, /body\.oars-root-page \.card/);
+  assert.match(css, /body\.oars-root-page textarea/);
+});
