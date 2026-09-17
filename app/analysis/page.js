@@ -80,7 +80,7 @@ function ProductRow({ row }) {
       <div className="md-analysis-metrics">
         <div><span>최근 7일 판매</span><b>{row.q7 || 0}개</b></div>
         <div><span>최근 30일 판매</span><b>{row.q30 || 0}개</b></div>
-        <div><span>판매된 날짜</span><b>{row.days30 || 0}일</b></div>
+        <div><span>최근 판매일</span><b>{row.last || "확인 필요"}</b></div>
       </div>
 
       {hasClaims && (
@@ -144,7 +144,6 @@ function Group({ title, description, rows }) {
     <section className="md-analysis-section">
       <div className="md-analysis-section-head">
         <div><h2>{title}</h2><p>{description}</p></div>
-        <b>{rows.length}개</b>
       </div>
       {rows.length ? rows.map((row) => <ProductRow key={row.key} row={row} />) : <p className="md-analysis-empty">해당 상품이 없습니다.</p>}
     </section>
@@ -173,21 +172,24 @@ export default function AnalysisPage() {
 
   useEffect(() => { load(); }, []);
 
+  const activeRows = useMemo(
+    () => (report?.rows || []).filter((row) => (row.q30 || 0) > 0),
+    [report],
+  );
+
   const summary = useMemo(() => {
-    const rows = report?.rows || [];
-    const claims = rows.flatMap((row) => row.claims || []);
+    const claims = activeRows.flatMap((row) => row.claims || []);
     return claimStats(claims);
-  }, [report]);
+  }, [activeRows]);
 
   if (loading && !report)
     return <main className="md-analysis-page"><p>사입 판단 데이터를 불러오고 있습니다.</p></main>;
   if (!report)
     return <main className="md-analysis-page"><p role="alert">{error || "데이터를 불러오지 못했습니다."}</p><button onClick={load}>새로고침</button></main>;
 
-  const rows = report.rows || [];
-  const buy = rows.filter((row) => row.decision === "사입 검토");
-  const watch = rows.filter((row) => row.decision === "관찰");
-  const stop = rows.filter((row) => row.decision === "추가 사입 중단");
+  const buy = activeRows.filter((row) => row.decision === "사입 검토");
+  const watch = activeRows.filter((row) => row.decision === "관찰");
+  const stop = activeRows.filter((row) => row.decision === "추가 사입 중단");
 
   return (
     <main className="md-analysis-page">
