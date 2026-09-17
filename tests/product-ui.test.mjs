@@ -16,13 +16,17 @@ test("상품 반응 화면은 상태·핵심 수치·할 일 중심으로 구성
   assert.doesNotMatch(reaction, />미확정 클레임</);
 });
 
-test("재고 화면은 사입 판단과 분리해 수량·옵션 관리에 집중한다", () => {
+test("재고 화면은 재고 현황 시트의 실제 보유 재고만 보여준다", () => {
   assert.match(products, />재고 현황</);
-  assert.match(products, />현재 재고</);
+  assert.match(products, /row\.stock !== null && row\.stock > 0/);
+  assert.match(products, /option\.qty !== null && option\.qty > 0/);
+  assert.match(products, />재고 보유 상품</);
+  assert.match(products, />전체 보유 재고</);
   assert.match(products, />옵션별 재고 보기</);
   assert.doesNotMatch(products, />재고 여유</);
-  assert.doesNotMatch(products, /<div className="inventory-list-head"><h2>상품 재고<\/h2><span>/);
-  assert.doesNotMatch(products, /<table>/);
+  assert.doesNotMatch(products, />품절</);
+  assert.doesNotMatch(products, />재고 확인 필요</);
   assert.doesNotMatch(products, />사입 검토</);
   assert.doesNotMatch(products, />추가 주문 중단</);
+  assert.doesNotMatch(products, /<table>/);
 });
