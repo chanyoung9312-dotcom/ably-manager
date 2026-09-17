@@ -106,7 +106,7 @@ try {
   await page.screenshot({ path: evidence + "/md-mobile.png", fullPage: true });
   await Promise.all([
     page.waitForURL(base + "/?tool=sms"),
-    page.getByRole("button", { name: "문자 도우미", exact: true }).click(),
+    page.getByRole("button", { name: "주문·배송", exact: true }).click(),
   ]);
   await page.getByRole("button", { name: "카페24 주문 불러오기", exact: true }).click();
   await page.getByRole("button", { name: "배송준비", exact: true }).first().click();
@@ -141,7 +141,7 @@ try {
   assert.equal(exported.D2.v, "1234567890123"); assert.equal(exported.E2.f, "1+1"); assert.equal(exported.D3.v, "9999999999999");
   await Promise.all([
     page.waitForURL(base + "/"),
-    page.getByRole("button", { name: "MD 총분석", exact: true }).click(),
+    page.getByRole("button", { name: "홈으로 돌아가기", exact: true }).click(),
   ]);
   await page.unroute("**/api/oars-analysis");
   await page.route("**/api/oars-analysis", (r) => r.fulfill({ status: 502, json: { error: "모의 API 실패" } }));
