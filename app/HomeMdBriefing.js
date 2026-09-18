@@ -122,7 +122,7 @@ export default function HomeMdBriefing(){
           </div>
           <div className="upload-team-summary">
             <b>이번 주 {uploads.weekTotal} / {uploads.teamWeekTarget}개</b>
-            <small>누적 업로드 {uploads.total}개</small>
+            <small>당월 누적 {uploads.monthTotal}개 · 총 누적 {uploads.total}개</small>
           </div>
         </div>
 
@@ -140,9 +140,9 @@ export default function HomeMdBriefing(){
                 <div className="upload-progress" aria-label={`${member.name} 주간 업로드 ${member.week}개`}>
                   <span style={{width:`${Math.min(100,(member.week/uploads.weeklyTargetPerPerson)*100)}%`}} />
                 </div>
-                <div className="upload-member-foot">
-                  <span>누적 업로드</span>
-                  <b>{member.total}개</b>
+                <div className="upload-member-foot upload-member-totals">
+                  <div><span>당월 누적 업로드</span><b>{member.month}개</b></div>
+                  <div><span>총 누적 업로드</span><b>{member.total}개</b></div>
                 </div>
               </article>)
             :<div className="upload-empty">MD 시트의 업로드날짜와 md 값을 확인해주세요.</div>}
@@ -151,7 +151,7 @@ export default function HomeMdBriefing(){
         {(uploads.members?.length||0)<uploads.expectedMembers&&
           <p className="upload-note">현재 MD 이름이 {uploads.members?.length||0}명만 확인됩니다. 두 사람 모두 md 값을 입력하면 개인별 목표가 함께 표시됩니다.</p>}
         {uploads.unassigned?.total>0&&
-          <p className="upload-note">담당자 미입력 상품: 이번 주 {uploads.unassigned.week}개 · 누적 {uploads.unassigned.total}개</p>}
+          <p className="upload-note">담당자 미입력 상품: 이번 주 {uploads.unassigned.week}개 · 당월 {uploads.unassigned.month}개 · 총 누적 {uploads.unassigned.total}개</p>}
       </section>
     }
 
@@ -198,7 +198,7 @@ export default function HomeMdBriefing(){
       .upload-member{padding:15px;border:1px solid #3b4448;border-radius:15px;background:#15191a;min-width:0}
       .upload-member-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}.upload-member-head small{display:block;color:#8f9a9e;font-size:11px;font-weight:800;margin-bottom:3px}.upload-member-head b{font-size:18px}.upload-member-head strong{font-size:17px;white-space:nowrap}
       .upload-progress{height:7px;margin:12px 0 13px;border-radius:999px;background:#252c2f;overflow:hidden}.upload-progress span{display:block;height:100%;border-radius:inherit;background:#d7dee1}
-                        .upload-member-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;padding-top:11px;border-top:1px solid #2e3538}.upload-member-foot span{color:#9ca6aa;font-size:12px}.upload-member-foot b{font-size:15px}
+      .upload-member-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;padding-top:11px;border-top:1px solid #2e3538}.upload-member-foot span{color:#9ca6aa;font-size:12px}.upload-member-foot b{font-size:15px}.upload-member-totals>div{display:flex;align-items:center;gap:7px}.upload-member-totals>div:last-child{margin-left:auto}
       .upload-note{margin:10px 2px 0;color:#9da7ab;font-size:12px;line-height:1.5}.upload-empty{grid-column:1/-1;padding:16px;border:1px dashed #3b4448;border-radius:12px;color:#aeb5b8;text-align:center;font-size:13px}
       @media(max-width:720px){.upload-board{padding:15px;margin-bottom:18px}.upload-board-head{flex-direction:column;gap:10px}.upload-team-summary{align-items:flex-start;text-align:left}.upload-team-summary b{font-size:18px}.upload-member-list{grid-template-columns:1fr}.upload-member{padding:14px}}
       .data-alert{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 18px;border:1px solid #4b5563;border-radius:16px;background:linear-gradient(180deg,#1b2124 0%,#161b1d 100%);color:#f3f4f6;text-decoration:none;transition:transform .15s ease,border-color .15s ease,background .15s ease}
