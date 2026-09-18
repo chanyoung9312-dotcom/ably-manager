@@ -7,6 +7,7 @@ import {
   parseClaims,
   parseInventory,
   parseMd,
+  normalizeClaimRows,
 } from "../lib/commerce.mjs";
 import { analyze } from "../lib/md.mjs";
 import {
@@ -41,6 +42,91 @@ const ih = ["상품번호", "상품명", "색상", "사이즈", "수량"];
 const ledger = (rows, claims = [h], iv = [ih], md = []) =>
   buildCommerce([h, ...rows], claims, iv, md, { salesMode: "unit" });
 const today = "2026-09-17";
+// Anonymized live-sheet shapes: shared request date, copied order status,
+// and the historical missing delivery-memo cell. No customer data is stored.
+const liveClaimHeaders = ["반품요청일","반품 사유","반품 비용","회수 요청일","반품 입고일","반품 처리일","발주일","오더넘버","트레킹넘버","주문금액","주문번호","발송일","택배사","배송관리","결제일","상품주문번호","주문번호","상품번호","상품명","판매가","판매자 상품코드","옵션 정보","수량","쿠폰소진금액","적립금소진금액","결제액","쿠폰지원금","적립금지원금","결제수단지원금","주문자명","연락처","판매채널","수취인명","수취인 연락처","우편번호","배송지 주소","배송 메모","주문상태","배송타입","개인통관고유부호","솔루션사 고유코드"];
+function liveClaim(id, status, { legacy = false, reason = "고객 취소 요청", done = "-", productNo = "p1" } = {}) {
+  const values = {
+    반품요청일: "0917", "반품 사유": reason, "반품 처리일": done,
+    결제일: today, 상품주문번호: id, 주문번호: "o1", 상품번호: productNo,
+    상품명: "원피스", 판매가: 20000, 수량: 1, 주문상태: status, 배송타입: "일반배송",
+  };
+  const r = liveClaimHeaders.map(k => values[k] ?? "");
+  if (legacy) r.splice(liveClaimHeaders.indexOf("배송 메모"), 1);
+  return r;
+}
+const fourQuantities = o => [o.cancelQty, o.qty, o.netQty, o.eligibleQty];
+test("live cancellation with a shared return-request date deducts completed quantity", () => {
+  for (const legacy of [false, true]) {
+    const d = ledger([row("cancel", 1, "취소 완료")],
+      [liveClaimHeaders, liveClaim("cancel", "취소 완료", { legacy, reason: "배송지연" })]);
+    assert.deepEqual(fourQuantities(d.orders[0]), [1, 1, 0, 0]);
+    assert.equal(d.claims[0].kind, "cancel");
+    assert.notEqual(d.claims[0].type, "return");
+    assert.equal(d.orders[0].pendingClaim, false);
+    assert.equal(d.orders[0].netSales, 0);
+    assert.equal(d.orders[0].sales, 20000);
+    assert.deepEqual(d.issues, []);
+  }
+});
+test("completed original wins over stale copied ready status without losing reaction", () => {
+  const d = ledger([row("cancel", 1, "취소 완료")],
+    [liveClaimHeaders, liveClaim("cancel", "결제 완료")]);
+  assert.deepEqual(fourQuantities(d.orders[0]), [1, 1, 0, 0]);
+});
+test("request date and delivery-delay reason alone never confirm cancellation", () => {
+  const d = ledger([row()], [liveClaimHeaders, liveClaim("po1", "상품 준비중", { reason: "배송 지연" })]);
+  assert.deepEqual(fourQuantities(d.orders[0]), [0, 1, 1, 0]);
+  assert.equal(d.claims[0].kind, "cancel");
+  assert.equal(d.orders[0].pendingClaim, true);
+});
+test("shared request date alone leaves claim kind unknown", () => {
+  const d = ledger([row()], [liveClaimHeaders, liveClaim("po1", "결제 완료", { reason: "" })]);
+  assert.equal(d.claims[0].kind, "unknown");
+  assert.deepEqual(fourQuantities(d.orders[0]), [0, 1, 1, 0]);
+});
+test("confirmed return processing and explicit return status deduct exactly once", () => {
+  for (const [status, done] of [["결제 완료", "0918"], ["반품 완료", "-"]]) {
+    const d = ledger([row()], [liveClaimHeaders, liveClaim("po1", status, { reason: "단순변심", done })]);
+    assert.equal(d.claims[0].kind, "return");
+    assert.deepEqual(fourQuantities(d.orders[0]), [1, 1, 0, 0]);
+  }
+});
+test("pending return stays out of procurement but not gross reaction", () => {
+  const d = ledger([row()], [liveClaimHeaders, liveClaim("po1", "반품 요청", { reason: "사이즈 미스" })]);
+  assert.equal(d.claims[0].kind, "return");
+  assert.deepEqual(fourQuantities(d.orders[0]), [0, 1, 1, 0]);
+});
+test("confirmed claim clears stale original request state", () => {
+  const d = ledger([row("po1", 3, "취소 요청")], [h, row("po1", 1, "취소 완료")]);
+  assert.deepEqual(fourQuantities(d.orders[0]), [1, 3, 2, 2]);
+  assert.equal(d.orders[0].pendingClaim, false);
+});
+test("historical moved cancellation is restored then deducted, without duplicate demand", () => {
+  const c = liveClaim("moved", "취소 완료", { legacy: true });
+  const d = ledger([], [liveClaimHeaders, c, [...c]]);
+  assert.equal(d.orders.length, 1);
+  assert.deepEqual(fourQuantities(d.orders[0]), [1, 1, 0, 0]);
+  assert.equal(d.orders[0].source, "claim-sheet");
+});
+test("legacy suffix normalization is immutable, idempotent and refuses ambiguous shifts", () => {
+  const old = liveClaim("po1", "취소 완료", { legacy: true });
+  const raw = [liveClaimHeaders, old];
+  const snapshot = JSON.stringify(raw);
+  const fixed = normalizeClaimRows(raw);
+  assert.equal(JSON.stringify(raw), snapshot);
+  assert.deepEqual(normalizeClaimRows(fixed), fixed);
+  assert.equal(fixed[1][liveClaimHeaders.indexOf("상품주문번호")], "po1");
+  const ambiguous = [...old];
+  ambiguous[liveClaimHeaders.indexOf("배송타입")] = "일반배송";
+  assert.deepEqual(normalizeClaimRows([liveClaimHeaders, ambiguous])[1], ambiguous);
+});
+test("invalid calendar date or monetary value cannot complete a return", () => {
+  for (const done of ["0230", "46,146", "46146"]) {
+    const d = ledger([row()], [liveClaimHeaders, liveClaim("po1", "반품 요청", { done })]);
+    assert.deepEqual(fourQuantities(d.orders[0]), [0, 1, 1, 0]);
+  }
+});
 test("KST midnight, leap dates, compact dates, strict calendar validation", () => {
   assert.equal(seoulDate(new Date("2026-09-16T15:01:00Z")), today);
   assert.equal(dateKey("2026-09-16T16:00:00Z"), today);
@@ -707,4 +793,33 @@ test("MD retains product ownership for claims of quarantined original orders", (
       claims: [["상품주문번호"], ["conflicted-original"]],
     }),
   );
+});
+
+test("malformed legacy status blocks only the owning product", () => {
+  const c = liveClaim("p1-po0", "일반배송");
+  c[liveClaimHeaders.indexOf("배송 메모")] = "알 수 없는 상태";
+  onlyP1Blocked(scopedLedger({ claims: [liveClaimHeaders, c] }));
+});
+test("completed cancellation and explicit return conflict remains product scoped", () => {
+  const r = row("conflict-final", 1, "취소 완료");
+  onlyP1Blocked(scopedLedger({ extra: [r], claims: [liveClaimHeaders, liveClaim("conflict-final", "반품 완료")] }));
+});
+test("mismatched claim product identity never deducts another product", () => {
+  const d = ledger([row()], [liveClaimHeaders, liveClaim("po1", "취소 완료", { productNo: "p2" })]);
+  assert.deepEqual(fourQuantities(d.orders[0]), [0, 1, 1, 0]);
+  assert.deepEqual(d.issues[0].productNos, ["p1", "p2"]);
+});
+test("copy validation never hides an unrelated malformed original at the same row number", () => {
+  const bad = row("bad", 0);
+  const d = scopedLedger({ extra: [bad], claims: [liveClaimHeaders, liveClaim("p1-po0", "취소 완료")] });
+  onlyP1Blocked(d);
+  assert.ok(d.issues.some(i => i.message.includes("수량 오류")));
+});
+
+
+test("cancellation completion is not reclassified by shared processing dates", () => {
+  const d = ledger([row("po1", 1, "취소 완료")],
+    [liveClaimHeaders, liveClaim("po1", "취소 완료", { done: "0918" })]);
+  assert.equal(d.claims[0].kind, "cancel");
+  assert.deepEqual(fourQuantities(d.orders[0]), [1, 1, 0, 0]);
 });

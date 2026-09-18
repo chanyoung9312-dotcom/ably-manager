@@ -3,15 +3,9 @@ import { useEffect, useMemo, useState } from "react";
 
 const won = (v) => `${Math.round(v || 0).toLocaleString("ko-KR")}원`;
 const month = (d) => String(d || "").slice(0, 7);
-const sum = (rows) => rows.reduce((total, row) => total + (row.sales ?? 0), 0);
+const sum = (rows, field = "sales") => rows.reduce((total, row) => total + (row[field] ?? 0), 0);
 const qty = (rows) => rows.reduce((total, row) => total + (row.qty || 0), 0);
-const cancelText = /취소|배송\s*지연|품절|답변\s*없음|미답변|환불/;
-const isCancellationClaim = (item) =>
-  item.type !== "return" || cancelText.test(`${item.reason || ""} ${item.claimStatus || ""}`);
-const uniqueClaims = (rows) => [
-  ...new Map(rows.map((item) => [item.productOrder || `${item.claimRow}-${item.productNo}`, item])).values(),
-];
-
+const isCancellationClaim = (item) => item.kind === "cancel";
 export default function Dashboard() {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
@@ -40,7 +34,7 @@ export default function Dashboard() {
   const view = useMemo(() => {
     if (!data) return null;
 
-    const salesRows = data.salesRows || data.orders;
+    const salesRows = data.orders.filter((item) => item.state !== "unpaid");
     const months = [
       ...new Set(salesRows.map((item) => month(item.date)).filter(Boolean)),
     ].sort().reverse();
@@ -48,30 +42,21 @@ export default function Dashboard() {
       selected === "all" || month(item.date) === selected;
 
     const orders = salesRows.filter(inPeriod);
-    // 취소 반품 시트와 원주문이 매칭된 전체 기록을 화면에 표시한다.
-    // 취소는 시트 기록 자체를 확정 취소로 보고, 반품은 처리 완료가 확인된 건만 실매출에서 차감한다.
+    // 공통 원장의 확정 취소·반품만 차감하고 미확정 수량은 별도 표시한다.
     const claims = (data.claims || []).filter(inPeriod);
     const cancel = claims.filter(isCancellationClaim);
-    const returns = claims.filter((item) => !isCancellationClaim(item));
-    const confirmedReturns = (data.cancels || [])
-      .filter(inPeriod)
-      .filter((item) => !isCancellationClaim(item));
-    const deductions = uniqueClaims([...cancel, ...confirmedReturns]);
+    const returns = claims.filter((item) => item.kind === "return");
+    const pendingQty = qty(orders.filter((item) => item.pendingClaim));
 
     const gross = sum(orders);
-    const deducted = sum(deductions);
     const orderQty = qty(orders);
-    const finalQty = Math.max(0, orderQty - qty(deductions));
+    const finalQty = sum(orders, "netQty");
 
     const rows = months.map((m) => {
       const monthOrders = salesRows.filter((item) => month(item.date) === m);
       const monthClaims = (data.claims || []).filter((item) => month(item.date) === m);
       const monthCancel = monthClaims.filter(isCancellationClaim);
-      const monthReturns = monthClaims.filter((item) => !isCancellationClaim(item));
-      const monthConfirmedReturns = (data.cancels || [])
-        .filter((item) => month(item.date) === m)
-        .filter((item) => !isCancellationClaim(item));
-      const monthDeductions = uniqueClaims([...monthCancel, ...monthConfirmedReturns]);
+      const monthReturns = monthClaims.filter((item) => item.kind === "return");
       const monthGross = sum(monthOrders);
 
       return {
@@ -82,17 +67,18 @@ export default function Dashboard() {
         cancel: sum(monthCancel),
         returnQty: qty(monthReturns),
         returns: sum(monthReturns),
-        net: monthGross - sum(monthDeductions),
-        finalQty: Math.max(0, qty(monthOrders) - qty(monthDeductions)),
+        net: sum(monthOrders, "netSales"),
+        finalQty: sum(monthOrders, "netQty"),
       };
     });
 
     return {
       months,
+      pendingQty,
       cancel,
       returns,
       gross,
-      net: gross - deducted,
+      net: sum(orders, "netSales"),
       orderQty,
       finalQty,
       rows,
@@ -139,12 +125,12 @@ export default function Dashboard() {
               <small>{won(view.gross)}</small>
             </article>
             <article>
-              <span>취소</span>
+              <span>취소 접수</span>
               <b>{qty(view.cancel)}건</b>
               <small>{won(sum(view.cancel))}</small>
             </article>
             <article>
-              <span>반품</span>
+              <span>반품 접수</span>
               <b>{qty(view.returns)}건</b>
               <small>{won(sum(view.returns))}</small>
             </article>
@@ -153,10 +139,10 @@ export default function Dashboard() {
           <section className="net">
             <div>
               <span>실매출</span>
-              <small>취소 전체 · 반품 완료건 반영</small>
+              <small>확정 취소·반품 차감 · 미확정 {view.pendingQty}개 포함</small>
             </div>
             <b>{won(view.net)}</b>
-            <strong>{view.finalQty}건 판매</strong>
+            <strong>{view.finalQty}개 순판매</strong>
           </section>
 
           <section className="table-card">
