@@ -69,6 +69,7 @@ export default function HomeMdBriefing(){
   const watch=activeRows.filter(p=>p.decision==="관찰");
   const stop=activeRows.filter(p=>p.decision==="추가 사입 중단");
   const seven=report.trends?.find(t=>t.days===7)?.current||{};
+  const uploads=report.uploads;
 
   const priority=[...activeRows]
     .filter((p)=>p.decision!=="관찰"||(p.q7||0)>0)
@@ -111,6 +112,63 @@ export default function HomeMdBriefing(){
       </a>
     </section>
 
+    {uploads&&
+      <section className="upload-board" aria-label="상품 업로드 현황">
+        <div className="upload-board-head">
+          <div>
+            <small>상품 등록 루틴</small>
+            <h2>상품 업로드 현황</h2>
+            <p>1인 하루 4개 · 평일 5일 · 1인 주 20개</p>
+          </div>
+          <div className="upload-team-summary">
+            <b>이번 주 {uploads.weekTotal} / {uploads.teamWeekTarget}개</b>
+            <small>{uploads.monthLabel} {uploads.monthTotal}개 · 누적 {uploads.total}개</small>
+          </div>
+        </div>
+
+        <div className="upload-member-list">
+          {uploads.members?.length
+            ?uploads.members.map((member)=>
+              <article className="upload-member" key={member.name}>
+                <div className="upload-member-head">
+                  <div>
+                    <small>MD</small>
+                    <b>{member.name}</b>
+                  </div>
+                  <strong>{member.week} / {uploads.weeklyTargetPerPerson}개</strong>
+                </div>
+                <div className="upload-progress" aria-label={`${member.name} 주간 업로드 ${member.week}개`}>
+                  <span style={{width:`${Math.min(100,(member.week/uploads.weeklyTargetPerPerson)*100)}%`}} />
+                </div>
+                <div className="upload-days">
+                  {uploads.weekdays.map((day)=>{
+                    const count=member.days?.[day.date]||0;
+                    const done=count>=uploads.dailyTargetPerPerson;
+                    return <div className={`upload-day ${day.date===uploads.today?"today":""} ${done?"done":""}`} key={day.date}>
+                      <small>{day.label} {day.short}</small>
+                      <div><b>{count}</b><span>/ {uploads.dailyTargetPerPerson}</span></div>
+                      <em>{done?"완료":" "}</em>
+                    </div>;
+                  })}
+                </div>
+                <div className="upload-member-foot">
+                  <span>
+                    오늘 <b>{member.today}{uploads.weekdayToday?` / ${uploads.dailyTargetPerPerson}`:""}개</b>
+                    {uploads.weekdayToday&&member.today>=uploads.dailyTargetPerPerson&&<i>완료</i>}
+                  </span>
+                  <small>{uploads.monthLabel} {member.month}개 · 누적 {member.total}개</small>
+                </div>
+              </article>)
+            :<div className="upload-empty">MD 시트의 업로드날짜와 md 값을 확인해주세요.</div>}
+        </div>
+
+        {(uploads.members?.length||0)<uploads.expectedMembers&&
+          <p className="upload-note">현재 MD 이름이 {uploads.members?.length||0}명만 확인됩니다. 두 사람 모두 md 값을 입력하면 개인별 목표가 함께 표시됩니다.</p>}
+        {uploads.unassigned?.total>0&&
+          <p className="upload-note">담당자 미입력 상품: 이번 주 {uploads.unassigned.week}개 · {uploads.monthLabel} {uploads.unassigned.month}개 · 누적 {uploads.unassigned.total}개</p>}
+      </section>
+    }
+
     <section className="today-products">
       <div className="section-title">
         <div><small>사입·재고 확인</small><h2>오늘 확인할 상품</h2><p>최근 30일 판매가 있고 지금 확인할 이유가 있는 상품만 최대 3개 보여줍니다.</p></div>
@@ -146,6 +204,20 @@ export default function HomeMdBriefing(){
       .work-card{display:grid;grid-template-columns:44px 1fr 24px;align-items:center;gap:14px;min-height:132px;padding:18px;border:1px solid #343c40;border-radius:16px;background:#191d1f;color:#f3f4f6;text-decoration:none}
       .work-no{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:#272e31;color:#dce3e6;font-size:13px;font-weight:900}
       .work-card small{display:block;color:#9ca6aa;font-size:12px;font-weight:800;margin-bottom:5px}.work-card b{display:block;color:#f8fafc;font-size:18px;line-height:1.35}.work-card p{margin:8px 0 0;color:#aeb5b8;font-size:13px;line-height:1.5}.work-card>strong{font-size:20px;color:#899499}
+      .upload-board{margin-bottom:22px;padding:18px;border:1px solid #343a3d;border-radius:18px;background:#191d1f}
+      .upload-board-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding-bottom:15px;margin-bottom:14px;border-bottom:1px solid #303638}
+      .upload-board-head small{color:#8f9a9e;font-weight:800}.upload-board-head h2{margin:3px 0 5px;font-size:24px}.upload-board-head p{margin:0;color:#aeb5b8;font-size:13px}
+      .upload-team-summary{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;text-align:right}.upload-team-summary b{font-size:20px}.upload-team-summary small{color:#aeb5b8}
+      .upload-member-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+      .upload-member{padding:15px;border:1px solid #3b4448;border-radius:15px;background:#15191a;min-width:0}
+      .upload-member-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}.upload-member-head small{display:block;color:#8f9a9e;font-size:11px;font-weight:800;margin-bottom:3px}.upload-member-head b{font-size:18px}.upload-member-head strong{font-size:17px;white-space:nowrap}
+      .upload-progress{height:7px;margin:12px 0 13px;border-radius:999px;background:#252c2f;overflow:hidden}.upload-progress span{display:block;height:100%;border-radius:inherit;background:#d7dee1}
+      .upload-days{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+      .upload-day{min-width:0;padding:9px 6px;border:1px solid #323a3e;border-radius:10px;background:#1d2325;text-align:center}.upload-day.today{border-color:#6b7880;background:#22292c}.upload-day.done{background:#202a25;border-color:#41584a}
+      .upload-day small{display:block;color:#9ca6aa;font-size:10px;white-space:nowrap}.upload-day div{display:flex;justify-content:center;align-items:baseline;gap:2px;margin-top:5px}.upload-day b{font-size:18px}.upload-day span{color:#8f9a9e;font-size:11px}.upload-day em{display:block;min-height:12px;margin-top:3px;color:#a7cbb1;font-size:10px;font-style:normal;font-weight:800}
+      .upload-member-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;padding-top:11px;border-top:1px solid #2e3538}.upload-member-foot span{color:#c7ced1;font-size:13px}.upload-member-foot span b{margin-left:4px}.upload-member-foot i{margin-left:6px;color:#a7cbb1;font-size:11px;font-style:normal;font-weight:900}.upload-member-foot small{color:#8f9a9e;text-align:right}
+      .upload-note{margin:10px 2px 0;color:#9da7ab;font-size:12px;line-height:1.5}.upload-empty{grid-column:1/-1;padding:16px;border:1px dashed #3b4448;border-radius:12px;color:#aeb5b8;text-align:center;font-size:13px}
+      @media(max-width:720px){.upload-board{padding:15px;margin-bottom:18px}.upload-board-head{flex-direction:column;gap:10px}.upload-team-summary{align-items:flex-start;text-align:left}.upload-team-summary b{font-size:18px}.upload-member-list{grid-template-columns:1fr}.upload-member{padding:14px}.upload-days{gap:5px}.upload-day{padding:8px 4px}.upload-day small{font-size:9px}.upload-day b{font-size:17px}.upload-member-foot{align-items:flex-start}.upload-member-foot small{font-size:11px}}
       .data-alert{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 18px;border:1px solid #4b5563;border-radius:16px;background:linear-gradient(180deg,#1b2124 0%,#161b1d 100%);color:#f3f4f6;text-decoration:none;transition:transform .15s ease,border-color .15s ease,background .15s ease}
       .data-alert:hover{transform:translateY(-1px);border-color:#6b7280;background:linear-gradient(180deg,#20272a 0%,#181d20 100%)}
       .data-alert-left{display:flex;align-items:flex-start;gap:12px;min-width:0}
