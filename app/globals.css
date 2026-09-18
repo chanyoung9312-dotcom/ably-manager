@@ -267,9 +267,9 @@ body.oars-root-page .priority-head>a{font-size:12px;text-decoration:none;padding
 body.oars-root-page .priority-item h3{margin:12px 0 14px;font-size:18px;line-height:1.45}
 body.oars-root-page .priority-badge{display:inline-flex;padding:6px 9px;border-radius:999px;font-size:12px;font-weight:900;background:#303638}
 body.oars-root-page .priority-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 10px}
-body.oars-root-page .priority-facts>div{padding:12px;border:1px solid #343c40;border-radius:11px;background:#22282a}
-body.oars-root-page .priority-facts dt{font-size:12px;color:#9ca3af;margin:0 0 5px}
-body.oars-root-page .priority-facts dd{font-size:17px;font-weight:900;color:#f8fafc;margin:0}
+body.oars-root-page .priority-fact{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid #343c40;border-radius:11px;background:#22282a}
+body.oars-root-page .priority-fact span{font-size:13px;color:#aeb5b8;font-weight:700}
+body.oars-root-page .priority-fact strong{font-size:17px;font-weight:900;color:#f8fafc;white-space:nowrap}
 body.oars-root-page .priority-action{padding:13px 14px;border:1px solid #59656a;border-radius:10px;background:#242b2e}
 body.oars-root-page .priority-action span{display:block;font-size:12px;color:#aeb8bc;font-weight:800;margin-bottom:5px}
 body.oars-root-page .priority-action b{display:block;font-size:15px;line-height:1.5}
@@ -282,15 +282,6 @@ body.oars-root-page .priority-reason{margin:10px 2px 0;color:#aeb8bc;font-size:1
  body.oars-root-page .priority-item{padding:16px}
  body.oars-root-page .priority-item h3{margin:10px 0 13px}
  body.oars-root-page .priority-facts{grid-template-columns:1fr 1fr}
- body.oars-root-page .priority-facts>div:last-child{grid-column:1/-1}
+ body.oars-root-page .priority-fact.last-order{grid-column:1/-1}
 }
 
-/* Priority metric readability */
-body.oars-root-page .priority-facts>div{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px}
-body.oars-root-page .priority-facts dt{margin:0}
-body.oars-root-page .priority-facts dd{white-space:nowrap}
-@media(max-width:760px){
- body.oars-root-page .priority-facts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
- body.oars-root-page .priority-facts>div{display:grid;grid-template-columns:1fr auto;align-items:center}
- body.oars-root-page .priority-facts .last-order{grid-column:1/-1}
-}
