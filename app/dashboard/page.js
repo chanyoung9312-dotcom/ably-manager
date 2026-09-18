@@ -46,7 +46,7 @@ export default function Dashboard() {
     const inPeriod = (item) =>
       selected === "all" || month(item.date) === selected;
 
-    const orders = data.orders.filter(inPeriod);
+    const orders = salesRows.filter(inPeriod);
     // 취소 반품 시트와 원주문이 매칭된 전체 기록을 화면에 표시한다.
     // 취소는 시트 기록 자체를 확정 취소로 보고, 반품은 처리 완료가 확인된 건만 실매출에서 차감한다.
     const claims = (data.claims || []).filter(inPeriod);
@@ -63,7 +63,7 @@ export default function Dashboard() {
     const finalQty = Math.max(0, orderQty - qty(deductions));
 
     const rows = months.map((m) => {
-      const monthOrders = data.orders.filter((item) => month(item.date) === m);
+      const monthOrders = salesRows.filter((item) => month(item.date) === m);
       const monthClaims = (data.claims || []).filter((item) => month(item.date) === m);
       const monthCancel = monthClaims.filter(isCancellationClaim);
       const monthReturns = monthClaims.filter((item) => !isCancellationClaim(item));
