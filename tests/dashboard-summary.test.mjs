@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { buildCommerce } from "../lib/commerce.mjs";
+import { buildCommerce, parseSalesRows } from "../lib/commerce.mjs";
 
 const orderHeaders = [
   "결제일",
@@ -64,4 +64,25 @@ test("매출 화면은 취소를 하나로 합치고 취소 반품 시트 매칭
   assert.doesNotMatch(source, />볼 기간</);
   assert.doesNotMatch(source, />매출 흐름</);
   assert.doesNotMatch(source, />최종 판매</);
+});
+
+
+test("판매가 총매출은 같은 상품주문번호가 중복되어도 원본 행 기준으로 합산한다", () => {
+  const rows = [
+    orderHeaders,
+    order("dup", "배송중", "2026-06-04"),
+    order("dup", "상품 준비중", "2026-06-04"),
+  ];
+  const salesRows = parseSalesRows(rows, "line");
+  assert.equal(salesRows.length, 2);
+  assert.equal(salesRows.reduce((total, row) => total + row.sales, 0), 40000);
+});
+
+test("매출 화면은 salesRows를 우선 사용한다", () => {
+  const source = fs.readFileSync(
+    new URL("../app/dashboard/page.js", import.meta.url),
+    "utf8",
+  );
+  assert.match(source, /const salesRows = data\.salesRows \|\| data\.orders/);
+  assert.match(source, /const orders = salesRows\.filter\(inPeriod\)/);
 });
