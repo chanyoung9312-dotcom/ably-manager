@@ -467,12 +467,16 @@ test("upload routine uses Monday-Sunday weekly targets and cumulative totals", (
   assert.equal(uploads.weeklyTargetPerPerson, 20);
   assert.equal(uploads.teamWeekTarget, 40);
   assert.equal(uploads.weekTotal, 8);
+  assert.equal(uploads.monthTotal, 8);
   assert.equal(uploads.total, 9);
   assert.equal(uploads.unassigned.week, 1);
+  assert.equal(uploads.unassigned.month, 1);
   assert.deepEqual(uploads.members.map((m) => m.name), ["김찬영", "이창민"]);
   assert.equal(byName["김찬영"].week, 6);
+  assert.equal(byName["김찬영"].month, 6);
   assert.equal(byName["김찬영"].total, 6);
   assert.equal(byName["이창민"].week, 2);
+  assert.equal(byName["이창민"].month, 2);
   assert.equal(byName["이창민"].total, 3);
 });
 
