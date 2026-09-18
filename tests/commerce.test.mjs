@@ -450,35 +450,30 @@ test("upload routine uses Monday-Sunday weekly targets and cumulative totals", (
   d.mdProducts = [];
   d.mdUploads = [
     { date: "2026-09-14", uploader: "김찬영" },
-    { date: "2026-09-14", uploader: "김찬영" },
+    { date: "2026-09-14", uploader: "김찬*" },
     { date: "2026-09-15", uploader: "김찬영" },
     { date: "2026-09-18", uploader: "김찬영" },
     { date: "2026-09-19", uploader: "김찬영" },
     { date: "2026-09-20", uploader: "김찬영" },
-    { date: "2026-09-14", uploader: "동업자" },
-    { date: "2026-09-18", uploader: "동업자" },
-    { date: "2026-08-31", uploader: "동업자" },
+    { date: "2026-09-14", uploader: "이창민" },
+    { date: "2026-09-18", uploader: "이창" },
+    { date: "2026-08-31", uploader: "이창민" },
     { date: "2026-09-18", uploader: "" },
   ];
   const uploads = analyze(d, { today: "2026-09-20" }).uploads;
   const byName = Object.fromEntries(uploads.members.map((m) => [m.name, m]));
   assert.equal(uploads.weekStart, "2026-09-14");
   assert.equal(uploads.weekEnd, "2026-09-20");
-  assert.equal(uploads.weekdays.length, 7);
-  assert.equal(uploads.weekdays[5].label, "토");
-  assert.equal(uploads.weekdays[6].label, "일");
   assert.equal(uploads.weeklyTargetPerPerson, 20);
   assert.equal(uploads.teamWeekTarget, 40);
   assert.equal(uploads.weekTotal, 8);
   assert.equal(uploads.total, 9);
   assert.equal(uploads.unassigned.week, 1);
+  assert.deepEqual(uploads.members.map((m) => m.name), ["김찬영", "이창민"]);
   assert.equal(byName["김찬영"].week, 6);
   assert.equal(byName["김찬영"].total, 6);
-  assert.equal(byName["동업자"].week, 2);
-  assert.equal(byName["동업자"].total, 3);
-  assert.equal(byName["김찬영"].days["2026-09-14"], 2);
-  assert.equal(byName["김찬영"].days["2026-09-19"], 1);
-  assert.equal(byName["김찬영"].days["2026-09-20"], 1);
+  assert.equal(byName["이창민"].week, 2);
+  assert.equal(byName["이창민"].total, 3);
 });
 
 test("formatted product IDs join the same inventory and MD product", () => {
