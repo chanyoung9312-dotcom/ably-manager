@@ -125,9 +125,17 @@ export default function HomeMdBriefing(){
 
     {report.warnings?.length>0&&
       <a className="data-alert" href="/analysis">
-        <span>데이터 확인 필요</span>
-        <b>{report.warnings.length}건</b>
-        <small>사입 판단에 영향을 줄 수 있는 항목 확인 →</small>
+        <div className="data-alert-left">
+          <span className="data-alert-badge">확인 필요</span>
+          <div className="data-alert-text">
+            <b>데이터 확인 필요</b>
+            <p>사입 판단에 영향을 줄 수 있는 항목이 있습니다.</p>
+          </div>
+        </div>
+        <div className="data-alert-right">
+          <strong>{report.warnings.length}건</strong>
+          <small>항목 확인 →</small>
+        </div>
       </a>
     }
 
@@ -138,6 +146,17 @@ export default function HomeMdBriefing(){
       .work-card{display:grid;grid-template-columns:44px 1fr 24px;align-items:center;gap:14px;min-height:132px;padding:18px;border:1px solid #343c40;border-radius:16px;background:#191d1f;color:#f3f4f6;text-decoration:none}
       .work-no{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:#272e31;color:#dce3e6;font-size:13px;font-weight:900}
       .work-card small{display:block;color:#9ca6aa;font-size:12px;font-weight:800;margin-bottom:5px}.work-card b{display:block;color:#f8fafc;font-size:18px;line-height:1.35}.work-card p{margin:8px 0 0;color:#aeb5b8;font-size:13px;line-height:1.5}.work-card>strong{font-size:20px;color:#899499}
+      .data-alert{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 18px;border:1px solid #4b5563;border-radius:16px;background:linear-gradient(180deg,#1b2124 0%,#161b1d 100%);color:#f3f4f6;text-decoration:none;transition:transform .15s ease,border-color .15s ease,background .15s ease}
+      .data-alert:hover{transform:translateY(-1px);border-color:#6b7280;background:linear-gradient(180deg,#20272a 0%,#181d20 100%)}
+      .data-alert-left{display:flex;align-items:flex-start;gap:12px;min-width:0}
+      .data-alert-badge{display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border-radius:999px;background:#3a2a12;color:#f7c66a;font-size:12px;font-weight:900;white-space:nowrap;border:1px solid #5b4420}
+      .data-alert-text{min-width:0}
+      .data-alert-text b{display:block;font-size:16px;color:#f8fafc;margin-bottom:4px}
+      .data-alert-text p{margin:0;font-size:13px;line-height:1.5;color:#aeb5b8}
+      .data-alert-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:4px;flex-shrink:0;text-align:right}
+      .data-alert-right strong{font-size:20px;line-height:1;color:#f8fafc}
+      .data-alert-right small{color:#cbd5db;font-size:12px;font-weight:700}
+      @media(max-width:720px){.data-alert{flex-direction:column;align-items:flex-start;padding:15px 14px}.data-alert-right{width:100%;flex-direction:row;justify-content:space-between;align-items:center;text-align:left}.data-alert-text b{font-size:15px}}
       @media(max-width:720px){.op-head{align-items:flex-start;margin-bottom:18px}.op-head h1{font-size:29px}.op-head p{font-size:14px;line-height:1.55;max-width:260px}.op-head button{padding:9px 11px;min-height:40px;font-size:13px}.work-flow-cards{grid-template-columns:1fr;gap:10px;margin-bottom:18px}.work-card{grid-template-columns:38px 1fr 20px;gap:12px;min-height:0;padding:15px 14px;border-radius:14px}.work-no{width:36px;height:36px;border-radius:10px;font-size:12px}.work-card b{font-size:17px}.work-card p{font-size:13px;margin-top:5px}}
     `}</style>
 
