@@ -284,3 +284,13 @@ body.oars-root-page .priority-reason{margin:10px 2px 0;color:#aeb8bc;font-size:1
  body.oars-root-page .priority-facts{grid-template-columns:1fr 1fr}
  body.oars-root-page .priority-facts>div:last-child{grid-column:1/-1}
 }
+
+/* Priority metric readability */
+body.oars-root-page .priority-facts>div{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px}
+body.oars-root-page .priority-facts dt{margin:0}
+body.oars-root-page .priority-facts dd{white-space:nowrap}
+@media(max-width:760px){
+ body.oars-root-page .priority-facts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+ body.oars-root-page .priority-facts>div{display:grid;grid-template-columns:1fr auto;align-items:center}
+ body.oars-root-page .priority-facts .last-order{grid-column:1/-1}
+}
