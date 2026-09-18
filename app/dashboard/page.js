@@ -40,8 +40,8 @@ export default function Dashboard() {
   const view = useMemo(() => {
     if (!data) return null;
 
-    const months = [
-      ...new Set(data.orders.map((item) => month(item.date)).filter(Boolean)),
+    const salesRows = data.salesRows || data.orders;\n    const months = [
+      ...new Set(salesRows.map((item) => month(item.date)).filter(Boolean)),
     ].sort().reverse();
     const inPeriod = (item) =>
       selected === "all" || month(item.date) === selected;
