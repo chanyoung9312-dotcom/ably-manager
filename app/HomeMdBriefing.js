@@ -35,10 +35,10 @@ function PriorityItem({p}){
       <a href="/analysis">상세 →</a>
     </div>
     <h3>{p.name||"상품명 확인 필요"}</h3>
-    <div className="priority-facts">
-      <span><small>최근 7일</small><b>{p.q7||0}개</b></span>
-      <span><small>최근 30일</small><b>{p.q30||0}개</b></span>
-      <span><small>마지막 주문</small><b>{p.last||"확인 필요"}</b></span>
+    <dl className="priority-facts">
+      <div><dt>최근 7일</dt><dd>{p.q7||0}개</dd></div>
+      <div><dt>최근 30일</dt><dd>{p.q30||0}개</dd></div>
+      <div className="last-order"><dt>마지막 주문</dt><dd>{p.last||"확인 필요"}</dd></div>
     </div>
     <div className="priority-action"><span>지금 할 일</span><b>{actionFor(p)}</b></div>
     <p className="priority-reason">{reasonFor(p)}</p>
