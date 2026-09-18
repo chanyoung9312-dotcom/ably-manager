@@ -254,3 +254,33 @@ body.oars-root-page .md-report a {
 body.oars-root-page [role="alert"] {
   color: #ffb4b4;
 }
+
+/* Home priority cards: global CSS because HomeMdBriefing's styled-jsx is not reliably applied in production. */
+body.oars-root-page .today-products{border:1px solid #343a3d;border-radius:18px;padding:20px;background:#191d1f}
+body.oars-root-page .section-title{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;border-bottom:1px solid #303638;padding-bottom:16px;margin-bottom:14px}
+body.oars-root-page .section-title h2{margin:3px 0 5px;font-size:24px}
+body.oars-root-page .section-title p{margin:0;color:#aeb5b8;font-size:14px}
+body.oars-root-page .priority-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+body.oars-root-page .priority-item{padding:16px;border:1px solid #3b4448;border-radius:16px;background:#15191a;min-width:0}
+body.oars-root-page .priority-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+body.oars-root-page .priority-head>a{font-size:12px;text-decoration:none;padding:7px 9px;border:1px solid #3b4448;border-radius:8px;background:#202628}
+body.oars-root-page .priority-item h3{margin:12px 0 14px;font-size:18px;line-height:1.45}
+body.oars-root-page .priority-badge{display:inline-flex;padding:6px 9px;border-radius:999px;font-size:12px;font-weight:900;background:#303638}
+body.oars-root-page .priority-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 10px}
+body.oars-root-page .priority-facts>div{padding:12px;border:1px solid #343c40;border-radius:11px;background:#22282a}
+body.oars-root-page .priority-facts dt{font-size:12px;color:#9ca3af;margin:0 0 5px}
+body.oars-root-page .priority-facts dd{font-size:17px;font-weight:900;color:#f8fafc;margin:0}
+body.oars-root-page .priority-action{padding:13px 14px;border:1px solid #59656a;border-radius:10px;background:#242b2e}
+body.oars-root-page .priority-action span{display:block;font-size:12px;color:#aeb8bc;font-weight:800;margin-bottom:5px}
+body.oars-root-page .priority-action b{display:block;font-size:15px;line-height:1.5}
+body.oars-root-page .priority-reason{margin:10px 2px 0;color:#aeb8bc;font-size:13px;line-height:1.55}
+@media(max-width:760px){
+ body.oars-root-page .today-products{padding:15px}
+ body.oars-root-page .section-title{flex-direction:column;gap:8px}
+ body.oars-root-page .section-title p{font-size:13px}
+ body.oars-root-page .priority-list{grid-template-columns:1fr;gap:14px}
+ body.oars-root-page .priority-item{padding:16px}
+ body.oars-root-page .priority-item h3{margin:10px 0 13px}
+ body.oars-root-page .priority-facts{grid-template-columns:1fr 1fr}
+ body.oars-root-page .priority-facts>div:last-child{grid-column:1/-1}
+}
