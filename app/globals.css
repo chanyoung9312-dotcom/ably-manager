@@ -285,3 +285,34 @@ body.oars-root-page .priority-reason{margin:10px 2px 0;color:#aeb8bc;font-size:1
  body.oars-root-page .priority-fact.last-order{grid-column:1/-1}
 }
 
+
+/* OARS unified app theme */
+html{background:#111516;color-scheme:dark}
+body{margin:0;background:#111516!important;color:#f4f7f8!important}
+body main{color:#f4f7f8}
+body h1,body h2,body h3,body h4,body b,body strong{color:#f7f9fa}
+body button,body input,body select,body textarea{font:inherit}
+body button{color:#f4f7f8;background:#202628;border:1px solid #3a4347}
+body select,body input,body textarea{color:#f4f7f8;background:#191d1f;border-color:#3a4347}
+body option{background:#191d1f;color:#f4f7f8}
+.sales-wrap,.md-analysis-page,.inventory-page,.reaction-page{color:#f4f7f8!important}
+.sales-wrap .summary article,.sales-wrap .net,.sales-wrap .table-card,.sales-wrap .filter,.sales-wrap .debug{color:#f4f7f8!important}
+.sales-wrap .summary b,.sales-wrap .net>b,.sales-wrap .net strong,.sales-wrap table,.sales-wrap td,.sales-wrap th,.sales-wrap label{color:#f4f7f8!important}
+.sales-wrap .filter select{background:#22282a!important;color:#f4f7f8!important;border-color:#465055!important}
+.sales-wrap .summary span,.sales-wrap .summary small,.sales-wrap .net small,.sales-wrap .title span,.sales-wrap header p,.sales-wrap header small{color:#aeb7bb!important}
+@media(max-width:620px){
+ .sales-wrap{padding:22px 14px 64px!important}
+ .sales-wrap header{display:grid!important;grid-template-columns:1fr auto;align-items:start!important}
+ .sales-wrap header>div{min-width:0}
+ .sales-wrap header h1{font-size:30px!important}
+ .sales-wrap header p{font-size:14px;line-height:1.5}
+ .sales-wrap header button{padding:9px 11px}
+ .sales-wrap .filter{padding:12px 14px!important}
+ .sales-wrap .summary{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important}
+ .sales-wrap .summary article{padding:13px 11px!important;min-height:96px!important}
+ .sales-wrap .summary b{font-size:20px!important}
+ .sales-wrap .summary small{font-size:12px!important;word-break:keep-all}
+ .sales-wrap .net{padding:16px!important}
+ .sales-wrap .table-card{padding:14px!important}
+}
+@media(max-width:390px){.sales-wrap .summary{grid-template-columns:1fr!important}}
