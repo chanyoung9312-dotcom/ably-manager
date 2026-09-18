@@ -324,24 +324,6 @@ export default function Page() {
           <p className="sub">오어즈 쇼핑몰 운영 관리</p>
         </>
       )}
-      <div className="actions" style={{ marginBottom: 18 }}>
-        <button onClick={() => (location.href = "/")}>MD 총분석</button>
-        <button onClick={() => (location.href = "/product-reaction")}>
-          상품 반응
-        </button>
-        <button onClick={() => (location.href = "/product-match")}>
-          상품번호 매칭
-        </button>
-        <button onClick={() => (location.href = "/dashboard")}>
-          매출 대시보드
-        </button>
-        <button onClick={() => (location.href = "/products")}>
-          상품별 판매분석
-        </button>
-        <button onClick={() => (location.href = "/?tool=sms")}>문자 도우미</button>
-        <button onClick={() => (location.href = "/?tool=post")}>우체국 엑셀 만들기</button>
-        <button onClick={() => (location.href = "/?tool=tracking")}>송장 매칭</button>
-      </div>
       {mode === "home" ? (
         <HomeMdBriefing />
       ) : mode === "sms" ? (
