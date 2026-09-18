@@ -445,7 +445,7 @@ test("MD upload cards retain uploader names", () => {
   assert.equal(p.uploader, "김찬영");
 });
 
-test("upload routine reports per-person daily weekly monthly and cumulative counts", () => {
+test("upload routine uses Monday-Sunday weekly targets and cumulative totals", () => {
   const d = ledger([]);
   d.mdProducts = [];
   d.mdUploads = [
@@ -453,28 +453,32 @@ test("upload routine reports per-person daily weekly monthly and cumulative coun
     { date: "2026-09-14", uploader: "김찬영" },
     { date: "2026-09-15", uploader: "김찬영" },
     { date: "2026-09-18", uploader: "김찬영" },
+    { date: "2026-09-19", uploader: "김찬영" },
+    { date: "2026-09-20", uploader: "김찬영" },
     { date: "2026-09-14", uploader: "동업자" },
     { date: "2026-09-18", uploader: "동업자" },
     { date: "2026-08-31", uploader: "동업자" },
     { date: "2026-09-18", uploader: "" },
-    { date: "2026-09-19", uploader: "김찬영" },
   ];
-  const uploads = analyze(d, { today: "2026-09-18" }).uploads;
+  const uploads = analyze(d, { today: "2026-09-20" }).uploads;
   const byName = Object.fromEntries(uploads.members.map((m) => [m.name, m]));
+  assert.equal(uploads.weekStart, "2026-09-14");
+  assert.equal(uploads.weekEnd, "2026-09-20");
+  assert.equal(uploads.weekdays.length, 7);
+  assert.equal(uploads.weekdays[5].label, "토");
+  assert.equal(uploads.weekdays[6].label, "일");
+  assert.equal(uploads.weeklyTargetPerPerson, 20);
   assert.equal(uploads.teamWeekTarget, 40);
-  assert.equal(uploads.teamTodayTarget, 8);
-  assert.equal(uploads.weekTotal, 6);
-  assert.equal(uploads.monthTotal, 6);
-  assert.equal(uploads.total, 7);
+  assert.equal(uploads.weekTotal, 8);
+  assert.equal(uploads.total, 9);
   assert.equal(uploads.unassigned.week, 1);
-  assert.equal(byName["김찬영"].today, 1);
-  assert.equal(byName["김찬영"].week, 4);
-  assert.equal(byName["김찬영"].month, 4);
-  assert.equal(byName["김찬영"].total, 4);
+  assert.equal(byName["김찬영"].week, 6);
+  assert.equal(byName["김찬영"].total, 6);
   assert.equal(byName["동업자"].week, 2);
-  assert.equal(byName["동업자"].month, 2);
   assert.equal(byName["동업자"].total, 3);
   assert.equal(byName["김찬영"].days["2026-09-14"], 2);
+  assert.equal(byName["김찬영"].days["2026-09-19"], 1);
+  assert.equal(byName["김찬영"].days["2026-09-20"], 1);
 });
 
 test("formatted product IDs join the same inventory and MD product", () => {
