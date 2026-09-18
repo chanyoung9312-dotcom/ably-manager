@@ -8,7 +8,7 @@ const labelFor=(p)=>
     ?"사입 검토"
     :p.decision==="추가 사입 중단"
       ?"추가 주문 중단"
-      :"조금 더 보기";
+      :"관찰";
 
 const toneFor=(p)=>
   p.decision==="사입 검토"?"buy":p.decision==="추가 사입 중단"?"stop":"watch";
