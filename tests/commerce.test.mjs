@@ -431,6 +431,52 @@ test("next MD card upload date cannot overwrite preceding card", () => {
   assert.equal(p[0].date, "2026-09-01");
   assert.equal(p[1].date, "2026-09-15");
 });
+test("MD upload cards retain uploader names", () => {
+  const md = [
+    ["", "", "", "", "업로드날짜", "md"],
+    ["", "", "", "", "260915", "김찬영"],
+    ["상품명"],
+    ["원피스"],
+    ["상품번호"],
+    ["p1"],
+  ];
+  const p = parseMd(md)[0];
+  assert.equal(p.date, "2026-09-15");
+  assert.equal(p.uploader, "김찬영");
+});
+
+test("upload routine reports per-person daily weekly monthly and cumulative counts", () => {
+  const d = ledger([]);
+  d.mdProducts = [];
+  d.mdUploads = [
+    { date: "2026-09-14", uploader: "김찬영" },
+    { date: "2026-09-14", uploader: "김찬영" },
+    { date: "2026-09-15", uploader: "김찬영" },
+    { date: "2026-09-18", uploader: "김찬영" },
+    { date: "2026-09-14", uploader: "동업자" },
+    { date: "2026-09-18", uploader: "동업자" },
+    { date: "2026-08-31", uploader: "동업자" },
+    { date: "2026-09-18", uploader: "" },
+    { date: "2026-09-19", uploader: "김찬영" },
+  ];
+  const uploads = analyze(d, { today: "2026-09-18" }).uploads;
+  const byName = Object.fromEntries(uploads.members.map((m) => [m.name, m]));
+  assert.equal(uploads.teamWeekTarget, 40);
+  assert.equal(uploads.teamTodayTarget, 8);
+  assert.equal(uploads.weekTotal, 6);
+  assert.equal(uploads.monthTotal, 6);
+  assert.equal(uploads.total, 7);
+  assert.equal(uploads.unassigned.week, 1);
+  assert.equal(byName["김찬영"].today, 1);
+  assert.equal(byName["김찬영"].week, 4);
+  assert.equal(byName["김찬영"].month, 4);
+  assert.equal(byName["김찬영"].total, 4);
+  assert.equal(byName["동업자"].week, 2);
+  assert.equal(byName["동업자"].month, 2);
+  assert.equal(byName["동업자"].total, 3);
+  assert.equal(byName["김찬영"].days["2026-09-14"], 2);
+});
+
 test("formatted product IDs join the same inventory and MD product", () => {
   const r = row();
   r[3] = "12,345";
