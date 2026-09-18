@@ -17,8 +17,9 @@ test("MD와 재고 화면 역할을 분리하고 취소 유형을 표시한다",
   assert.doesNotMatch(products, /사입 검토/);
   assert.doesNotMatch(products, /추가 주문 중단/);
 
-  assert.match(nav, /사입 판단/);
-  assert.match(nav, /재고 현황/);
+  // Navigation uses the shorter labels; destinations and screen roles are unchanged.
+  assert.match(nav, /\["상품 분석", "\/analysis"\]/);
+  assert.match(nav, /\["재고", "\/products"\]/);
 });
 
 test("홈은 오늘 처리할 업무 순서와 우선 상품만 보여준다", async () => {
@@ -30,7 +31,8 @@ test("홈은 오늘 처리할 업무 순서와 우선 상품만 보여준다", a
   assert.match(home, />사입 확인</);
   assert.match(home, />매출 확인</);
   assert.match(home, /filter\(\(p\)=>\(p\.q30\|\|0\)>0\)/);
-  assert.match(home, />최근 주문</);
+  assert.match(home, />마지막 주문<\/span><strong>\{p\.last\|\|"확인 필요"\}/);
+  assert.match(home, />지금 할 일<\/span><b>\{actionFor\(p\)\}/);
   assert.match(home, />오늘 할 일</);
   assert.match(home, />전체 사입 판단 보기 →</);
   assert.doesNotMatch(home, /판단 근거 자세히 보기/);
