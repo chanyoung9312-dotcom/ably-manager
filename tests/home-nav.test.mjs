@@ -59,6 +59,10 @@ test("product registration helper keeps VVIC ZIP processing local and human-conf
   assert.match(page, /무시/);
   assert.match(page, /상단 자르기/);
   assert.match(page, /정리 완료 ZIP 저장/);
+  assert.match(page, /상품정보 생성 준비/);
+  assert.match(page, /ChatGPT에서 상품정보 만들기/);
+  assert.match(page, /ChatGPT 결과 붙여넣기/);
+  assert.match(page, /카페24 등록용 상품정보/);
   assert.match(page, /buildStoredZip/);
   assert.doesNotMatch(page, /fetch\(/);
 });
