@@ -5,6 +5,7 @@ const text = (v) => String(v ?? "").trim();
 const digits = (v) => text(v).replace(/\D/g, "");
 const phone = (v) => digits(v).replace(/^(01\d)(\d{3,4})(\d{4})$/, "$1-$2-$3");
 const TEMPLATE_KEY = "ably-manager-sms-template";
+const CAFE24_MARKETPLUS_URL = "https://eclogin.cafe24.com/Shop/?mode=mp";
 const DEFAULT_TEMPLATE = `안녕하세요 {수취인명} 고객님\n\n고객님께서 주문하신 {상품명} 상품은 저희 주문량이 밀려 저희 업체로 공급되는 시간이 지체되어 곧바로 배송이 어려워 안내드립니다. \n\n배송 기간은 영업일 기준으로 3일~7일 정도 소요될 수도 있는 것으로 확인됩니다. 배송현황은 CJ대한통운으로 등록되어있을텐데 실제 배송은 우체국택배로 진행됩니다!\n\n문자 확인 후 답변 해주시면 배송 진행, 혹은 취소 진행으로 도와드리겠습니다\n\n감사합니다!!`;
 // N02 접수중은 표시하되 결제 확인 전 상태 변경을 막는다.
 // Cafe24 order_status: N10=상품준비중(결제 완료 신규 주문), N20=배송준비중.
@@ -129,6 +130,17 @@ export default function SmsCafe24Manager() {
         <div className="actions">
           <button onClick={load} disabled={loading}>
             {loading ? "불러오는 중..." : "카페24 주문 불러오기"}
+          </button>
+          <button
+            onClick={() =>
+              window.open(
+                CAFE24_MARKETPLUS_URL,
+                "_blank",
+                "noopener,noreferrer",
+              )
+            }
+          >
+            카페24 주문수집 열기 ↗
           </button>
           <button onClick={() => (location.href = "/api/cafe24/connect")}>
             카페24 다시 연결
