@@ -206,8 +206,8 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
   assert.match(page, /소싱 검토 분류/);
   assert.match(page, /SourcingBriefBoard/);
   assert.match(page, /ResearchPlanBoard/);
-  assert.match(researchView, /소싱 조사 작업목록/);
-  assert.match(researchView, /현재는 읽기 전용 작업목록/);
+  assert.match(researchView, /다음 소싱 검색 키워드/);
+  assert.match(researchView, /외부 인기 검색어가 아니라 우리 판매 데이터/);
   assert.match(briefView, /이번 소싱 검토 브리프/);
   assert.match(briefView, /추천 점수·추천 순위·사입 수량이 아니라/);
   assert.match(candidateView, /소싱 검토 후보/);
@@ -240,6 +240,9 @@ test("the screen exposes details, shared evidence, filters, and mobile one-colum
   assert.match(page, /품목 수준 근거/);
   assert.match(page, /조합 근거/);
   assert.match(researchView, /공급처 링크/);
+  assert.match(page, /추천 검색 키워드/);
+  assert.match(page, /전체 복사/);
+  assert.match(page, /왜 이 키워드인가요/);
   assert.match(page, /템플릿 복사/);
   assert.match(page, /상품번호/);
   assert.match(page, /판단 반영/);
