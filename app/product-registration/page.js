@@ -14,6 +14,7 @@ const IMAGE_FILE = /\.(?:jpe?g|png|webp|gif)$/i;
 const STATES = {
   keep: { label: "사용", tone: "ok" },
   crop: { label: "상단 자르기", tone: "crop" },
+  cropBottom: { label: "하단 자르기", tone: "crop" },
   exclude: { label: "제외", tone: "bad" },
 };
 const ROLE_OPTIONS = [
@@ -60,8 +61,11 @@ function stem(name) {
 
 async function cropImage(item) {
   const image = await loadImage(item.url);
-  const sourceY = Math.round(image.naturalHeight * (item.cropTop / 100));
-  const height = image.naturalHeight - sourceY;
+  const isBottom = item.state === "cropBottom";
+  const cropPercent = isBottom ? item.cropBottom : item.cropTop;
+  const cut = Math.round(image.naturalHeight * (cropPercent / 100));
+  const sourceY = isBottom ? 0 : cut;
+  const height = image.naturalHeight - cut;
   if (height <= 0) throw new Error("잘라낼 범위를 확인해주세요.");
 
   const canvas = document.createElement("canvas");
@@ -82,13 +86,14 @@ async function cropImage(item) {
   );
 
   const format = outputFormat(item.fileName);
+  const direction = isBottom ? "하단" : "상단";
   const blob = await new Promise((resolve) =>
     canvas.toBlob(resolve, format.mime, format.mime === "image/jpeg" ? 0.94 : undefined),
   );
   if (!blob) throw new Error("이미지 저장에 실패했습니다.");
   return {
     data: new Uint8Array(await blob.arrayBuffer()),
-    fileName: `${stem(item.fileName)}_상단${item.cropTop}퍼센트제거${format.ext}`,
+    fileName: `${stem(item.fileName)}_${direction}${cropPercent}퍼센트제거${format.ext}`,
     blob,
   };
 }
@@ -99,15 +104,18 @@ function sorted(list) {
 
 function ImageCard({ item, onPatch, onSaveCrop }) {
   const state = STATES[item.state];
+  const isBottomCrop = item.state === "cropBottom";
+  const isCrop = item.state === "crop" || isBottomCrop;
+  const cropValue = isBottomCrop ? item.cropBottom : item.cropTop;
   return (
     <>
       <article className={`image-card ${state.tone}`}>
         <div className="image-wrap">
           <img src={item.url} alt={item.fileName} />
-          {item.state === "crop" && (
+          {isCrop && (
             <div
-              className="crop-mask"
-              style={{ height: `${item.cropTop}%` }}
+              className={isBottomCrop ? "crop-mask bottom" : "crop-mask"}
+              style={{ height: `${cropValue}%` }}
               aria-hidden="true"
             >
               잘라낼 영역
@@ -129,27 +137,43 @@ function ImageCard({ item, onPatch, onSaveCrop }) {
               </button>
             ))}
           </div>
-          {item.state === "crop" && (
+          {isCrop && (
             <div className="crop-control">
               <div>
-                <b>위에서 {item.cropTop}% 제거</b>
-                <span>모델 얼굴이 포함된 상단 전체를 잘라냅니다.</span>
+                <b>{isBottomCrop ? "아래" : "위"}에서 {cropValue}% 제거</b>
+                <span>
+                  {isBottomCrop
+                    ? "하단 중국어 문구나 불필요한 여백을 잘라냅니다."
+                    : "모델 얼굴이 포함된 상단 전체를 잘라냅니다."}
+                </span>
               </div>
               <input
-                aria-label={`${item.fileName} 상단 크롭 비율`}
+                aria-label={`${item.fileName} ${isBottomCrop ? "하단" : "상단"} 크롭 비율`}
                 type="range"
                 min="5"
                 max="45"
                 step="1"
-                value={item.cropTop}
-                onChange={(event) => onPatch(item.id, { cropTop: Number(event.target.value) })}
+                value={cropValue}
+                onChange={(event) =>
+                  onPatch(
+                    item.id,
+                    isBottomCrop
+                      ? { cropBottom: Number(event.target.value) }
+                      : { cropTop: Number(event.target.value) },
+                  )
+                }
               />
               <div className="presets">
                 {[10, 15, 20, 25, 30].map((value) => (
                   <button
                     type="button"
                     key={value}
-                    onClick={() => onPatch(item.id, { cropTop: value })}
+                    onClick={() =>
+                      onPatch(
+                        item.id,
+                        isBottomCrop ? { cropBottom: value } : { cropTop: value },
+                      )
+                    }
                   >
                     {value}%
                   </button>
@@ -170,10 +194,11 @@ function ImageCard({ item, onPatch, onSaveCrop }) {
         .image-wrap{position:relative;width:100%;aspect-ratio:4/5;background:#0e1213;display:flex;align-items:center;justify-content:center;overflow:hidden}
         .image-wrap img{display:block;width:100%;height:100%;max-width:100%;object-fit:contain}
         .crop-mask{position:absolute;left:0;top:0;width:100%;display:grid;place-items:center;background:rgba(190,135,24,.46);border-bottom:2px dashed #ffd981;font-weight:900;color:white;text-shadow:0 1px 2px #000}
+        .crop-mask.bottom{top:auto;bottom:0;border-bottom:none;border-top:2px dashed #ffd981}
         .exclude-mask{position:absolute;inset:0;display:grid;place-items:center;background:rgba(64,20,24,.62);font-size:24px;font-weight:900}
         .card-body{padding:10px}
         .file-name{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
-        .state-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-top:8px}
+        .state-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-top:8px}
         .state-buttons button{padding:8px 3px;min-height:38px;font-size:11px}
         .state-buttons button.selected{background:#eef2f3;color:#121719;border-color:#eef2f3;font-weight:900}
         .crop-control{border-top:1px solid #333d41;margin-top:10px;padding-top:10px}
@@ -242,7 +267,7 @@ export default function ProductRegistrationHelperPage() {
           acc[item.state] += 1;
           return acc;
         },
-        { main: 0, detail: 0, keep: 0, crop: 0, exclude: 0 },
+        { main: 0, detail: 0, keep: 0, crop: 0, cropBottom: 0, exclude: 0 },
       ),
     [activeItems],
   );
@@ -263,6 +288,7 @@ export default function ProductRegistrationHelperPage() {
         url: URL.createObjectURL(new Blob([entry.data], { type: mimeFromName(entry.fileName) })),
         state: "keep",
         cropTop: 20,
+        cropBottom: 20,
       }))
       .sort((a, b) => collator.compare(a.name, b.name));
 
@@ -398,7 +424,7 @@ export default function ProductRegistrationHelperPage() {
       for (let index = 0; index < list.length; index += 1) {
         const item = list[index];
         const processed =
-          item.state === "crop"
+          item.state === "crop" || item.state === "cropBottom"
             ? await cropImage(item)
             : { data: item.data, fileName: item.fileName };
         const order = String(index + 1).padStart(2, "0");
@@ -419,18 +445,24 @@ export default function ProductRegistrationHelperPage() {
     try {
       const root = await window.showDirectoryPicker({ mode: "readwrite" });
       setBusy(true);
-      setNotice("정리한 이미지를 선택한 폴더에 저장하는 중...");
+      const productFolderName = baseName(zipName).trim() || "VVIC";
+      setNotice(`${productFolderName} 폴더에 정리 이미지를 저장하는 중...`);
       const output = await buildOutputFiles();
+      const productFolder = await root.getDirectoryHandle(productFolderName, {
+        create: true,
+      });
       for (const file of output.files) {
         const [folderName, fileName] = file.path.split("/");
-        const folder = await root.getDirectoryHandle(folderName, { create: true });
+        const folder = await productFolder.getDirectoryHandle(folderName, {
+          create: true,
+        });
         const handle = await folder.getFileHandle(fileName, { create: true });
         const writable = await handle.createWritable();
         await writable.write(file.data);
         await writable.close();
       }
       setNotice(
-        `폴더 저장 완료: 01_메인_GIF용 ${output.mainCount}장 / 02_상세이미지 ${output.detailCount}장`,
+        `폴더 저장 완료: ${productFolderName} / 01_메인_GIF용 ${output.mainCount}장 / 02_상세이미지 ${output.detailCount}장`,
       );
     } catch (error) {
       if (error?.name !== "AbortError") {
@@ -597,6 +629,7 @@ export default function ProductRegistrationHelperPage() {
             <div><span>메인·GIF용</span><b>{counts.main}</b></div>
             <div><span>상세이미지</span><b>{counts.detail}</b></div>
             <div><span>상단 크롭</span><b>{counts.crop}</b></div>
+            <div><span>하단 크롭</span><b>{counts.cropBottom}</b></div>
             <div><span>제외</span><b>{counts.exclude}</b></div>
           </section>
 
@@ -629,7 +662,7 @@ export default function ProductRegistrationHelperPage() {
               <div>
                 <span className="eyebrow">상세이미지</span>
                 <h2>상세페이지에 넣을 이미지</h2>
-                <p>중국어가 너무 많은 이미지는 제외하고, 얼굴이 보이면 상단 자르기를 사용합니다.</p>
+                <p>중국어가 너무 많은 이미지는 제외하고, 필요하면 상단·하단 자르기를 사용합니다.</p>
               </div>
               <b>{detailItems.length}장</b>
             </div>
@@ -706,7 +739,7 @@ export default function ProductRegistrationHelperPage() {
         .folder-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.folder-card{border:1px solid #364044;border-radius:15px;background:#171c1e;padding:14px}.folder-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.folder-top>div{display:flex;gap:8px;align-items:center}.folder-top>div span{color:#9da8ac;font-size:12px}.recommend{font-size:12px;padding:5px 8px;border:1px solid #3f4a4e;border-radius:999px;color:#cad1d3}
         .samples{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:12px 0}.samples img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;background:#0f1314}.role-select{display:flex;justify-content:space-between;align-items:center;gap:10px}.role-select span{color:#aeb7bb;font-size:13px}.role-select select{min-width:160px;padding:8px;border-radius:9px}
         .confirm-bar{display:flex;justify-content:space-between;gap:18px;align-items:center;margin:18px 0;padding:16px;border:1px solid #435055;border-radius:15px;background:#1b2224}.confirm-bar>div{display:flex;flex-direction:column;gap:4px}.confirm-bar span{color:#9da8ac;font-size:13px}.confirm-bar button{font-weight:900}.confirm-bar.bottom{margin-top:28px}
-        .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.summary div{padding:14px;border:1px solid #333d41;border-radius:13px;background:#171c1e}.summary span{display:block;color:#98a3a7;font-size:13px}.summary b{font-size:24px;display:block;margin-top:4px}.edit-actions{display:flex;justify-content:space-between;gap:10px;margin:12px 0}.action-pair{display:flex;gap:8px;flex-wrap:wrap}.export{background:#edf1f2;color:#111719;font-weight:900}
+        .summary{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0}.summary div{padding:14px;border:1px solid #333d41;border-radius:13px;background:#171c1e}.summary span{display:block;color:#98a3a7;font-size:13px}.summary b{font-size:24px;display:block;margin-top:4px}.edit-actions{display:flex;justify-content:space-between;gap:10px;margin:12px 0}.action-pair{display:flex;gap:8px;flex-wrap:wrap}.export{background:#edf1f2;color:#111719;font-weight:900}
         .image-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
         
         .size-reference{margin-top:26px;padding:15px;border:1px solid #394448;border-radius:14px;background:#151a1c}.size-reference summary{cursor:pointer;font-weight:900}.size-reference p{color:#aeb7bb}.reference-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.reference-grid img{width:100%;max-height:360px;object-fit:contain;border-radius:10px;background:#0e1213}

@@ -59,6 +59,8 @@ test("product registration helper keeps desktop folder and ZIP processing local 
   assert.match(page, /webkitdirectory/);
   assert.match(page, /showDirectoryPicker/);
   assert.match(page, /정리 폴더 저장/);
+  assert.match(page, /productFolderName/);
+  assert.match(page, /getDirectoryHandle\(productFolderName/);
   assert.match(page, /ZIP 저장/);
   assert.match(page, /이미지 정리는 로컬 처리/);
   assert.match(page, /폴더명은 공급처마다 다를 수 있어 자동 확정하지 않습니다/);
@@ -67,6 +69,8 @@ test("product registration helper keeps desktop folder and ZIP processing local 
   assert.match(page, /사이즈 참고/);
   assert.match(page, /무시/);
   assert.match(page, /상단 자르기/);
+  assert.match(page, /하단 자르기/);
+  assert.match(page, /cropBottom/);
   assert.match(page, /grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/);
   assert.match(page, /@media\(max-width:850px\)\{\.image-grid\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\)\}/);
   assert.match(page, /ChatGPT 분석/);
