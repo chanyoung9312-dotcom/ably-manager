@@ -128,7 +128,6 @@ function ImageCard({ item, onPatch, onSaveCrop }) {
           <div className="state-buttons" aria-label={`${item.fileName} 처리 선택`}>
             {Object.entries(STATES).map(([key, value]) => {
               const selected = item.state === key;
-              const label = key === "exclude" && selected ? "제외 취소" : value.label;
               return (
                 <button
                   type="button"
@@ -140,7 +139,7 @@ function ImageCard({ item, onPatch, onSaveCrop }) {
                     })
                   }
                 >
-                  {label}
+                  {value.label}
                 </button>
               );
             })}
