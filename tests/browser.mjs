@@ -234,7 +234,7 @@ try {
   await firstImageCard.scrollIntoViewIfNeeded();
   const editorScrollTop = await page.evaluate(() => window.scrollY);
   assert.ok(editorScrollTop > 100, "image editor should be below the page top");
-  for (const stateLabel of ["상단 자르기", "사용", "제외", "사용"]) {
+  for (const stateLabel of ["상단 자르기", "하단 자르기", "제외", "사용"]) {
     await firstImageCard.getByRole("button", { name: stateLabel, exact: true }).click();
     await page.waitForTimeout(50);
     const scrollTop = await page.evaluate(() => window.scrollY);
@@ -243,12 +243,29 @@ try {
       `image state button ${stateLabel} must not jump the page to the top`,
     );
   }
+
+  await firstImageCard.getByRole("button", { name: "하단 자르기", exact: true }).click();
+  await firstImageCard.getByLabel("商品主图_1.png 하단 크롭 비율").waitFor();
+  const bottomMaskPosition = await firstImageCard.locator(".crop-mask.bottom").evaluate((node) => {
+    const style = getComputedStyle(node);
+    return { top: style.top, bottom: style.bottom, borderTopWidth: style.borderTopWidth };
+  });
+  assert.notEqual(bottomMaskPosition.bottom, "auto");
+  assert.equal(bottomMaskPosition.borderTopWidth, "2px");
+  await firstImageCard.getByRole("button", { name: "30%", exact: true }).click();
+  assert.equal(
+    await firstImageCard.getByLabel("商品主图_1.png 하단 크롭 비율").inputValue(),
+    "30",
+  );
+  await page.getByText("하단 크롭", { exact: true }).waitFor();
+
   const registrationDownload = page.waitForEvent("download");
   await page.getByRole("button", { name: "ZIP 저장", exact: true }).first().click();
   const registrationFile = await registrationDownload;
   const registrationEntries = parseZipEntries(new Uint8Array(await readFile(await registrationFile.path())));
   assert.equal(registrationEntries.length, 2);
   assert.ok(registrationEntries.some((entry) => entry.name.startsWith("01_메인_GIF용/")));
+  assert.ok(registrationEntries.some((entry) => entry.name.includes("하단30퍼센트제거")));
   assert.ok(registrationEntries.some((entry) => entry.name.startsWith("02_상세이미지/")));
   assert.equal(registrationEntries.some((entry) => entry.name.includes("颜色属性图")), false);
   assert.equal(registrationEntries.some((entry) => entry.name.includes("尺码图")), false);
