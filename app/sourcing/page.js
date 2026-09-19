@@ -239,7 +239,7 @@ export default function SourcingPage() {
 
       {(!summary.coverageVerified || !summary.exposureAvailable || !summary.testDurationAvailable) && (
         <div className="data-caution" role="note">
-          주문 수집 완전성·노출수·테스트 기간이 모두 확인된 상태가 아닙니다. 최근 증감과 주문 0건은 관측값으로만 보고, 실패나 비추천으로 해석하지 않습니다.
+          주문 수집 완전성·노출수·테스트 기간이 모두 확인된 상태가 아닙니다. 최근 증감과 주문 0건은 관측값으로만 보고, 실패나 낮은 상품성으로 단정하지 않습니다.
         </div>
       )}
 
