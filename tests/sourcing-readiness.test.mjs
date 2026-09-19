@@ -15,6 +15,7 @@ test("coverage is verified only when it includes the previous 30-day comparison 
   const ready = assessSourcingReadiness({
     asOf,
     coverageStart: "2026-04-15",
+    coverageThrough: asOf,
     periods: periods("2026-04-15"),
   });
   assert.equal(ready.recentComparisonStart, "2026-07-22");
@@ -24,8 +25,22 @@ test("coverage is verified only when it includes the previous 30-day comparison 
   const partial = assessSourcingReadiness({
     asOf,
     coverageStart: "2026-09-01",
+    coverageThrough: asOf,
     periods: periods("2026-09-01"),
   });
+  assert.equal(partial.coverage.status, "partial");
+  assert.equal(partial.coverage.recentWindowsComplete, false);
+});
+
+test("a sufficient start date alone does not prove current collection completeness", () => {
+  const partial = assessSourcingReadiness({
+    asOf,
+    coverageStart: "2026-04-15",
+    coverageThrough: null,
+    periods: periods("2026-04-15"),
+  });
+  assert.equal(partial.coverage.historySufficient, true);
+  assert.equal(partial.coverage.currentSufficient, false);
   assert.equal(partial.coverage.status, "partial");
   assert.equal(partial.coverage.recentWindowsComplete, false);
 });
@@ -34,6 +49,7 @@ test("missing, malformed and future coverage never become verified", () => {
   const missing = assessSourcingReadiness({
     asOf,
     coverageStart: null,
+    coverageThrough: null,
     periods: periods("2000-01-01"),
   });
   assert.equal(missing.coverage.status, "missing");
@@ -41,6 +57,7 @@ test("missing, malformed and future coverage never become verified", () => {
   const malformed = assessSourcingReadiness({
     asOf,
     coverageStart: "not-a-date",
+    coverageThrough: asOf,
     periods: periods("2000-01-01"),
   });
   assert.equal(malformed.coverage.status, "invalid");
@@ -48,6 +65,7 @@ test("missing, malformed and future coverage never become verified", () => {
   const future = assessSourcingReadiness({
     asOf,
     coverageStart: "2027-01-01",
+    coverageThrough: asOf,
     periods: periods("2000-01-01"),
   });
   assert.equal(future.coverage.status, "invalid");
@@ -57,6 +75,7 @@ test("registration and season-end dates are descriptive only and keep anomalies 
   const readiness = assessSourcingReadiness({
     asOf,
     coverageStart: "2026-04-15",
+    coverageThrough: asOf,
     periods: periods("2026-04-15"),
     products: [
       { registeredAt: "2026-08-01", seasonEnd: "2026-10-01" },
@@ -85,6 +104,7 @@ test("upstream ledger and product issues are counted without silently changing s
   const readiness = assessSourcingReadiness({
     asOf,
     coverageStart: "2026-04-15",
+    coverageThrough: asOf,
     periods: periods("2026-04-15"),
     issues: [
       { scope: "ledger", message: "ledger" },
@@ -107,7 +127,7 @@ test("live adapter marks collection completeness verified only for sufficient co
     issues: [],
   };
   const verified = buildLiveSourcingDiagnostics(
-    { ...base, coverageStart: "2026-04-15" },
+    { ...base, coverageStart: "2026-04-15", coverageThrough: asOf },
     { today: asOf },
   );
   assert.equal(verified.snapshot.collectionCompleteness, "verified");
@@ -115,7 +135,7 @@ test("live adapter marks collection completeness verified only for sufficient co
   assert.equal(verified.sourceMeta.readiness.coverage.status, "verified");
 
   const partial = buildLiveSourcingDiagnostics(
-    { ...base, coverageStart: "2026-09-01" },
+    { ...base, coverageStart: "2026-09-01", coverageThrough: asOf },
     { today: asOf },
   );
   assert.equal(partial.snapshot.collectionCompleteness, "unknown");
@@ -127,6 +147,7 @@ test("future configured coverage is quarantined instead of crashing the live scr
   const diagnostics = buildLiveSourcingDiagnostics(
     {
       coverageStart: "2027-01-01",
+      coverageThrough: asOf,
       mdProducts: [{ row: 2, productNo: "p1", product: "니트" }],
       orders: [],
       issues: [],
