@@ -7,6 +7,7 @@ import { buildSourcingCandidateView } from "../../../lib/sourcing-candidate-view
 import { buildSourcingCandidateEvidence } from "../../../lib/sourcing-evidence.mjs";
 import { buildSourcingReviewBriefs } from "../../../lib/sourcing-briefs.mjs";
 import { buildSourcingReviewBriefView } from "../../../lib/sourcing-brief-view.mjs";
+import { resolveSourcingValidation } from "../../../lib/sourcing-validation.mjs";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,8 @@ async function handleGET() {
   try {
     const dashboard = await loadDashboard();
     const diagnostics = buildLiveSourcingDiagnostics(dashboard);
-    const report = buildSourcingView(diagnostics);
+    const validationReport = resolveSourcingValidation({ diagnostics });
+    const report = buildSourcingView(diagnostics, validationReport);
     const candidates = buildSourcingCandidates({ diagnostics });
     const evidence = buildSourcingCandidateEvidence({
       diagnostics,
@@ -28,6 +30,7 @@ async function handleGET() {
     return Response.json(
       {
         report,
+        validationReport,
         candidateReport,
         briefReport,
         source: "live-taxonomy-commerce-sourcing-signals-candidates-briefs",
