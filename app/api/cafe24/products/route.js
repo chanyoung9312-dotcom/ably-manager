@@ -55,7 +55,10 @@ function optionGroups(value) {
 }
 
 function productNoFrom(payload) {
-  const value = payload?.product?.product_no ?? payload?.product_no;
+  const value =
+    payload?.product?.product_no ??
+    payload?.resource?.product_no ??
+    payload?.product_no;
   return value == null || value === "" ? "" : String(value);
 }
 
@@ -175,7 +178,7 @@ async function handlePOST(req) {
         },
       };
 
-    const product = verified.data?.product || {};
+    const product = verified.data?.product || verified.data?.resource || {};
     if (product.display !== "F" || product.selling !== "F")
       return {
         status: 207,
