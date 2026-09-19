@@ -126,7 +126,7 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
     setConnectUrl("");
     setStatus(
       parsed.productName
-        ? "상품정보를 채웠습니다. 아래 내용과 가격을 확인한 뒤 임시등록하세요."
+        ? "상품정보를 채웠습니다. 아래 내용과 가격을 확인한 뒤 등록하세요."
         : "상품명을 찾지 못했습니다. 등록용 블록 형식을 확인해주세요.",
     );
   }
@@ -204,7 +204,7 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
       const mainImagePaths = uploaded.slice(0, main.length);
       const detailImagePaths = uploaded.slice(main.length);
 
-      setStatus("이미지 업로드 완료 · 카페24에 진열안함/판매안함 상품을 생성하는 중...");
+      setStatus("이미지 업로드 완료 · 카페24에 진열함/판매함 상품을 생성하는 중...");
       const { response, data } = await postJson("/api/cafe24/products", {
         productName: form.productName.trim(),
         price: Number(numberText(form.price)),
@@ -227,10 +227,10 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
       }
       setResult(data);
       setStatus(
-        `카페24 임시등록 완료 · 상품번호 ${data.productNo} · 진열안함 / 판매안함`,
+        `카페24 등록 완료 · 상품번호 ${data.productNo} · 진열함 / 판매함`,
       );
     } catch (error) {
-      setStatus(error.message || "카페24 임시등록에 실패했습니다.");
+      setStatus(error.message || "카페24 등록에 실패했습니다.");
     } finally {
       setBusy(false);
     }
@@ -241,13 +241,13 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
       <div className="panel-head">
         <div>
           <span className="eyebrow">4. 한 번 붙여넣고 등록</span>
-          <h2>카페24 임시등록</h2>
+          <h2>카페24 등록</h2>
           <p>
             ChatGPT 답변의 OARS 등록용 블록을 한 번 붙여넣고 최종 확인합니다.
             앞에서 정리한 이미지는 다시 고르지 않습니다.
           </p>
         </div>
-        <span className="safe">항상 진열안함 · 판매안함</span>
+        <span className="safe">기본 진열함 · 판매함</span>
       </div>
 
       <div className="connection-row">
@@ -368,7 +368,7 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
         </div>
         <div>
           <span>등록 상태</span>
-          <b>진열안함 · 판매안함</b>
+          <b>진열함 · 판매함</b>
         </div>
       </div>
 
@@ -395,7 +395,7 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
           <b>카페24 상품번호 {result.productNo || "확인 필요"}</b>
           <span>
             {result.ok
-              ? "임시등록이 끝났습니다. 카페24 관리자에서 확인한 뒤 다음 단계로 진행하세요."
+              ? "등록이 끝났습니다. 카페24 관리자에서 확인한 뒤 다음 단계로 진행하세요."
               : "상품은 이미 생성됐습니다. 중복 방지를 위해 등록 버튼을 다시 누르지 마세요."}
           </span>
         </div>
@@ -407,12 +407,11 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
         disabled={busy || Boolean(result?.productCreated)}
         onClick={registerProduct}
       >
-        {busy ? "카페24 등록 중..." : "카페24 임시등록"}
+        {busy ? "카페24 등록 중..." : "카페24 등록"}
       </button>
 
       <p className="footnote">
-        등록 버튼을 눌러도 바로 판매되지 않습니다. OARS는 상품 생성 요청에 진열안함·판매안함을 강제로 적용하고,
-        생성 후 상태를 다시 확인합니다.
+        OARS는 상품 생성 요청을 진열함·판매함으로 등록하고, 생성 후 상태를 다시 확인합니다.
       </p>
 
       <style jsx>{`
