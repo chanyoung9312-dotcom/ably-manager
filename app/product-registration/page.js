@@ -126,16 +126,24 @@ function ImageCard({ item, onPatch, onSaveCrop }) {
         <div className="card-body">
           <b className="file-name" title={item.fileName}>{item.fileName}</b>
           <div className="state-buttons" aria-label={`${item.fileName} 처리 선택`}>
-            {Object.entries(STATES).map(([key, value]) => (
-              <button
-                type="button"
-                key={key}
-                className={item.state === key ? "selected" : ""}
-                onClick={() => onPatch(item.id, { state: key })}
-              >
-                {value.label}
-              </button>
-            ))}
+            {Object.entries(STATES).map(([key, value]) => {
+              const selected = item.state === key;
+              const label = key === "exclude" && selected ? "제외 취소" : value.label;
+              return (
+                <button
+                  type="button"
+                  key={key}
+                  className={selected ? "selected" : ""}
+                  onClick={() =>
+                    onPatch(item.id, {
+                      state: key === "exclude" && selected ? "keep" : key,
+                    })
+                  }
+                >
+                  {label}
+                </button>
+              );
+            })}
           </div>
           {isCrop && (
             <div className="crop-control">
