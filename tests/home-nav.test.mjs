@@ -63,10 +63,11 @@ test("product registration helper keeps desktop folder and ZIP processing local 
   assert.match(page, /사이즈 참고/);
   assert.match(page, /무시/);
   assert.match(page, /상단 자르기/);
-  assert.match(page, /상품정보 생성 준비/);
-  assert.match(page, /ChatGPT에서 상품정보 만들기/);
-  assert.match(page, /ChatGPT 결과 붙여넣기/);
-  assert.match(page, /카페24 등록용 상품정보/);
+  assert.match(page, /ChatGPT 분석/);
+  assert.match(page, /다음은 지금 하던 방식 그대로/);
+  assert.match(page, /정리한 메인·상세 이미지를 ChatGPT에 올리면/);
+  assert.doesNotMatch(page, /ChatGPT 결과 붙여넣기/);
+  assert.doesNotMatch(page, /상품정보 불러오기/);
   assert.match(page, /buildStoredZip/);
   assert.doesNotMatch(page, /fetch\(/);
 });
