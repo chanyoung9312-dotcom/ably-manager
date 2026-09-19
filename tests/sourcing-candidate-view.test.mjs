@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { diagnoseSourcingSignals } from "../lib/sourcing-signals.mjs";
 import { buildSourcingCandidates } from "../lib/sourcing-candidates.mjs";
+import { buildSourcingCandidateEvidence } from "../lib/sourcing-evidence.mjs";
 import {
   buildSourcingCandidateView,
   CANDIDATE_LANE_COPY,
@@ -14,7 +15,9 @@ const fixture = JSON.parse(
 );
 const diagnostics = diagnoseSourcingSignals(fixture);
 const candidateResult = buildSourcingCandidates({ diagnostics });
-const view = buildSourcingCandidateView(candidateResult);
+const catalog = fixture.products.filter((product) => product.productNo).map((product) => ({ productNo: product.productNo, product: product.productName }));
+const evidenceResult = buildSourcingCandidateEvidence({ diagnostics, candidates: candidateResult, products: catalog });
+const view = buildSourcingCandidateView(candidateResult, evidenceResult);
 
 const lane = (key) => {
   const found = view.lanes.find((item) => item.key === key);
@@ -44,6 +47,7 @@ test("candidate view explicitly states that it is not ranking or purchase instru
     scoreUsed: false,
     rankingUsed: false,
     automaticAction: false,
+    customerDataExposed: false,
   });
 });
 
@@ -112,10 +116,32 @@ test("lane sorting uses observations only and exposes no numeric rank", () => {
   }
 });
 
+test("candidate cards expose readable product evidence without raw role enums", () => {
+  const longDress = card("hit_reference", "secondaryCategory:롱원피스");
+  assert.equal(longDress.evidence.products[0].productName, "체형 커버 스트라이프 오버핏 롱 원피스");
+  assert.equal(longDress.evidence.products[0].all.Q, 113);
+  assert.ok(longDress.evidence.products[0].roles.some((role) => role.label === "TOP1 기여 상품"));
+  assert.ok(!longDress.evidence.products[0].roles.some((role) => role.label === "top1_contributor"));
+});
+
+test("missing catalog names use the product number instead of inventing a title", () => {
+  const missingEvidence = buildSourcingCandidateEvidence({
+    diagnostics,
+    candidates: candidateResult,
+    products: [],
+  });
+  const next = buildSourcingCandidateView(candidateResult, missingEvidence);
+  const longDress = next.lanes.flatMap((item) => item.items).find(
+    (item) => item.groupId === "secondaryCategory:롱원피스",
+  );
+  assert.match(longDress.evidence.products[0].productName, /^상품번호 /);
+  assert.equal(longDress.evidence.products[0].catalogStatusLabel, "상품명 미연결");
+});
+
 test("unknown internal flags are not leaked as raw enums", () => {
   const synthetic = structuredClone(candidateResult);
   synthetic.items[0].cautionFlags = ["not_a_real_ui_flag"];
-  const next = buildSourcingCandidateView(synthetic);
+  const next = buildSourcingCandidateView(synthetic, evidenceResult);
   const first = next.lanes.flatMap((item) => item.items).find(
     (item) => item.groupId === synthetic.items[0].groupId,
   );
