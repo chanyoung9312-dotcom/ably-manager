@@ -48,9 +48,14 @@ test("feature pages rely on the single global home action", () => {
 });
 
 
-test("product registration helper keeps VVIC ZIP processing local and human-confirmed", () => {
+test("product registration helper keeps desktop folder and ZIP processing local and human-confirmed", () => {
   const page = fs.readFileSync(new URL("../app/product-registration/page.js", import.meta.url), "utf8");
-  assert.match(page, /VVIC ZIP 정리 도우미/);
+  assert.match(page, /VVIC 상품 이미지 정리 도우미/);
+  assert.match(page, /압축 푼 상품 폴더 열기/);
+  assert.match(page, /webkitdirectory/);
+  assert.match(page, /showDirectoryPicker/);
+  assert.match(page, /정리 폴더 저장/);
+  assert.match(page, /ZIP 저장/);
   assert.match(page, /외부 업로드 없음/);
   assert.match(page, /폴더명은 공급처마다 다를 수 있어 자동 확정하지 않습니다/);
   assert.match(page, /메인·GIF용/);
@@ -58,7 +63,6 @@ test("product registration helper keeps VVIC ZIP processing local and human-conf
   assert.match(page, /사이즈 참고/);
   assert.match(page, /무시/);
   assert.match(page, /상단 자르기/);
-  assert.match(page, /정리 완료 ZIP 저장/);
   assert.match(page, /상품정보 생성 준비/);
   assert.match(page, /ChatGPT에서 상품정보 만들기/);
   assert.match(page, /ChatGPT 결과 붙여넣기/);
