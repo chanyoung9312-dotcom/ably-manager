@@ -451,7 +451,7 @@ export default function ProductRegistrationHelperPage() {
             사람이 이미지를 확인한 뒤 메인·GIF용과 상세이미지 두 폴더로 바로 저장합니다.
           </p>
         </div>
-        <div className="privacy">추가 비용 0원 · 외부 업로드 없음</div>
+        <div className="privacy">추가 비용 0원 · 이미지 정리는 로컬 처리</div>
       </header>
 
       <section className="flow">
