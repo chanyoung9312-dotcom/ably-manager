@@ -6,6 +6,7 @@ const menu = [
   ["주문·배송", "/?tool=sms"],
   ["매출", "/dashboard"],
   ["상품 분석", "/analysis"],
+  ["소싱 진단", "/sourcing"],
   ["재고", "/products"],
   ["상품 매칭", "/product-match"],
   ["우체국 엑셀", "/?tool=post"],
