@@ -222,6 +222,7 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
 
 test("the screen exposes details, shared evidence, filters, and mobile one-column cards", () => {
   const page = fs.readFileSync(new URL("../app/sourcing/page.js", import.meta.url), "utf8");
+  const researchView = fs.readFileSync(new URL("../lib/sourcing-research-view.mjs", import.meta.url), "utf8");
   assert.match(page, />자세히 보기</);
   assert.match(page, />근거 상품 공유</);
   assert.match(page, /최근 활성 상품 수/);
