@@ -179,7 +179,7 @@ async function handlePOST(req) {
       };
 
     const product = verified.data?.product || verified.data?.resource || {};
-    if (product.display !== "F" || product.selling !== "F")
+    if (product.display !== "T" || product.selling !== "T")
       return {
         status: 207,
         data: {
@@ -188,7 +188,7 @@ async function handlePOST(req) {
           productNo,
           stage: "safety",
           error:
-            "상품은 생성됐지만 진열안함·판매안함 상태를 확인하지 못했습니다. 카페24 관리자에서 즉시 상태를 확인해주세요.",
+            "상품은 생성됐지만 진열함·판매함 상태를 확인하지 못했습니다. 카페24 관리자에서 상태를 확인해주세요.",
           display: product.display,
           selling: product.selling,
         },

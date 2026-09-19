@@ -140,13 +140,13 @@ test("Cafe24 product image upload sends browser image data", async () => {
   }
 });
 
-test("Cafe24 product create always forces hidden and not selling", async () => {
+test("Cafe24 product create always forces visible and selling", async () => {
   const old = global.fetch;
   let body;
   global.fetch = async (url, opts) => {
     body = JSON.parse(opts.body);
     return Response.json({
-      product: { product_no: 1234, display: "F", selling: "F" },
+      product: { product_no: 1234, display: "T", selling: "T" },
     });
   };
   try {
@@ -158,8 +158,8 @@ test("Cafe24 product create always forces hidden and not selling", async () => {
       selling: "T",
     });
     assert.equal(body.request.product_name, "테스트 상품");
-    assert.equal(body.request.display, "F");
-    assert.equal(body.request.selling, "F");
+    assert.equal(body.request.display, "T");
+    assert.equal(body.request.selling, "T");
   } finally {
     global.fetch = old;
   }
@@ -199,7 +199,7 @@ test("Cafe24 product verification embeds options", async () => {
   global.fetch = async (url) => {
     requestUrl = String(url);
     return Response.json({
-      product: { product_no: 1234, display: "F", selling: "F" },
+      product: { product_no: 1234, display: "T", selling: "T" },
     });
   };
   try {
