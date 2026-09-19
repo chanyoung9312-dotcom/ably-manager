@@ -429,6 +429,72 @@ test("shipment excludes returned/cancelled/completed and missing shipping header
   assert.equal(postalRows([sh, line("배송중")]).length, 1);
   assert.throws(() => postalRows([["상품주문번호", "주문번호", "주문상태"]]));
 });
+test("MD parser exposes registration-date cell coordinates without changing the stored date", () => {
+  const md = [
+    ["상품명"],
+    ["원피스"],
+    ["상품번호"],
+    ["p1"],
+    ["상품등록일"],
+    [""],
+  ];
+  const p = parseMd(md)[0];
+  assert.equal(p.registeredAt, "");
+  assert.equal(p.registeredAtRow, 6);
+  assert.equal(p.registeredAtCol, 0);
+});
+
+test("product matching can confirm a missing MD registration date from the ABLY product list", () => {
+  const md = [
+    ["상품명"],
+    ["[벨트포함] 원피스"],
+    ["상품번호"],
+    ["p1"],
+    ["상품등록일"],
+    [""],
+  ];
+  const p = matchProducts(md, [{
+    productNo: "p1",
+    name: "[벨트포함] 원피스",
+    registeredAt: "2026-08-01",
+  }])[0];
+  assert.equal(p.status, "기존값 유지");
+  assert.deepEqual(p.registration, {
+    status: "확정",
+    value: "2026-08-01",
+    reason: "에이블리 상품목록의 동일 상품 등록일",
+    cell: "A6",
+  });
+});
+
+test("registration-date matching never overwrites existing MD dates or trusts an ID/name mismatch", () => {
+  const existing = [
+    ["상품명"], ["원피스"], ["상품번호"], ["p1"], ["상품등록일"], ["2026-07-01"],
+  ];
+  const kept = matchProducts(existing, [{
+    productNo: "p1", name: "원피스", registeredAt: "2026-08-01",
+  }])[0];
+  assert.equal(kept.registration.status, "기존값 유지");
+  assert.equal(kept.registration.value, "2026-07-01");
+
+  const mismatch = [
+    ["상품명"], ["원피스"], ["상품번호"], ["p1"], ["상품등록일"], [""],
+  ];
+  const blocked = matchProducts(mismatch, [{
+    productNo: "p1", name: "다른 상품", registeredAt: "2026-08-01",
+  }])[0];
+  assert.equal(blocked.registration.status, "확인 필요");
+  assert.equal(blocked.registration.value, "");
+});
+
+test("conflicting ABLY registration dates for the same product number are rejected", () => {
+  const md = [["상품명"], ["원피스"], ["상품번호"], [""], ["상품등록일"], [""]];
+  assert.throws(() => matchProducts(md, [
+    { productNo: "p1", name: "원피스", registeredAt: "2026-08-01" },
+    { productNo: "p1", name: "원피스", registeredAt: "2026-08-02" },
+  ]), /상품등록일이 다릅니다/);
+});
+
 test("product matching preserves bracket variants, refuses fuzzy and duplicate names", () => {
   const md = [["상품명"], ["[벨트포함] 원피스"], ["상품번호"], [""]];
   assert.equal(
