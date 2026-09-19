@@ -11,7 +11,8 @@ Node 22 이상. `npm ci`, `npm test`, `npm run build` 순서로 확인한다. �
 - `GOOGLE_SHEET_ID`: 실제 운영 시트 ID. 미설정은 기존 프로젝트의 시트 ID 사용.
 - `CAFE24_REDIRECT_URI`: 배포 도메인의 `/api/cafe24/callback`. Cafe24 앱 등록값과 정확히 일치해야 한다.
 - `OARS_SALES_PRICE_MODE`: 판매가의 정의를 검수한 후 `line` 또는 `unit`. 미설정은 기존 행 합계를 유지하고 경고.
-- `OARS_ORDER_COVERAGE_START`: 해당 날짜부터 주문이 전부 수집되었다고 확인한 날짜. 단순 최소 결제일을 넣지 않는다. 미설정이면 기간 비교·사입 근거 부족 표시.
+- `OARS_ORDER_COVERAGE_START`: 해당 날짜부터 주문이 전부 수집되었다고 확인한 시작일. 단순 최소 결제일을 넣지 않는다.
+- `OARS_ORDER_COVERAGE_THROUGH`: 주문 수집 완전성이 확인된 마지막 날짜. 당일 주문 수집이 아직 진행 중이면 오늘 날짜를 넣지 않는다. START와 THROUGH가 최근 비교 전체를 덮을 때만 수집 범위를 확인된 것으로 본다.
 
 ## 배포 전 읽기 검수
 
