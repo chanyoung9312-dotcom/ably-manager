@@ -66,6 +66,33 @@ try {
   const candidateResult = buildSourcingCandidates({ diagnostics: sourcingDiagnostics });
   const candidateEvidence = buildSourcingCandidateEvidence({ diagnostics: sourcingDiagnostics, candidates: candidateResult, products: d.mdProducts });
   const candidateReport = buildSourcingCandidateView(candidateResult, candidateEvidence);
+  const briefReport = {
+    count: 1,
+    confidenceLabel: "현재 관측 기준",
+    title: "이번 소싱 검토 브리프",
+    description: "브라우저 회귀용 검토 브리프",
+    notice: "추천 점수·추천 순위·사입 수량이 아니라 현재 관측 데이터의 검토 요약입니다.",
+    briefs: [{
+      id: "brief:test",
+      label: "숏·하프팬츠",
+      headline: "소싱 검토 브리프",
+      confidenceLabel: "현재 관측 기준",
+      facts: {
+        linkedProducts: 27,
+        reactingProducts: 8,
+        repeatedDateProducts: 2,
+        recent30ActiveProducts: 3,
+        top2ShareLabel: "50.0%",
+      },
+      summary: "27개 연결 상품 중 8개에서 반응이 확인됐습니다.",
+      combinationSummary: "반복 근거가 확인된 조합은 아직 없습니다.",
+      concentrationNote: null,
+      evidenceProducts: [{ productNo: "p1", productName: "테스트 원피스", Q: 3, recent30Q: 3 }],
+      cautions: [],
+      sharedEvidence: false,
+      note: "자동 소싱 결정이 아닙니다.",
+    }],
+  };
   if (process.env.AGENT_BROWSER_CLI) {
     const cli = (...args) => execFileSync(process.execPath, [process.env.AGENT_BROWSER_CLI, ...args], { env: { ...process.env, AGENT_BROWSER_EXECUTABLE_PATH: process.env.BROWSER_EXECUTABLE_PATH }, encoding: "utf8", timeout: 30000 });
     try {
@@ -91,7 +118,7 @@ try {
   async function applyFont() { if (fontCss) { await page.addStyleTag({ content: fontCss }); await page.evaluate(() => document.fonts.ready); } }
   await page.route("**/api/oars-analysis", (r) => r.fulfill({ json: { report } }));
   await page.route("**/api/dashboard-data", (r) => r.fulfill({ json: d }));
-  await page.route("**/api/sourcing-signals", (r) => r.fulfill({ json: { report: sourcingReport, candidateReport } }));
+  await page.route("**/api/sourcing-signals", (r) => r.fulfill({ json: { report: sourcingReport, candidateReport, briefReport } }));
   const ship = { productOrderNo: "po0", orderNo: "order1", name: "테스트고객", phone: "01000000000", zip: "01234", address: "서울시 테스트로 10", detail: ".", rowNumber: 2, shipping: "우체국 배송" };
   ship.snapshot = shippingSnapshot(ship);
   await page.route("**/api/google-orders", (r) => r.fulfill({ json: { rows: [ship] } }));
@@ -112,6 +139,8 @@ try {
         await page.getByText("판정 준비 상태", { exact: true }).waitFor();
         await page.getByText("판정 준비 상태", { exact: true }).click();
         await page.getByText("상품 노출", { exact: true }).waitFor();
+        await page.getByRole("heading", { name: "이번 소싱 검토 브리프", exact: true }).waitFor();
+        await page.getByText("품목 수준 근거", { exact: true }).first().waitFor();
         await page.getByRole("heading", { name: "소싱 검토 분류", exact: true }).waitFor();
         await page.getByText("소싱 검토 후보", { exact: true }).first().waitFor();
         const allEvidence = page.locator(".candidate-evidence > summary");
