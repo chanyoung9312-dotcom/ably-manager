@@ -193,14 +193,13 @@ export default function SourcingPage() {
       (category === "all" || card.filterBucket === category)
       && (state === "all" || card.primaryState === state),
     );
-    const stateOrder = { exploration_signal: 0, concentration_dependent: 1, insufficient_data: 2 };
     source.sort((a, b) => {
       if (sort === "reaction") return b.sort.reactionProducts - a.sort.reactionProducts || a.label.localeCompare(b.label, "ko");
       if (sort === "size") return b.sort.linkedProducts - a.sort.linkedProducts || a.label.localeCompare(b.label, "ko");
       if (sort === "name") return a.label.localeCompare(b.label, "ko");
       return b.sort.recent30Active - a.sort.recent30Active
-        || (stateOrder[a.primaryState] ?? 9) - (stateOrder[b.primaryState] ?? 9)
         || b.sort.reactionProducts - a.sort.reactionProducts
+        || b.sort.linkedProducts - a.sort.linkedProducts
         || a.label.localeCompare(b.label, "ko");
     });
     return source;
