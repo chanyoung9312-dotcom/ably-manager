@@ -147,6 +147,23 @@
 
 ---
 
+## 3-1. 레이어 판정 순서
+
+레이어는 아래 순서로 한 번만 결정한다.
+
+1. 계산이 blocked이거나 주문 연결 가능한 상품이 없으면 `data_hold`
+2. `concentration_dependent`이면 `hit_reference`
+3. `exploration_signal`이면서 `D >= 1`, 최근30일 `A >= 1`이면 `review_candidate`
+4. 나머지 `exploration_signal`은 `emerging_watch`
+5. `insufficient_data`지만 최근30일 `A >= 1`이고 계산 가능하면 `emerging_watch`
+6. 그 외는 `data_hold`
+
+이 순서는 후보 수를 늘리기 위한 우선순위가 아니라 **서로 다른 의미가 중복되지 않게 만드는 결정 규칙**이다.
+
+`concentration_dependent`는 주문량이 적어도 먼저 `hit_reference`로 분리한다. 소수 상품 의존 근거를 `review_candidate`와 섞지 않기 위해서다.
+
+---
+
 ## 4. 후보로 사용할 그룹 레벨
 
 모든 142개 그룹을 동일한 후보로 취급하지 않는다.
@@ -191,6 +208,26 @@
 `숏·하프팬츠 ∩ 데님`
 
 을 확인할 수는 있지만, 해당 조합 자체가 최근성과·반복성을 충족하지 못하면 긍정 속성으로 승격하지 않는다.
+
+---
+
+## 4-1. 동일 상품 집합 중복 제거
+
+`equivalentGroups` 또는 동일한 `memberKeys`를 가진 그룹은 후보 개수를 늘리는 별도 사례로 세지 않는다.
+
+후보 identity는 상품 집합 단위로 하나만 만든다.
+
+대표 그룹 우선순위:
+
+1. `baseType`
+2. `secondaryCategory`
+3. `primaryCategory`
+4. 단일 attribute
+5. combination
+
+숨겨진 동일 그룹명은 `aliases`로 보존한다.
+
+단, 필터에서는 alias의 그룹 종류도 유지해 사용자가 조합/속성 문맥에서 다시 찾을 수 있어야 한다.
 
 ---
 
@@ -419,13 +456,31 @@ BEST, TOP 추천, 추천점수 같은 표현은 사용하지 않는다.
 | 숏·하프팬츠 ∩ 데님 | L13 / A3 / D0 / 최근30일 A0 | `emerging_hint` | 과거 반응은 있으나 반복·최근성이 없음 |
 | 니트 | L13 / A0 / 최근30일 A0 | `data_hold` | 주문 미관측이지만 노출·테스트 기간을 모르므로 실패 판정 불가 |
 
+### 수동 검증 25개 그룹에 규칙을 대입한 결과
+
+5·6단계에서 상태를 수동 비교한 25개 그룹 중, 품목/세부품목 레벨은 다음처럼 갈린다.
+
+- `review_candidate`: **숏·하프팬츠 1개**
+- `hit_reference`: 원피스, 롱원피스, 미니원피스, 스커트, 팬츠, 슬랙스, 나시·슬리브리스
+- `data_hold`: 티셔츠, 블라우스
+
+속성/조합에서는:
+
+- A라인 → attribute watch
+- 데님 → attribute watch
+- 스커트 ∩ A라인 → emerging hint
+- 숏·하프팬츠 ∩ 데님 → emerging hint
+- 팬츠 ∩ 와이드 → concentrated hint
+- 원피스 ∩ 롱 → concentrated hint
+- 팬츠 ∩ 와이드 ∩ 데님 → data-hold hint
+
 ### 이 드라이런에서 중요한 점
 
-현재 데이터만 사용하면 **숏·하프팬츠처럼 실제 review candidate가 많지 않을 수 있다.**
+현재 데이터만 사용하면 **실제 review candidate가 숏·하프팬츠처럼 매우 적을 수 있다.**
 
 이는 문제로 보지 않는다.
 
-후보 개수를 늘리기 위해 기준을 낮추거나 집중 상품을 일반화하면 안 된다.
+후보 개수를 늘리기 위해 기준을 낮추거나 집중 상품을 일반화하면 안 된다. 현재 구조의 목적은 후보를 많이 만드는 것이 아니라 **재현 가능한 관측 후보와 히트 의존을 분리하는 것**이다.
 
 ---
 
