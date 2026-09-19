@@ -10,6 +10,7 @@ import { buildLiveSourcingDiagnostics } from "../lib/sourcing-live.mjs";
 import { buildSourcingView } from "../lib/sourcing-view.mjs";
 import { buildSourcingCandidates } from "../lib/sourcing-candidates.mjs";
 import { buildSourcingCandidateView } from "../lib/sourcing-candidate-view.mjs";
+import { buildSourcingCandidateEvidence } from "../lib/sourcing-evidence.mjs";
 const port = 3123,
   base = `http://127.0.0.1:${port}`,
   user = "test",
@@ -62,7 +63,9 @@ try {
   const report = analyze(d, { today: "2026-09-17" });
   const sourcingDiagnostics = buildLiveSourcingDiagnostics(d, { today: "2026-09-17" });
   const sourcingReport = buildSourcingView(sourcingDiagnostics);
-  const candidateReport = buildSourcingCandidateView(buildSourcingCandidates({ diagnostics: sourcingDiagnostics }));
+  const candidateResult = buildSourcingCandidates({ diagnostics: sourcingDiagnostics });
+  const candidateEvidence = buildSourcingCandidateEvidence({ diagnostics: sourcingDiagnostics, candidates: candidateResult, products: d.mdProducts });
+  const candidateReport = buildSourcingCandidateView(candidateResult, candidateEvidence);
   if (process.env.AGENT_BROWSER_CLI) {
     const cli = (...args) => execFileSync(process.execPath, [process.env.AGENT_BROWSER_CLI, ...args], { env: { ...process.env, AGENT_BROWSER_EXECUTABLE_PATH: process.env.BROWSER_EXECUTABLE_PATH }, encoding: "utf8", timeout: 30000 });
     try {
@@ -111,6 +114,11 @@ try {
         await page.getByText("상품 노출", { exact: true }).waitFor();
         await page.getByRole("heading", { name: "소싱 검토 분류", exact: true }).waitFor();
         await page.getByText("소싱 검토 후보", { exact: true }).first().waitFor();
+        const evidenceToggle = page.getByText(/근거 상품 보기 · \d+개/, { exact: false }).first();
+        if (await evidenceToggle.count()) {
+          await evidenceToggle.click();
+          await page.getByText(/상품번호 p1/, { exact: false }).first().waitFor();
+        }
         assert.equal(await page.getByText("추천순", { exact: true }).count(), 0);
       }
     }
