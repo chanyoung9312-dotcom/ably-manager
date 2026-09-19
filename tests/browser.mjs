@@ -234,7 +234,7 @@ try {
   await firstImageCard.scrollIntoViewIfNeeded();
   const editorScrollTop = await page.evaluate(() => window.scrollY);
   assert.ok(editorScrollTop > 100, "image editor should be below the page top");
-  for (const stateLabel of ["상단 자르기", "하단 자르기", "제외", "사용"]) {
+  for (const stateLabel of ["상단 자르기", "하단 자르기", "사용"]) {
     await firstImageCard.getByRole("button", { name: stateLabel, exact: true }).click();
     await page.waitForTimeout(50);
     const scrollTop = await page.evaluate(() => window.scrollY);
@@ -243,6 +243,18 @@ try {
       `image state button ${stateLabel} must not jump the page to the top`,
     );
   }
+
+  const excludeButton = firstImageCard.getByRole("button", { name: "제외", exact: true });
+  await excludeButton.click();
+  await firstImageCard.locator(".exclude-mask").waitFor();
+  assert.equal(await firstImageCard.locator(".exclude-mask").count(), 1);
+  const excludedScrollTop = await page.evaluate(() => window.scrollY);
+  assert.ok(excludedScrollTop > 100, "exclude must not jump the page to the top");
+
+  await excludeButton.click();
+  assert.equal(await firstImageCard.locator(".exclude-mask").count(), 0);
+  const restoredScrollTop = await page.evaluate(() => window.scrollY);
+  assert.ok(restoredScrollTop > 100, "second exclude click must restore use without jumping");
 
   await firstImageCard.getByRole("button", { name: "하단 자르기", exact: true }).click();
   await firstImageCard.getByLabel("商品主图_1.png 하단 크롭 비율").waitFor();
