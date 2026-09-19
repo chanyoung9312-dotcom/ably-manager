@@ -60,6 +60,52 @@ function DataState({ fitness = {}, issueCount = 0 }) {
   );
 }
 
+function ReadinessPanel({ readiness }) {
+  if (!readiness) return null;
+  const registration = readiness.registrationDates || {};
+  const seasonEnds = readiness.seasonEnds || {};
+  const upstream = readiness.upstreamIssues || {};
+  return (
+    <details className="readiness-panel">
+      <summary>
+        <span>판정 준비 상태</span>
+        <small>데이터가 어디까지 확인됐는지 보기</small>
+      </summary>
+      <div className="readiness-body">
+        <p className="readiness-intro">
+          강한 근거·약한 반응을 확정하기 전에 필요한 운영 데이터 상태입니다. 확인되지 않은 항목은 현재 진단을 실패나 낮은 상품성으로 바꾸지 않습니다.
+        </p>
+        <div className="readiness-grid">
+          {readiness.requirements.map((item) => (
+            <div className="readiness-item" key={item.key}>
+              <div><b>{item.label}</b><span className={item.ready ? "ready" : ""}>{item.statusLabel}</span></div>
+              <p>{item.detail}</p>
+            </div>
+          ))}
+        </div>
+        <div className="readiness-meta">
+          <p>
+            <span>상품 등록일</span>
+            <b>{registration.valid ?? 0}/{registration.total ?? 0}개 확인</b>
+            {(registration.future || registration.invalid) ? <small>미래·형식 이상 {Number(registration.future || 0) + Number(registration.invalid || 0)}개</small> : null}
+          </p>
+          <p>
+            <span>판매 종료일</span>
+            <b>{seasonEnds.valid ?? 0}/{seasonEnds.total ?? 0}개 입력 확인</b>
+            <small>현재 판매 가능 여부와 동일하게 보지 않음</small>
+          </p>
+          <p>
+            <span>상류 데이터 확인</span>
+            <b>{upstream.total ?? 0}건</b>
+            <small>원장 {upstream.ledger ?? 0} · 상품 {upstream.product ?? 0}</small>
+          </p>
+        </div>
+        {readiness.note && <p className="readiness-note">{readiness.note}</p>}
+      </div>
+    </details>
+  );
+}
+
 function SourcingCard({ card }) {
   const all = card.metrics.all || {};
   return (
@@ -243,6 +289,8 @@ export default function SourcingPage() {
         </div>
       )}
 
+      <ReadinessPanel readiness={report.readiness} />
+
       <section className="controls" aria-label="소싱 진단 필터">
         <div className="filter-row">
           {report.filters.map((item) => (
@@ -285,13 +333,14 @@ export default function SourcingPage() {
         .sourcing-head .notice{margin-top:7px;color:#d3d8da;font-size:13px}.sourcing-head>button,.more{padding:11px 16px;border-radius:12px}
         .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:24px 0 10px}.summary-grid>div{padding:15px;border:1px solid #343a3d;border-radius:15px;background:#191d1f;display:flex;flex-direction:column;gap:4px}.summary-grid span{font-size:12px;color:#aeb5b8}.summary-grid b{font-size:23px}
         .observation-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 13px;border-radius:12px;background:#202527;color:#c8ced0;font-size:13px}.observation-line b{color:#f3f4f6}.data-caution{margin-top:8px;padding:11px 13px;border:1px solid #4a4435;border-radius:12px;background:#262319;color:#d7d0bb;font-size:12px;line-height:1.55}
+        .readiness-panel{margin:10px 0 18px;border:1px solid #343a3d;border-radius:15px;background:#191d1f;padding:0 14px}.readiness-panel summary{cursor:pointer;padding:13px 0;display:flex;align-items:center;gap:9px;font-weight:800}.readiness-panel summary small{color:#9da6aa;font-weight:500}.readiness-body{border-top:1px solid #303638;padding:13px 0 15px}.readiness-intro,.readiness-note{font-size:12px;line-height:1.6;color:#b8c0c3;margin:0 0 11px}.readiness-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.readiness-item{background:#22282a;border-radius:11px;padding:11px}.readiness-item>div{display:flex;justify-content:space-between;gap:8px;align-items:center}.readiness-item b{font-size:13px}.readiness-item span{font-size:11px;color:#c7ced0}.readiness-item span.ready{font-weight:800}.readiness-item p{margin:6px 0 0;color:#aeb5b8;font-size:11px;line-height:1.55}.readiness-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}.readiness-meta p{margin:0;background:#202527;border-radius:11px;padding:10px;display:flex;flex-direction:column;gap:3px}.readiness-meta span,.readiness-meta small{font-size:11px;color:#aeb5b8}.readiness-meta b{font-size:13px}.readiness-note{margin:10px 0 0}
         .controls{margin:18px 0;padding:14px;border:1px solid #343a3d;border-radius:15px;background:#191d1f}.filter-row{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:10px}.filter-row::-webkit-scrollbar{display:none}.filter-row button{white-space:nowrap;border:1px solid #343c40;background:#1a1f21;color:inherit;border-radius:10px;padding:8px 11px}.filter-row button.active{background:#313a3e;border-color:#8b9aa0}.select-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.select-row label{display:flex;align-items:center;gap:7px;color:#aeb5b8;font-size:13px}.select-row select{background:#202628;color:inherit;border:1px solid #3b4447;border-radius:9px;padding:7px 9px}.select-row>span{margin-left:auto;color:#aeb5b8;font-size:13px}
         .card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.sourcing-card{border:1px solid #343a3d;border-radius:17px;background:#191d1f;padding:17px;min-width:0}.card-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.card-head small{color:#929b9f}.card-head h2{font-size:20px;margin:4px 0 0}.state-badge{border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800;white-space:nowrap}.state-badge.explore{background:#294936}.state-badge.concentrated{background:#4a4025}.state-badge.insufficient{background:#353a3c}.state-description{margin:10px 0;color:#b6bec1;font-size:13px;line-height:1.55}
         .key-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.key-facts>div,.detail-grid>p{background:#22282a;border-radius:11px;padding:10px;margin:0;display:flex;flex-direction:column;gap:3px}.key-facts span,.detail-grid span,.detail-grid small{font-size:11px;color:#aeb5b8}.key-facts b{font-size:17px}.narrative{margin-top:10px;background:#202527;border-radius:12px;padding:12px}.narrative>b{font-size:12px}.narrative p{margin:5px 0 0;color:#c6ccce;font-size:13px;line-height:1.6}.recent-line{margin:9px 0 0;color:#c6ccce;font-size:13px;line-height:1.5}
         .flag-row,.all-flags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.flag-row span,.all-flags span{padding:5px 7px;border-radius:8px;background:#272d2f;font-size:11px;color:#c8ced0}.flag-row .validation{border:1px solid #465156;background:#1b2022}.alias-line,.shared-line{font-size:12px;color:#aeb5b8;margin:9px 0 0}.shared-line b{color:#d7dcde}
         .sourcing-card details{margin-top:12px;border-top:1px solid #303638;padding-top:11px}.sourcing-card summary{cursor:pointer;font-weight:800;font-size:13px}.detail-sections>section{margin-top:14px}.detail-sections h3{font-size:14px;margin:0 0 7px}.detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.detail-grid b{font-size:14px}.period-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.period-block{background:#22282a;border-radius:11px;padding:10px}.period-block>b{font-size:13px}.compare-row{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:11px}.compare-row span{color:#aeb5b8}.compare-row b{text-align:right}.data-state{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.data-state p{margin:0;background:#22282a;border-radius:10px;padding:9px;display:flex;justify-content:space-between;gap:8px;font-size:11px}.data-state span{color:#aeb5b8}.more{display:block;margin:18px auto 0}.empty{text-align:center;color:#aeb5b8;padding:40px}
         @media(min-width:1120px){.card-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.detail-grid{grid-template-columns:repeat(2,1fr)}.period-grid{grid-template-columns:1fr}}
-        @media(max-width:760px){.sourcing-page{padding:20px 12px 60px}.sourcing-head h1{font-size:28px}.summary-grid{grid-template-columns:1fr 1fr}.card-grid{grid-template-columns:1fr}.detail-grid{grid-template-columns:1fr 1fr}.period-grid{grid-template-columns:1fr}.select-row>span{width:100%;margin-left:0}.key-facts{grid-template-columns:1fr 1fr}.key-facts>div:last-child{grid-column:1/-1}}
+        @media(max-width:760px){.sourcing-page{padding:20px 12px 60px}.sourcing-head h1{font-size:28px}.summary-grid{grid-template-columns:1fr 1fr}.card-grid{grid-template-columns:1fr}.detail-grid{grid-template-columns:1fr 1fr}.period-grid{grid-template-columns:1fr}.readiness-grid{grid-template-columns:1fr}.readiness-meta{grid-template-columns:1fr}.select-row>span{width:100%;margin-left:0}.key-facts{grid-template-columns:1fr 1fr}.key-facts>div:last-child{grid-column:1/-1}}
         @media(max-width:440px){.summary-grid{grid-template-columns:1fr 1fr}.detail-grid,.data-state{grid-template-columns:1fr}.card-head{flex-direction:column}.state-badge{align-self:flex-start}}
       `}</style>
     </main>
