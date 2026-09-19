@@ -8,6 +8,8 @@ import { analyze } from "../lib/md.mjs";
 import { shippingSnapshot } from "../lib/shipping.mjs";
 import { buildLiveSourcingDiagnostics } from "../lib/sourcing-live.mjs";
 import { buildSourcingView } from "../lib/sourcing-view.mjs";
+import { buildSourcingCandidates } from "../lib/sourcing-candidates.mjs";
+import { buildSourcingCandidateView } from "../lib/sourcing-candidate-view.mjs";
 const port = 3123,
   base = `http://127.0.0.1:${port}`,
   user = "test",
@@ -58,7 +60,9 @@ try {
   d.coverageStart = "2026-01-01";
   d.mdProducts = [{ productNo: "p1", product: "테스트 원피스", registeredAt: "2026-08-01", leadDays: 7, incoming: 0, reserved: 0 }];
   const report = analyze(d, { today: "2026-09-17" });
-  const sourcingReport = buildSourcingView(buildLiveSourcingDiagnostics(d, { today: "2026-09-17" }));
+  const sourcingDiagnostics = buildLiveSourcingDiagnostics(d, { today: "2026-09-17" });
+  const sourcingReport = buildSourcingView(sourcingDiagnostics);
+  const candidateReport = buildSourcingCandidateView(buildSourcingCandidates({ diagnostics: sourcingDiagnostics }));
   if (process.env.AGENT_BROWSER_CLI) {
     const cli = (...args) => execFileSync(process.execPath, [process.env.AGENT_BROWSER_CLI, ...args], { env: { ...process.env, AGENT_BROWSER_EXECUTABLE_PATH: process.env.BROWSER_EXECUTABLE_PATH }, encoding: "utf8", timeout: 30000 });
     try {
@@ -84,7 +88,7 @@ try {
   async function applyFont() { if (fontCss) { await page.addStyleTag({ content: fontCss }); await page.evaluate(() => document.fonts.ready); } }
   await page.route("**/api/oars-analysis", (r) => r.fulfill({ json: { report } }));
   await page.route("**/api/dashboard-data", (r) => r.fulfill({ json: d }));
-  await page.route("**/api/sourcing-signals", (r) => r.fulfill({ json: { report: sourcingReport } }));
+  await page.route("**/api/sourcing-signals", (r) => r.fulfill({ json: { report: sourcingReport, candidateReport } }));
   const ship = { productOrderNo: "po0", orderNo: "order1", name: "테스트고객", phone: "01000000000", zip: "01234", address: "서울시 테스트로 10", detail: ".", rowNumber: 2, shipping: "우체국 배송" };
   ship.snapshot = shippingSnapshot(ship);
   await page.route("**/api/google-orders", (r) => r.fulfill({ json: { rows: [ship] } }));
@@ -105,6 +109,8 @@ try {
         await page.getByText("판정 준비 상태", { exact: true }).waitFor();
         await page.getByText("판정 준비 상태", { exact: true }).click();
         await page.getByText("상품 노출", { exact: true }).waitFor();
+        await page.getByRole("heading", { name: "소싱 검토 분류", exact: true }).waitFor();
+        await page.getByText("소싱 검토 후보", { exact: true }).first().waitFor();
         assert.equal(await page.getByText("추천순", { exact: true }).count(), 0);
       }
     }
