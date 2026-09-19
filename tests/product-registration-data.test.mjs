@@ -10,19 +10,27 @@ import {
 test("registration paste keeps one-copy workflow readable", () => {
   const parsed = parseRegistrationPaste(`
 [OARS 등록용]
-상품명: [가을신상] 슬림 골지 니트
-판매가: 29900
+**상품명 1:** [가을신상] 슬림 골지 니트
+- 상품명 2: 데일리 골지 슬림 니트
+상품명 3: 가을 골지 라운드 니트
+판매가: 29,900
 공급가: 12000
 색상: 블랙, 크림 / 브라운
 사이즈: FREE
-해시태그: #골지니트, 가을니트, 데일리룩
+해시태그: #골지니트, 가을니트
+데일리룩
 상세페이지 문구:
 부드럽게 떨어지는 골지 라인이 포인트예요.
 데일리로 가볍게 입기 좋아요.
 [OARS 끝]
 `);
   assert.equal(parsed.productName, "[가을신상] 슬림 골지 니트");
-  assert.equal(parsed.price, "29900");
+  assert.equal(parsed.price, "29,900");
+  assert.deepEqual(parsed.productNames, [
+    "[가을신상] 슬림 골지 니트",
+    "데일리 골지 슬림 니트",
+    "가을 골지 라운드 니트",
+  ]);
   assert.equal(parsed.supplyPrice, "12000");
   assert.equal(parsed.colors, "블랙, 크림, 브라운");
   assert.equal(parsed.sizes, "FREE");
