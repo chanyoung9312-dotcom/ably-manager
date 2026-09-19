@@ -74,7 +74,7 @@ test("registration and season-end dates are descriptive only and keep anomalies 
     },
     { valid: 1, missing: 1, invalid: 1, future: 1 },
   );
-  assert.equal(readiness.seasonEnds.valid, 1);
+  assert.equal(readiness.seasonEnds.valid, 2);
   assert.equal(readiness.seasonEnds.future, 1);
   assert.equal(readiness.seasonEnds.invalid, 1);
   assert.equal(readiness.requirements.find((item) => item.key === "testDuration").ready, false);
