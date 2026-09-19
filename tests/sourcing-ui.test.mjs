@@ -199,8 +199,9 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
   assert.match(candidateView, /추가 관찰/);
   assert.match(candidateView, /데이터 보류/);
   assert.match(page, /현재 판매 가능 여부/);
-  assert.doesNotMatch(page, /사입 판단용 수량/);
+  assert.doesNotMatch(page, /사입 판단용 수량|사입 판단용 반복 상품/);
   assert.match(page, /판단 반영 수량/);
+  assert.match(page, /판단 반영 반복 상품/);
 });
 
 test("the screen exposes details, shared evidence, filters, and mobile one-column cards", () => {
