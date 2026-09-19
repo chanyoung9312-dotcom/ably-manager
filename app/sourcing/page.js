@@ -636,9 +636,9 @@ export default function SourcingPage() {
     <main className="sourcing-page">
       <header className="sourcing-head">
         <div>
-          <small>상품군별 주문 반응을 읽는 화면</small>
+          <small>실제 판매 반응으로 다음 소싱 방향을 찾는 화면</small>
           <h1>소싱 반응 진단</h1>
-          <p>등록 상품과 실제 주문 반응을 비교해 어떤 상품군에서 반응이 반복됐는지 확인합니다.</p>
+          <p>먼저 추천 검색 키워드를 확인하고, 필요할 때 아래에서 근거 상품과 세부 진단을 펼쳐보세요.</p>
           <p className="notice">{report.notice}</p>
         </div>
         <button onClick={load} disabled={loading}>{loading ? "불러오는 중" : "새로고침"}</button>
@@ -653,24 +653,34 @@ export default function SourcingPage() {
         <div><span>최근 30일 활성 상품</span><b>{value(summary.recent30ActiveProducts)}</b></div>
       </section>
 
-      <div className="observation-line">
-        <b>{summary.validationLabel}</b>
-        <span>동일 상품 집합은 대표 카드 하나로 묶어 표시합니다. 원 분석 그룹 {summary.rawGroupCount ?? "?"}개 → 화면 카드 {summary.visibleGroupCount ?? "?"}개</span>
-      </div>
-
-      {(!summary.coverageVerified || !summary.exposureAvailable || !summary.testDurationAvailable) && (
-        <div className="data-caution" role="note">
-          주문 수집 완전성·노출수·테스트 기간이 모두 확인된 상태가 아닙니다. 최근 증감과 주문 0건은 관측값으로만 보고, 실패나 낮은 상품성으로 단정하지 않습니다.
-        </div>
-      )}
-
-      <ReadinessPanel readiness={report.readiness} />
+      <ResearchPlanBoard researchPlan={researchPlan} />
 
       <SourcingBriefBoard briefReport={briefReport} />
 
-      <ResearchPlanBoard researchPlan={researchPlan} />
-
       <CandidateBoard candidateReport={candidateReport} />
+
+      <section className="diagnostic-support" aria-label="진단 데이터 상태">
+        <div className="diagnostic-support-head">
+          <div>
+            <small>보조 정보</small>
+            <h2>진단 데이터 상태</h2>
+            <p>추천 키워드를 더 보수적으로 해석해야 하는 이유가 궁금할 때 확인하세요.</p>
+          </div>
+        </div>
+
+        <div className="observation-line">
+          <b>{summary.validationLabel}</b>
+          <span>동일 상품 집합은 대표 카드 하나로 묶어 표시합니다. 원 분석 그룹 {summary.rawGroupCount ?? "?"}개 → 화면 카드 {summary.visibleGroupCount ?? "?"}개</span>
+        </div>
+
+        {(!summary.coverageVerified || !summary.exposureAvailable || !summary.testDurationAvailable) && (
+          <div className="data-caution" role="note">
+            주문 수집 완전성·노출수·테스트 기간이 모두 확인된 상태가 아닙니다. 최근 증감과 주문 0건은 관측값으로만 보고, 실패나 낮은 상품성으로 단정하지 않습니다.
+          </div>
+        )}
+
+        <ReadinessPanel readiness={report.readiness} />
+      </section>
 
       <section className="diagnostic-section-head">
         <div>
@@ -721,7 +731,7 @@ export default function SourcingPage() {
         .sourcing-head small,.sourcing-head p{color:#aeb5b8}.sourcing-head h1{font-size:34px;margin:5px 0}.sourcing-head p{max-width:760px;margin:0}
         .sourcing-head .notice{margin-top:7px;color:#d3d8da;font-size:13px}.sourcing-head>button,.more{padding:11px 16px;border-radius:12px}
         .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:24px 0 10px}.summary-grid>div{padding:15px;border:1px solid #343a3d;border-radius:15px;background:#191d1f;display:flex;flex-direction:column;gap:4px}.summary-grid span{font-size:12px;color:#aeb5b8}.summary-grid b{font-size:23px}
-        .observation-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 13px;border-radius:12px;background:#202527;color:#c8ced0;font-size:13px}.observation-line b{color:#f3f4f6}.data-caution{margin-top:8px;padding:11px 13px;border:1px solid #4a4435;border-radius:12px;background:#262319;color:#d7d0bb;font-size:12px;line-height:1.55}
+        .diagnostic-support{margin:28px 0 8px;padding-top:18px;border-top:1px solid #2e3436}.diagnostic-support-head{margin-bottom:10px}.diagnostic-support-head small,.diagnostic-support-head p{color:#aeb5b8}.diagnostic-support-head h2{margin:3px 0;font-size:18px}.diagnostic-support-head p{margin:0;font-size:11px;line-height:1.5}.observation-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 13px;border-radius:12px;background:#202527;color:#c8ced0;font-size:13px}.observation-line b{color:#f3f4f6}.data-caution{margin-top:8px;padding:11px 13px;border:1px solid #4a4435;border-radius:12px;background:#262319;color:#d7d0bb;font-size:12px;line-height:1.55}
         .readiness-panel{margin:10px 0 18px;border:1px solid #343a3d;border-radius:15px;background:#191d1f;padding:0 14px}.readiness-panel summary{cursor:pointer;padding:13px 0;display:flex;align-items:center;gap:9px;font-weight:800}.readiness-panel summary small{color:#9da6aa;font-weight:500}.readiness-body{border-top:1px solid #303638;padding:13px 0 15px}.readiness-intro,.readiness-note{font-size:12px;line-height:1.6;color:#b8c0c3;margin:0 0 11px}.readiness-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.readiness-item{background:#22282a;border-radius:11px;padding:11px}.readiness-item>div{display:flex;justify-content:space-between;gap:8px;align-items:center}.readiness-item b{font-size:13px}.readiness-item span{font-size:11px;color:#c7ced0}.readiness-item span.ready{font-weight:800}.readiness-item p{margin:6px 0 0;color:#aeb5b8;font-size:11px;line-height:1.55}.readiness-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}.readiness-meta p{margin:0;background:#202527;border-radius:11px;padding:10px;display:flex;flex-direction:column;gap:3px}.readiness-meta span,.readiness-meta small{font-size:11px;color:#aeb5b8}.readiness-meta b{font-size:13px}.readiness-note{margin:10px 0 0}
         .brief-board{margin:20px 0 18px;padding:18px;border:1px solid #42504a;border-radius:18px;background:#171d1a}.brief-board-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.brief-board-head small,.brief-board-head p{color:#aeb5b8}.brief-board-head h2{font-size:24px;margin:4px 0 5px}.brief-board-head p{margin:0;max-width:760px;font-size:13px;line-height:1.55}.brief-board-head>span{white-space:nowrap;padding:6px 9px;border:1px solid #4c5c54;border-radius:999px;font-size:11px}.brief-notice{margin:12px 0 0;padding:10px 12px;border-radius:10px;background:#202722;color:#c4cbc7;font-size:12px;line-height:1.5}.brief-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.brief-card{border:1px solid #35413b;border-radius:15px;background:#1b211e;padding:14px}.brief-title{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.brief-title small{font-size:10px;color:#9da6a1}.brief-title h3{font-size:19px;margin:4px 0 0}.brief-title>span{font-size:10px;border:1px solid #46544d;border-radius:999px;padding:5px 7px}.brief-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}.brief-facts p{margin:0;background:#222a26;border-radius:9px;padding:9px;display:flex;flex-direction:column;gap:3px}.brief-facts span{font-size:10px;color:#aeb5b1}.brief-facts b{font-size:13px}.brief-copy{margin-top:9px;padding:10px;border-radius:10px;background:#202722}.brief-copy>b{font-size:11px}.brief-copy p{margin:4px 0 0;color:#c6cec9;font-size:12px;line-height:1.55}.brief-products{margin-top:10px;border-top:1px solid #303a35;padding-top:9px}.brief-products summary{cursor:pointer;font-size:11px;font-weight:800}.brief-products>div{margin-top:7px;display:grid;gap:6px}.brief-products p{margin:0;background:#222a26;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:2px}.brief-products p b{font-size:11px}.brief-products p span{font-size:10px;color:#aeb5b1}.brief-flags{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}.brief-flags span{font-size:10px;background:#29312d;border-radius:7px;padding:4px 6px;color:#c9d0cc}.brief-footnote{margin:10px 0 0;color:#9fa8a3;font-size:10px;line-height:1.5}
         .research-board{margin:18px 0 24px;padding:18px;border:1px solid #3e4854;border-radius:18px;background:#171a1f}.research-board-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.research-board-head small,.research-board-head p{color:#aeb5b8}.research-board-head h2{font-size:23px;margin:4px 0 5px}.research-board-head p{margin:0;max-width:760px;font-size:13px;line-height:1.55}.research-board-head>span{white-space:nowrap;border:1px solid #485463;border-radius:999px;padding:6px 9px;font-size:11px}.research-notice{margin:12px 0 0;padding:10px 12px;border-radius:10px;background:#20252c;color:#c8ced3;font-size:12px;line-height:1.5}.research-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.research-card{border:1px solid #353d47;border-radius:15px;background:#1b1f25;padding:14px}.research-title{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.research-title small{font-size:10px;color:#9fa7af}.research-title h3{font-size:19px;margin:4px 0 0}.research-title>span{font-size:10px;border:1px solid #47515d;border-radius:999px;padding:5px 7px}.research-keywords{margin-top:12px;padding:12px;border:1px solid #465467;border-radius:12px;background:#202731}.research-keywords-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.research-keywords-head>b{font-size:13px}.research-keywords-head button{padding:6px 9px;border-radius:8px;font-size:10px}.research-keywords>p{margin:6px 0 9px;color:#bac3ca;font-size:11px;line-height:1.5}.research-keyword-list{display:flex;flex-wrap:wrap;gap:7px}.research-keyword{display:flex;align-items:center;gap:7px;border:1px solid #536276;border-radius:10px;background:#18202a;color:inherit;padding:8px 10px;text-align:left;cursor:pointer}.research-keyword strong{font-size:13px}.research-keyword small{font-size:9px;color:#aeb8c2}.research-keyword.supported{border-color:#557661;background:#1c2a23}.research-keyword.emerging{border-color:#586b7d;background:#1c2630}.research-keyword.item{border-color:#4b535e;background:#20242a}.research-keyword-caution{margin-top:9px;border-top:1px solid #36414e;padding-top:8px}.research-keyword-caution summary{cursor:pointer;font-size:10px;color:#aeb8c2}.research-keyword-caution>div{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.research-keyword-caution span{font-size:10px;padding:5px 7px;border-radius:7px;background:#2a2925;color:#c8c3b6}.research-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}.research-facts p{margin:0;background:#22272e;border-radius:9px;padding:9px;display:flex;flex-direction:column;gap:3px}.research-facts span{font-size:10px;color:#aeb5bc}.research-facts b{font-size:13px}.research-context,.research-fields{margin-top:9px;padding:10px;border-radius:10px;background:#20252c}.research-context summary,.research-fields>b{font-size:11px;font-weight:800;cursor:pointer}.research-context>div{margin-top:7px}.research-context p{margin:6px 0 0;display:flex;justify-content:space-between;gap:10px;font-size:11px}.research-context span{color:#aeb5bc}.research-context strong{text-align:right}.research-fields>div{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.research-fields span{display:flex;gap:5px;align-items:center;padding:5px 7px;border-radius:7px;background:#293039;font-size:10px}.research-fields small{color:#9fa7af}.research-reference,.research-guardrails,.research-template{margin-top:10px;border-top:1px solid #303640;padding-top:9px}.research-reference summary,.research-guardrails summary,.research-template summary{cursor:pointer;font-size:11px;font-weight:800}.research-reference>div{display:grid;gap:6px;margin-top:7px}.research-reference p{margin:0;background:#22272e;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:2px}.research-reference b{font-size:11px}.research-reference span{font-size:10px;color:#aeb5bc}.research-guardrails ul{margin:8px 0 0;padding-left:18px;color:#b8c0c6;font-size:10px;line-height:1.6}.research-template pre{white-space:pre-wrap;word-break:break-word;margin:8px 0;padding:10px;border-radius:9px;background:#15191e;color:#c9d0d5;font-size:10px;line-height:1.55}.research-template button{padding:7px 10px;border-radius:8px;font-size:11px}
