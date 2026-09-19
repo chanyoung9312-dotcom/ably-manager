@@ -2,13 +2,16 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-test("MD와 재고 화면 역할을 분리하고 취소 유형을 표시한다", async () => {
+test("MD와 재고 화면 역할을 분리하고 취소·반품을 단순 집계한다", async () => {
   const analysis = await readFile(new URL("../app/analysis/page.js", import.meta.url), "utf8");
   const products = await readFile(new URL("../app/products/page.js", import.meta.url), "utf8");
   const nav = await readFile(new URL("../app/TodayHomeNav.js", import.meta.url), "utf8");
 
-  assert.match(analysis, /발주 전 취소/);
-  assert.match(analysis, /발주 후 취소/);
+  assert.match(analysis, /<span>취소<\/span><b>{summary\.cancels}건<\/b>/);
+  assert.match(analysis, /<span>반품<\/span><b>{summary\.returns}건<\/b>/);
+  assert.doesNotMatch(analysis, /발주 전 취소/);
+  assert.doesNotMatch(analysis, /발주 후 취소/);
+  assert.doesNotMatch(analysis, /구분 확인/);
   assert.match(analysis, /취소 반품 시트에 기록된 건 기준/);
   assert.match(analysis, /사입 판단/);
 
