@@ -8,16 +8,16 @@
 
 ## 주문 수집 범위
 
-`.env`의 `OARS_ORDER_COVERAGE_START`는 “이 날짜부터 주문 시트가 완전하다고 확인된 시작일”이라는 기존 계약을 그대로 사용한다.
+`.env`의 `OARS_ORDER_COVERAGE_START`는 “이 날짜부터 주문 시트가 완전하다고 확인된 시작일”이라는 기존 계약을 사용한다. 여기에 `OARS_ORDER_COVERAGE_THROUGH`를 추가해 **어느 날짜까지 수집 완전성이 확인됐는지**를 별도로 기록한다.
 
-단, 시작일이 존재한다고 바로 최근 비교를 검증하지 않는다. 현재 7/14/30일 비교에서 가장 이른 구간은 이전 30일의 시작일이므로:
+시작일만 존재한다고 최근 비교를 검증하지 않는다. 현재 7/14/30일 비교에서 가장 이른 구간은 이전 30일의 시작일이고, 가장 늦은 구간은 현재 기준일이므로:
 
-- coverage start <= previous 30-day start → 최근 30·14·7일 비교 범위를 모두 포함
-- coverage start > previous 30-day start → 일부 구간만 확인
-- 미설정 → 미확인
+- coverage start <= previous 30-day start **그리고** coverage through >= as-of → 최근 30·14·7일 비교 범위 확인
+- 시작 범위만 충분하거나 종료 완전성만 확인 → 일부 확인
+- 둘 다 미설정 → 미확인
 - 잘못된 형식/미래 날짜 → 설정 확인 필요
 
-충분한 coverage가 확인된 경우에만 `snapshot.collectionCompleteness='verified'`를 전달한다.
+현재 날짜의 주문이 아직 진행 중이라면 `OARS_ORDER_COVERAGE_THROUGH`를 오늘로 올리지 않는다. 시작/종료 범위가 모두 확인된 경우에만 `snapshot.collectionCompleteness='verified'`를 전달한다.
 
 ## 등록일과 판매종료일
 
