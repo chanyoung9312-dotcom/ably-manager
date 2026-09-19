@@ -160,14 +160,14 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
   assert.match(route, /buildSourcingView/);
   assert.doesNotMatch(route, /fixtures\/sourcing-signals/);
   assert.doesNotMatch(page, /추천순|비추천|BEST/);
-  assert.match(page, /추천 점수나 자동 소싱 결정이 아닌 관측 데이터/);
+  assert.equal(view.notice, "추천 점수나 자동 소싱 결정이 아닌 관측 데이터입니다.");\n  assert.match(page, /report\\.notice/);
 });
 
 test("the screen exposes details, shared evidence, filters, and mobile one-column cards", () => {
   const page = fs.readFileSync(new URL("../app/sourcing/page.js", import.meta.url), "utf8");
   assert.match(page, />자세히 보기</);
   assert.match(page, />근거 상품 공유</);
-  assert.match(page, /최근 30일 활성 상품 수/);
+  assert.match(page, /최근 활성 상품 수/);
   assert.match(page, /@media\(max-width:760px\)/);
   assert.match(page, /\.card-grid\{grid-template-columns:1fr\}/);
   assert.match(page, /INITIAL_VISIBLE = 18/);
