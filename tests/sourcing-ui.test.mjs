@@ -25,6 +25,7 @@ test("state and flag enums are translated into neutral Korean observation copy",
   assert.match(SOURCING_STATE_COPY.exploration_signal.description, /반복성과 최근 흐름, 집중도/);
   assert.equal(SOURCING_STATE_COPY.concentration_dependent.label, "특정 상품 의존");
   assert.equal(SOURCING_STATE_COPY.insufficient_data.label, "판단 자료 부족");
+  assert.equal(SOURCING_STATE_COPY.evidence_strong.label, "강한 근거");
   assert.equal(SOURCING_FLAG_COPY.cooling_observed, "최근 반응 둔화 관측");
   assert.equal(SOURCING_FLAG_COPY.shared_evidence, "다른 속성과 동일 상품 근거 공유");
 });
@@ -185,7 +186,8 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
   assert.match(page, /fetch\("\/api\/sourcing-signals"/);
   assert.match(route, /loadDashboard\(\)/);
   assert.match(route, /buildLiveSourcingDiagnostics/);
-  assert.match(route, /buildSourcingView/);
+  assert.match(route, /resolveSourcingValidation/);
+  assert.match(route, /buildSourcingView\(diagnostics, validationReport\)/);
   assert.match(route, /buildSourcingCandidates/);
   assert.match(route, /buildSourcingCandidateView/);
   assert.match(route, /buildSourcingCandidateEvidence/);
