@@ -152,7 +152,7 @@ try {
   await page.getByRole("button", { name: "새로고침", exact: true }).click();
   await page.getByRole("alert").filter({ hasText: "모의 API 실패" }).waitFor();
   assert.deepEqual(errors, []);
-  console.log("PASS: 8 routes × 2 viewports, operator-first home, auth/CSRF, query navigation, single-item prepare, ambiguous matching, failed/successful tracking, Excel preservation, API error UX; no page errors.");
+  console.log("PASS: 9 routes × 2 viewports, operator-first home, auth/CSRF, query navigation, single-item prepare, ambiguous matching, failed/successful tracking, Excel preservation, API error UX; no page errors.");
 } finally {
   if (browser) await browser.close();
   server.kill("SIGTERM");
