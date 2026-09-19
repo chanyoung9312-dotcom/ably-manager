@@ -1,0 +1,3257 @@
+{
+  "source": "OARS_taxonomy_validation(1).md, appendix A; MD snapshot 2026-09-18",
+  "products": [
+    {
+      "row": 117,
+      "productNo": null,
+      "product": "[Y2K무드] 빅포켓 레더 카고 미니스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미니←미니; 소재표현: 레더←레더",
+        "review": "—"
+      }
+    },
+    {
+      "row": 129,
+      "productNo": null,
+      "product": "[힙한핏🖤] 빈티지 워싱 와이드 카고 벌룬팬츠 4color",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "핏: 벌룬←벌룬, 와이드←와이드",
+        "review": "—"
+      }
+    },
+    {
+      "row": 141,
+      "productNo": "76668973",
+      "product": "[허리잘록핏] 하이웨스트 플리츠 A라인 맥시 롱스커트 2color",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 롱←롱, 맥시←맥시; 핏: A라인←A라인; 디자인: 플리츠←플리츠",
+        "review": "—"
+      }
+    },
+    {
+      "row": 153,
+      "productNo": "76602866",
+      "product": "[레이어드핏🩶] 홀터넥 레이어드 골지 슬림 니트 가디건 2color",
+      "expected": {
+        "primaryCategory": "아우터",
+        "secondaryCategory": "가디건",
+        "categoryEvidence": "가디건",
+        "attributes": "핏: 슬림←슬림; 넥라인: 홀터넥←홀터넥; 소재표현: 니트←니트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 165,
+      "productNo": "76602670",
+      "product": "[핏보장🖤] 하이웨스트 핀턱 A라인 플레어 롱스커트 3color",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 롱←롱; 핏: A라인←A라인, 플레어←플레어; 디자인: 핀턱←핀턱",
+        "review": "—"
+      }
+    },
+    {
+      "row": 177,
+      "productNo": "76582799",
+      "product": "[4color] 여리핏 드레이프넥 셔링 슬림 긴팔티",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "긴팔티",
+        "attributes": "핏: 슬림←슬림; 디자인: 셔링←셔링; 넥라인: 드레이프넥←드레이프넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 189,
+      "productNo": "76582496",
+      "product": "키치 캣프린팅 오버핏 라운드 맨투맨",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "맨투맨",
+        "categoryEvidence": "맨투맨",
+        "attributes": "핏: 오버핏←오버핏; 넥라인: 라운드←라운드",
+        "review": "—"
+      }
+    },
+    {
+      "row": 201,
+      "productNo": null,
+      "product": "[세트] 여리핏 스트라이프 나시 가디건 세트",
+      "expected": {
+        "primaryCategory": "세트",
+        "secondaryCategory": "의류세트",
+        "categoryEvidence": "세트",
+        "attributes": "미확인",
+        "review": "—"
+      }
+    },
+    {
+      "row": 213,
+      "productNo": null,
+      "product": "여리핏 단가라 스트라이프 후드티",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "후드티",
+        "categoryEvidence": "후드티",
+        "attributes": "패턴: 스트라이프←단가라/스트라이프",
+        "review": "—"
+      }
+    },
+    {
+      "row": 225,
+      "productNo": null,
+      "product": "허리스트링 데님 셔츠 롱원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 소재표현: 데님←데님; 형태: 셔츠형←셔츠",
+        "review": "—"
+      }
+    },
+    {
+      "row": 237,
+      "productNo": null,
+      "product": "후드 레이어드 크롭 데님자켓",
+      "expected": {
+        "primaryCategory": "아우터",
+        "secondaryCategory": "자켓",
+        "categoryEvidence": "자켓",
+        "attributes": "기장: 크롭←크롭; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 249,
+      "productNo": "76539245",
+      "product": "하이웨스트 와이드 슬랙스 숏팬츠 반바지",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "숏팬츠, 반바지",
+        "attributes": "기장: 숏←숏; 핏: 와이드←와이드",
+        "review": "—"
+      }
+    },
+    {
+      "row": 261,
+      "productNo": "76538804",
+      "product": "골지 니트 플리츠 A라인 밴딩 미니스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미니←미니; 핏: A라인←A라인; 디자인: 플리츠←플리츠; 소재표현: 니트←니트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 273,
+      "productNo": "76538098",
+      "product": "빈티지 핫걸 스트라이프 크롭 셔츠 블라우스",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "미확인",
+        "categoryEvidence": "셔츠, 블라우스",
+        "attributes": "기장: 크롭←크롭; 패턴: 스트라이프←스트라이프",
+        "review": "셔츠/블라우스 경쟁"
+      }
+    },
+    {
+      "row": 285,
+      "productNo": "76538025",
+      "product": "오피스룩 브이넥 랩카라 화이트 블라우스",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "블라우스",
+        "categoryEvidence": "블라우스",
+        "attributes": "디자인: 랩←랩; 넥라인: 브이넥←브이넥, 카라←카라",
+        "review": "—"
+      }
+    },
+    {
+      "row": 297,
+      "productNo": "76537982",
+      "product": "와이드카라 스트라이프 셔츠 블라우스",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "미확인",
+        "categoryEvidence": "셔츠, 블라우스",
+        "attributes": "넥라인: 카라←카라; 패턴: 스트라이프←스트라이프",
+        "review": "셔츠/블라우스 경쟁"
+      }
+    },
+    {
+      "row": 309,
+      "productNo": "76537932",
+      "product": "레더 카고 빅포켓 미니스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미니←미니; 소재표현: 레더←레더",
+        "review": "—"
+      }
+    },
+    {
+      "row": 321,
+      "productNo": "76537875",
+      "product": "찐가을 무드 스웨이드 언발 롱스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 롱←롱; 소재표현: 스웨이드←스웨이드",
+        "review": "—"
+      }
+    },
+    {
+      "row": 333,
+      "productNo": "76515780",
+      "product": "데일리 스포티 V넥 배색 라인 오버핏 맨투맨",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "맨투맨",
+        "categoryEvidence": "맨투맨",
+        "attributes": "핏: 오버핏←오버핏; 넥라인: 브이넥←V넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 345,
+      "productNo": "76515742",
+      "product": "여리핏 프릴 물결 하프 반목 폴라 티셔츠 (4color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "디자인: 프릴←프릴; 넥라인: 폴라·반목←반목/폴라",
+        "review": "—"
+      }
+    },
+    {
+      "row": 357,
+      "productNo": "76494599",
+      "product": "[빈티지무드] 중청 워싱 포켓 데님 민소매 베스트",
+      "expected": {
+        "primaryCategory": "아우터",
+        "secondaryCategory": "베스트",
+        "categoryEvidence": "베스트",
+        "attributes": "소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 369,
+      "productNo": "76494597",
+      "product": "[파스텔/빈티지] 포켓 포인트 깅엄 체크 반팔 셔츠 (2color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "셔츠",
+        "categoryEvidence": "셔츠",
+        "attributes": "패턴: 체크←체크",
+        "review": "—"
+      }
+    },
+    {
+      "row": 381,
+      "productNo": "76494594",
+      "product": "[데일리] 여리핏 스트라이프 와이드 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "핏: 와이드←와이드; 패턴: 스트라이프←스트라이프",
+        "review": "—"
+      }
+    },
+    {
+      "row": 393,
+      "productNo": "76494590",
+      "product": "[데일리] 여리핏 오버핏 와이드 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "핏: 오버핏←오버핏, 와이드←와이드",
+        "review": "—"
+      }
+    },
+    {
+      "row": 405,
+      "productNo": "76494587",
+      "product": "[데일리] 여리핏 리본 프릴 파자마 세트",
+      "expected": {
+        "primaryCategory": "세트",
+        "secondaryCategory": "파자마세트",
+        "categoryEvidence": "세트",
+        "attributes": "미확인",
+        "review": "—"
+      }
+    },
+    {
+      "row": 417,
+      "productNo": "76494585",
+      "product": "[데일리] 여리핏 크롭 윈드브레이커 트레이닝 투피스",
+      "expected": {
+        "primaryCategory": "세트",
+        "secondaryCategory": "의류세트",
+        "categoryEvidence": "투피스",
+        "attributes": "미확인",
+        "review": "—"
+      }
+    },
+    {
+      "row": 429,
+      "productNo": "76494582",
+      "product": "[데일리] 여리핏 펀칭 레이스 브이넥 블라우스",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "블라우스",
+        "categoryEvidence": "블라우스",
+        "attributes": "디자인: 펀칭←펀칭, 레이스←레이스; 넥라인: 브이넥←브이넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 441,
+      "productNo": "76494579",
+      "product": "[하객룩/격식] 여신핏 빅카라 랩 핀턱 A라인 롱 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 핏: A라인←A라인; 디자인: 핀턱←핀턱, 랩←랩; 넥라인: 카라←카라",
+        "review": "—"
+      }
+    },
+    {
+      "row": 453,
+      "productNo": "76494577",
+      "product": "몸매 보정 끝판왕! 배색 단가라 슬림핏 니트 미니 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "미니원피스",
+        "categoryEvidence": "원피스, 미니",
+        "attributes": "기장: 미니←미니; 핏: 슬림←슬림핏; 패턴: 스트라이프←단가라; 소재표현: 니트←니트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 465,
+      "productNo": "76492662",
+      "product": "[꾸안꾸/비율보장] 단가라 V넥 나시 롱 슬림 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 핏: 슬림←슬림; 넥라인: 브이넥←V넥; 패턴: 스트라이프←단가라",
+        "review": "—"
+      }
+    },
+    {
+      "row": 477,
+      "productNo": "76492223",
+      "product": "베이직 여리핏 슬림 골지 폴라 티셔츠 (7color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "핏: 슬림←슬림; 넥라인: 폴라·반목←폴라",
+        "review": "—"
+      }
+    },
+    {
+      "row": 489,
+      "productNo": "76491911",
+      "product": "[핏보장/비율천재] 투버튼 하이웨이스트 데님 플리츠 미니스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미니←미니; 디자인: 플리츠←플리츠; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 501,
+      "productNo": "76491285",
+      "product": "[감성무드/체형커버] 딥 타탄체크 하이웨이스트 롱 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 롱←롱; 패턴: 체크←체크",
+        "review": "—"
+      }
+    },
+    {
+      "row": 513,
+      "productNo": "76491089",
+      "product": "데일리 라운드 배색 단가라 긴팔 티셔츠 (2color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "넥라인: 라운드←라운드; 패턴: 스트라이프←단가라",
+        "review": "—"
+      }
+    },
+    {
+      "row": 525,
+      "productNo": "76467899",
+      "product": "데일리 찰랑 와이드 스트링 롱팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "기장: 롱←롱; 핏: 와이드←와이드",
+        "review": "—"
+      }
+    },
+    {
+      "row": 537,
+      "productNo": "76467883",
+      "product": "러블리 포켓 박시핏 크롭자켓",
+      "expected": {
+        "primaryCategory": "아우터",
+        "secondaryCategory": "자켓",
+        "categoryEvidence": "자켓",
+        "attributes": "기장: 크롭←크롭; 핏: 박시←박시핏",
+        "review": "—"
+      }
+    },
+    {
+      "row": 549,
+      "productNo": "76467862",
+      "product": "여리핏 버튼 보트넥 롱슬리브 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "넥라인: 보트넥←보트넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 561,
+      "productNo": "76467847",
+      "product": "모던 하이넥 벨티드 숏자켓",
+      "expected": {
+        "primaryCategory": "아우터",
+        "secondaryCategory": "자켓",
+        "categoryEvidence": "자켓",
+        "attributes": "기장: 숏←숏; 디자인: 벨트←벨티드; 넥라인: 하이넥←하이넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 573,
+      "productNo": "76467813",
+      "product": "로맨틱 셔링넥 허리끈 롱원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 디자인: 셔링←셔링",
+        "review": "—"
+      }
+    },
+    {
+      "row": 585,
+      "productNo": "76467800",
+      "product": "러블리 레이어드 오픈 짜임 니트",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "니트",
+        "categoryEvidence": "니트",
+        "attributes": "소재표현: 니트←니트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 597,
+      "productNo": "76467782",
+      "product": "빈티지 레터링 루즈핏 그래픽 맨투맨",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "맨투맨",
+        "categoryEvidence": "맨투맨",
+        "attributes": "핏: 루즈←루즈핏",
+        "review": "—"
+      }
+    },
+    {
+      "row": 609,
+      "productNo": "76467254",
+      "product": "핀턱 와이드 부츠 숏팬츠 반바지 (S~XL)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "숏팬츠, 반바지",
+        "attributes": "기장: 숏←숏; 핏: 와이드←와이드; 디자인: 핀턱←핀턱",
+        "review": "—"
+      }
+    },
+    {
+      "row": 621,
+      "productNo": "76467058",
+      "product": "[속바지내장] 벨벳 캉캉 프릴 미니스커트 (블랙/딥브라운)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미니←미니; 디자인: 프릴←프릴, 캉캉←캉캉; 소재표현: 벨벳←벨벳",
+        "review": "—"
+      }
+    },
+    {
+      "row": 633,
+      "productNo": "76466763",
+      "product": "[키치/트렌디] 스웨이드 언발 플랩 슬릿 랩 미니스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미니←미니; 디자인: 트임←슬릿, 랩←랩; 소재표현: 스웨이드←스웨이드",
+        "review": "—"
+      }
+    },
+    {
+      "row": 645,
+      "productNo": "76449530",
+      "product": "투포켓 금장 포인트 밑단 트임 A라인 롱치마 (블랙/브라운)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "치마",
+        "attributes": "기장: 롱←롱; 핏: A라인←A라인; 디자인: 트임←트임",
+        "review": "—"
+      }
+    },
+    {
+      "row": 657,
+      "productNo": "76449314",
+      "product": "랩 리본 포인트 슬릿 H라인 롱 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 롱←롱; 핏: H라인←H라인; 디자인: 리본←리본, 트임←슬릿, 랩←랩",
+        "review": "—"
+      }
+    },
+    {
+      "row": 669,
+      "productNo": "76449186",
+      "product": "[체형보정/A라인] 클래식 딥블루 워싱 데님 롱 스커트 (XL~5XL)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 롱←롱; 핏: A라인←A라인; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 681,
+      "productNo": "76449109",
+      "product": "[클래식/프레피] 빈티지 사선 체크 모직 A라인 스커트 (S~XL)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "핏: A라인←A라인; 패턴: 체크←체크; 소재표현: 모직←모직",
+        "review": "—"
+      }
+    },
+    {
+      "row": 693,
+      "productNo": "76291088",
+      "product": "키치 빈티지 체크 언발 캉캉 밴딩 롱 스커트 (S~XL)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 롱←롱; 디자인: 캉캉←캉캉; 패턴: 체크←체크",
+        "review": "—"
+      }
+    },
+    {
+      "row": 705,
+      "productNo": "76291010",
+      "product": "절개 라인 뒷밴딩 코튼 롱 스커트 (아이보리, 블랙 / S~XL)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 롱←롱; 소재표현: 코튼←코튼",
+        "review": "—"
+      }
+    },
+    {
+      "row": 717,
+      "productNo": "76290252",
+      "product": "핀스트라이프 핀턱 하이웨스트 일자 와이드 슬랙스 롱팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "슬랙스",
+        "categoryEvidence": "슬랙스",
+        "attributes": "기장: 롱←롱; 핏: 일자←일자, 와이드←와이드; 디자인: 핀턱←핀턱; 패턴: 스트라이프←스트라이프",
+        "review": "—"
+      }
+    },
+    {
+      "row": 729,
+      "productNo": "76289707",
+      "product": "[꾸안꾸/힙캐주얼] 스티치 라인 힙한 밴딩 와이드팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "핏: 와이드←와이드",
+        "review": "—"
+      }
+    },
+    {
+      "row": 741,
+      "productNo": "76246482",
+      "product": "체크 언발 셔츠묶음 레이어드 플레어 숏스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 숏←숏; 핏: 플레어←플레어; 패턴: 체크←체크",
+        "review": "—"
+      }
+    },
+    {
+      "row": 753,
+      "productNo": "76245942",
+      "product": "인생핏 하이웨스트 버튼 밴딩 데님 숏팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "숏팬츠",
+        "attributes": "기장: 숏←숏; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 765,
+      "productNo": "76244218",
+      "product": "[비율천재/빅사이즈] 하이웨스트 투버튼 트임 일자 와이드 청바지 데님 팬츠 (L~4XL)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "바지, 팬츠",
+        "attributes": "핏: 일자←일자, 와이드←와이드; 디자인: 트임←트임; 소재표현: 데님←청바지/데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 777,
+      "productNo": "76224452",
+      "product": "하이웨스트 빈티지 아가일 모직 A라인 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "핏: A라인←A라인; 패턴: 아가일←아가일; 소재표현: 모직←모직",
+        "review": "—"
+      }
+    },
+    {
+      "row": 789,
+      "productNo": "76224137",
+      "product": "[체형커버/데일리] A라인 찰랑 주름 롱 스커트 플리츠 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 롱←롱; 핏: A라인←A라인; 디자인: 플리츠←플리츠",
+        "review": "—"
+      }
+    },
+    {
+      "row": 801,
+      "productNo": "76223979",
+      "product": "[데이트룩/하객룩] 라운드넥 민소매 A라인 플레어 미니 원피스 (퍼플,크림,블랙)",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "미니원피스",
+        "categoryEvidence": "원피스, 미니",
+        "attributes": "기장: 미니←미니; 핏: A라인←A라인, 플레어←플레어; 넥라인: 라운드←라운드넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 813,
+      "productNo": "76065455",
+      "product": "[데일리필수] 루즈핏 린넨 셔츠원피스 롱 반팔 포켓 사이드트임 여름원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 핏: 루즈←루즈핏; 디자인: 트임←트임; 소재표현: 린넨←린넨; 형태: 셔츠형←셔츠",
+        "review": "—"
+      }
+    },
+    {
+      "row": 825,
+      "productNo": "76067123",
+      "product": "[여리핏/바스락] 입체 핀턱 주름 플레어 롱 나시 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 핏: 플레어←플레어; 디자인: 핀턱←핀턱",
+        "review": "—"
+      }
+    },
+    {
+      "row": 837,
+      "productNo": "76067113",
+      "product": "[키치무드] 잔잔 체크 넥 배색 핀턱 민소매 롱 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 디자인: 핀턱←핀턱; 패턴: 체크←체크",
+        "review": "—"
+      }
+    },
+    {
+      "row": 849,
+      "productNo": "76067103",
+      "product": "[바스락/스트링] 셔링 포켓 스포티 벌룬 민소매 롱 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 핏: 벌룬←벌룬; 디자인: 셔링←셔링",
+        "review": "—"
+      }
+    },
+    {
+      "row": 861,
+      "productNo": "75410090",
+      "product": "[L~4XL] 페미닌 V넥 셔링 플레어 펀칭 자수 반팔 블라우스",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "블라우스",
+        "categoryEvidence": "블라우스",
+        "attributes": "핏: 플레어←플레어; 디자인: 셔링←셔링, 펀칭←펀칭, 자수←자수; 넥라인: 브이넥←V넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 873,
+      "productNo": "75410018",
+      "product": "살랑핏 플레어 캉캉 반팔 롱 원피스 (M~4XL)",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 핏: 플레어←플레어; 디자인: 캉캉←캉캉",
+        "review": "—"
+      }
+    },
+    {
+      "row": 885,
+      "productNo": "75409941",
+      "product": "[Y2K/스트릿] 빈티지 워싱 카고 데님 버뮤다 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "버뮤다",
+        "attributes": "소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 897,
+      "productNo": "75409861",
+      "product": "벌룬핏 카고 포켓 밴딩 숏팬츠 반바지 (5color)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "숏팬츠, 반바지",
+        "attributes": "기장: 숏←숏; 핏: 벌룬←벌룬핏",
+        "review": "—"
+      }
+    },
+    {
+      "row": 909,
+      "productNo": "75409805",
+      "product": "어깨 트임 숄더 컷아웃 시스루 니트 데이트룩 (2color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "니트",
+        "categoryEvidence": "니트",
+        "attributes": "디자인: 트임←트임; 소재표현: 니트←니트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 921,
+      "productNo": "75409731",
+      "product": "노카라 세로 스트라이프 롤업 셔츠 블라우스",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "미확인",
+        "categoryEvidence": "셔츠, 블라우스",
+        "attributes": "넥라인: 노카라←노카라; 패턴: 스트라이프←스트라이프",
+        "review": "셔츠/블라우스 경쟁"
+      }
+    },
+    {
+      "row": 933,
+      "productNo": "75409594",
+      "product": "[비율보정/힙스터] 디스트로이드 워싱 와이드 롱 데님 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "기장: 롱←롱; 핏: 와이드←와이드; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 945,
+      "productNo": "75319817",
+      "product": "잔스트라이프 드롭숄더 클래식 루즈핏 셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "셔츠",
+        "categoryEvidence": "셔츠",
+        "attributes": "핏: 루즈←루즈핏; 패턴: 스트라이프←스트라이프",
+        "review": "—"
+      }
+    },
+    {
+      "row": 957,
+      "productNo": "75319782",
+      "product": "하객룩 허리버클 포인트 핀턱 플리츠 A라인 롱 스커트 (3color)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 롱←롱; 핏: A라인←A라인; 디자인: 플리츠←플리츠, 핀턱←핀턱",
+        "review": "—"
+      }
+    },
+    {
+      "row": 969,
+      "productNo": "75319674",
+      "product": "[여리핏/발레코어] 뷔스티에 콩단추 캉캉 프릴 미니 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "미니원피스",
+        "categoryEvidence": "원피스, 미니",
+        "attributes": "기장: 미니←미니; 디자인: 프릴←프릴, 캉캉←캉캉",
+        "review": "—"
+      }
+    },
+    {
+      "row": 981,
+      "productNo": "75319577",
+      "product": "러블리 페미닌 밑단 레이스 핀턱 셔츠 블라우스 (2color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "미확인",
+        "categoryEvidence": "셔츠, 블라우스",
+        "attributes": "디자인: 핀턱←핀턱, 레이스←레이스",
+        "review": "셔츠/블라우스 경쟁"
+      }
+    },
+    {
+      "row": 993,
+      "productNo": "75268440",
+      "product": "바스락 스트링 밴딩 카고 나일론 하프 팬츠 (4color)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "하프 팬츠",
+        "attributes": "소재표현: 나일론←나일론",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1005,
+      "productNo": "75266705",
+      "product": "[S~XL] 실루엣 절개 라인 슬림핏 머메이드 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "핏: 슬림←슬림핏, 머메이드←머메이드",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1017,
+      "productNo": "75265033",
+      "product": "[러블리/여리핏] 넥셔링 밴딩스모크 소매 핀턱 블라우스",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "블라우스",
+        "categoryEvidence": "블라우스",
+        "attributes": "디자인: 셔링←셔링, 핀턱←핀턱",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1029,
+      "productNo": "75264342",
+      "product": "[여름신상/살랑핏] 땡땡이 잔도트 캉캉 허리밴딩 롱 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 롱←롱; 디자인: 캉캉←캉캉; 패턴: 도트←땡땡이/도트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1041,
+      "productNo": null,
+      "product": "[인생핏/데일리룩] 데일리 배색 단가라 스트라이프 루즈핏 반팔 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "핏: 루즈←루즈핏; 패턴: 스트라이프←단가라/스트라이프",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1053,
+      "productNo": "71126350",
+      "product": "[1+1/인생핏/캡내장] 원쁠원 키치 골지 헨리넥 단추 민소매 끈나시 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "나시·슬리브리스",
+        "categoryEvidence": "나시",
+        "attributes": "넥라인: 헨리넥←헨리넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1065,
+      "productNo": "71126316",
+      "product": "[색상맛집/퀄리티/색상별소장] 키치 키링 스퀘어넥 스파게티 끈 나시 민소매 티셔츠 (5color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "나시·슬리브리스",
+        "categoryEvidence": "나시",
+        "attributes": "넥라인: 스퀘어넥←스퀘어넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1077,
+      "productNo": "71126273",
+      "product": "[여름필수/찰랑핏] 텐셀 썸머 시스루 브이넥 가디건 에어컨대비 긴팔 자외선차단",
+      "expected": {
+        "primaryCategory": "아우터",
+        "secondaryCategory": "가디건",
+        "categoryEvidence": "가디건",
+        "attributes": "넥라인: 브이넥←브이넥; 소재표현: 텐셀←텐셀",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1089,
+      "productNo": "71126182",
+      "product": "[핏보장/Y2K] 힙한 무드 나일론 와이드 카고 조거 팬츠 스트링 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "핏: 와이드←와이드; 소재표현: 나일론←나일론",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1101,
+      "productNo": "71126142",
+      "product": "[여름필수/시스루] 여리루즈핏 썸머 체크 시스루 셔츠 에어컨대비 자외선차단 남방",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "셔츠",
+        "categoryEvidence": "셔츠",
+        "attributes": "핏: 루즈←루즈핏; 패턴: 체크←체크",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1113,
+      "productNo": "70339358",
+      "product": "[데일리룩/데이트룩] 배색 카라 타탄 체크 포켓 셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "셔츠",
+        "categoryEvidence": "셔츠",
+        "attributes": "넥라인: 카라←카라; 패턴: 체크←체크",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1125,
+      "productNo": "70339354",
+      "product": "프릴 타이 포인트 실키 퍼프 블라우스",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "블라우스",
+        "categoryEvidence": "블라우스",
+        "attributes": "디자인: 퍼프←퍼프, 프릴←프릴",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1137,
+      "productNo": "70339353",
+      "product": "도트나시 끈나시 슬리브리스 뷔스티에 여름코디 꾸안꾸 데이트룩 바캉스룩 빈티지무드",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "나시·슬리브리스",
+        "categoryEvidence": "나시, 슬리브리스",
+        "attributes": "패턴: 도트←도트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1149,
+      "productNo": "70339352",
+      "product": "[모리걸/빈티지] 키치 로맨틱 펀칭 레이스 밑단 밴딩 와이드 벌룬 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "핏: 벌룬←벌룬, 와이드←와이드; 디자인: 펀칭←펀칭, 레이스←레이스",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1161,
+      "productNo": "70339350",
+      "product": "[핏보장/여리여리] 여리핏 쫀쫀 골지 와이드 라운드 유넥 슬림 반팔 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "핏: 슬림←슬림",
+        "review": "넥라인 후보 충돌"
+      }
+    },
+    {
+      "row": 1173,
+      "productNo": "70339348",
+      "product": "[로맨틱무드] 밑단 레이스 믹스 레터링 반팔 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "디자인: 레이스←레이스",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1185,
+      "productNo": "70339347",
+      "product": "하이웨스트 도트무늬 땡땡이 와이드 롱 슬랙스 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "슬랙스",
+        "categoryEvidence": "슬랙스",
+        "attributes": "기장: 롱←롱; 핏: 와이드←와이드; 패턴: 도트←도트/땡땡이",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1197,
+      "productNo": "70339343",
+      "product": "[SET/여리핏] 레이스 브이넥 니트 + 체크 캉캉 롱 스커트 투피스 세트 (2color)",
+      "expected": {
+        "primaryCategory": "세트",
+        "secondaryCategory": "의류세트",
+        "categoryEvidence": "SET, 투피스, 세트",
+        "attributes": "미확인",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1209,
+      "productNo": "70339341",
+      "product": "[벨트셋트/기장선택] 로맨틱 빈티지 체크 퍼프 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "원피스(기장선택)",
+        "categoryEvidence": "원피스, 기장선택",
+        "attributes": "디자인: 퍼프←퍼프, 벨트←벨트; 패턴: 체크←체크",
+        "review": "기장 옵션 선택: 단일 기장 확정 금지"
+      }
+    },
+    {
+      "row": 1221,
+      "productNo": "70339339",
+      "product": "[로맨틱무드] 깅엄 체크 프릴 슬리브리스 블라우스",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "블라우스",
+        "categoryEvidence": "블라우스",
+        "attributes": "디자인: 프릴←프릴; 패턴: 체크←체크",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1233,
+      "productNo": "70260696",
+      "product": "[러블리무드] 플로럴 레이스 자수 셔링 페플럼 블라우스 (M~4XL)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "블라우스",
+        "categoryEvidence": "블라우스",
+        "attributes": "디자인: 셔링←셔링, 자수←자수, 레이스←레이스; 패턴: 플라워←플로럴",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1245,
+      "productNo": "70260224",
+      "product": "사선 랩 셔링 리본 와이드 스트라이프 팬츠 (3color)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "핏: 와이드←와이드; 디자인: 셔링←셔링, 리본←리본, 랩←랩; 패턴: 스트라이프←스트라이프",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1257,
+      "productNo": "70240597",
+      "product": "[여리핏/빈티지] 하이웨스트 샌드 워싱 와이드 데님 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "핏: 와이드←와이드; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1269,
+      "productNo": "70240592",
+      "product": "레이어드 나시 세트 레터링 크롭 티셔츠 단가라 나시 힙한룩 꾸안꾸룩",
+      "expected": {
+        "primaryCategory": "세트",
+        "secondaryCategory": "의류세트",
+        "categoryEvidence": "세트",
+        "attributes": "미확인",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1281,
+      "productNo": "70240590",
+      "product": "[핏보장/인생기본템] 쫀득 골지 라운드 스퀘어넥 레이어드 크롭 민소매 나시",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "나시·슬리브리스",
+        "categoryEvidence": "나시",
+        "attributes": "기장: 크롭←크롭",
+        "review": "넥라인 후보 충돌"
+      }
+    },
+    {
+      "row": 1293,
+      "productNo": "70240584",
+      "product": "[캡내장/4color] 헤일리 헨리넥 골지 캡나시 크롭 탑 민소매 이너 슬리브리스",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "나시·슬리브리스",
+        "categoryEvidence": "나시, 슬리브리스",
+        "attributes": "기장: 크롭←크롭; 넥라인: 헨리넥←헨리넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1305,
+      "productNo": "70226755",
+      "product": "빈티지 크랙 레더 하프문 버클 숄더 토트백 (4color)",
+      "expected": {
+        "primaryCategory": "가방",
+        "secondaryCategory": "가방",
+        "categoryEvidence": "토트백",
+        "attributes": "소재표현: 레더←레더",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1317,
+      "productNo": "70226729",
+      "product": "[스트릿] 내추럴 셔링 버클 호보 슬링백 바디백 (5color)",
+      "expected": {
+        "primaryCategory": "가방",
+        "secondaryCategory": "가방",
+        "categoryEvidence": "바디백",
+        "attributes": "디자인: 셔링←셔링",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1329,
+      "productNo": "70226034",
+      "product": "내추럴 소프트 하프문 미디엄 숄더 크로스백",
+      "expected": {
+        "primaryCategory": "가방",
+        "secondaryCategory": "가방",
+        "categoryEvidence": "크로스백",
+        "attributes": "미확인",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1341,
+      "productNo": "70224788",
+      "product": "[데일리] 미니멀 스퀘어 로프 스트랩 미니백",
+      "expected": {
+        "primaryCategory": "가방",
+        "secondaryCategory": "가방",
+        "categoryEvidence": "미니백",
+        "attributes": "미확인",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1353,
+      "productNo": "70179991",
+      "product": "에스닉 자수 핀턱 밴딩 와이드 반바지 (3color)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "반바지",
+        "attributes": "핏: 와이드←와이드; 디자인: 핀턱←핀턱, 자수←자수",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1365,
+      "productNo": "70178446",
+      "product": "여름 하이웨스트 밴딩 카고 숏팬츠 (블랙/크림/차콜)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "숏팬츠",
+        "attributes": "기장: 숏←숏",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1377,
+      "productNo": "69828834",
+      "product": "하이웨스트 와이드 데님 숏팬츠 A라인 연청 반바지",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "숏팬츠, 반바지",
+        "attributes": "기장: 숏←숏; 핏: A라인←A라인, 와이드←와이드; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1389,
+      "productNo": "69827394",
+      "product": "Y2K 로우 플리츠 데님 치마바지 생지 미니스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "치마바지",
+        "categoryEvidence": "치마바지",
+        "attributes": "기장: 미니←미니; 디자인: 플리츠←플리츠; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1401,
+      "productNo": "69826154",
+      "product": "인생핏 린넨 체크 와이드 팬츠 롱 슬랙스",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "슬랙스",
+        "categoryEvidence": "슬랙스",
+        "attributes": "기장: 롱←롱; 핏: 와이드←와이드; 패턴: 체크←체크; 소재표현: 린넨←린넨",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1413,
+      "productNo": "69822783",
+      "product": "핀턱 A라인 데님 치마바지 (3color)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "치마바지",
+        "categoryEvidence": "치마바지",
+        "attributes": "핏: A라인←A라인; 디자인: 핀턱←핀턱; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1425,
+      "productNo": "69531998",
+      "product": "[캐주얼/데일리룩] 데일리 자수 스트라이프 반팔 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "디자인: 자수←자수; 패턴: 스트라이프←스트라이프",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1437,
+      "productNo": "69531975",
+      "product": "파스텔 레이스 배색 셔링 퍼프 블라우스",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "블라우스",
+        "categoryEvidence": "블라우스",
+        "attributes": "디자인: 셔링←셔링, 퍼프←퍼프, 레이스←레이스",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1449,
+      "productNo": "69531939",
+      "product": "[벨트세트] 파리지앵 빈티지 핀턱 와이드 코튼 팬츠 (2color)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "핏: 와이드←와이드; 디자인: 핀턱←핀턱, 벨트←벨트; 소재표현: 코튼←코튼",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1461,
+      "productNo": "69531908",
+      "product": "[여리핏/러블리] 레이스 배색 스티치 리본 셔링 반팔 티셔츠 (2color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "디자인: 셔링←셔링, 리본←리본, 레이스←레이스",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1473,
+      "productNo": "69531874",
+      "product": "페미닌 무드 입술넥 드레이프 꼬임 슬림핏 반팔 티셔츠 데이트룩",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "핏: 슬림←슬림핏; 넥라인: 입술넥←입술넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1485,
+      "productNo": "69531847",
+      "product": "핀턱 와이드 밴딩 팬츠 가벼운 여름 찰랑 바지 체형커버",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠, 바지",
+        "attributes": "핏: 와이드←와이드; 디자인: 핀턱←핀턱",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1497,
+      "productNo": "69531812",
+      "product": "빈티지 무드 탄탄핏 사계절 와이드 일자 연청 데님 바지 (S/M/L)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "바지",
+        "attributes": "핏: 일자←일자, 와이드←와이드; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1509,
+      "productNo": "69382323",
+      "product": "[여리핏/6color] 레이스 배색 리본 포인트 셔링 슬림 반팔 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "핏: 슬림←슬림; 디자인: 셔링←셔링, 리본←리본, 레이스←레이스",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1521,
+      "productNo": "69382318",
+      "product": "[핏보장/와이드] 빈티지 중청 워싱 롱 데님 팬츠 (S/M/L)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "기장: 롱←롱; 핏: 와이드←와이드; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1533,
+      "productNo": "69382311",
+      "product": "[SET/여리무드] 레이스 뷔스티에 나시 + 베이직 반팔 티셔츠 코디 세트 (2color)",
+      "expected": {
+        "primaryCategory": "세트",
+        "secondaryCategory": "의류세트",
+        "categoryEvidence": "SET, 세트",
+        "attributes": "미확인",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1545,
+      "productNo": "69382303",
+      "product": "[SET/청순] 살랑 플라워 뷔스티에 원피스 + 시스루 니트 가디건 코디 세트",
+      "expected": {
+        "primaryCategory": "세트",
+        "secondaryCategory": "의류세트",
+        "categoryEvidence": "SET, 세트",
+        "attributes": "미확인",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1557,
+      "productNo": "69382297",
+      "product": "여리함 한스푼! 리본 셔링 캉캉 밴딩 롱 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 롱←롱; 디자인: 셔링←셔링, 리본←리본, 캉캉←캉캉",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1569,
+      "productNo": "69382270",
+      "product": "[미니&롱/벨트세트] 인생샷 보장 브이넥 셔링 리본 원피스 (2type)",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "원피스(기장선택)",
+        "categoryEvidence": "원피스, 미니&롱",
+        "attributes": "디자인: 셔링←셔링, 리본←리본, 벨트←벨트; 넥라인: 브이넥←브이넥",
+        "review": "기장 옵션 선택: 단일 기장 확정 금지"
+      }
+    },
+    {
+      "row": 1581,
+      "productNo": "69357561",
+      "product": "[SET/여리핏] 레이어드 브이넥 반팔 티셔츠 + 레이스 나시 코디 세트 (3color)",
+      "expected": {
+        "primaryCategory": "세트",
+        "secondaryCategory": "의류세트",
+        "categoryEvidence": "SET, 세트",
+        "attributes": "미확인",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1593,
+      "productNo": "69357560",
+      "product": "[키치무드] 잔도트 프릴 캉캉 밴딩 미니 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미니←미니; 디자인: 프릴←프릴, 캉캉←캉캉; 패턴: 도트←도트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1605,
+      "productNo": "69357558",
+      "product": "체크무늬 캉캉 밴딩 스커트 여리핏 프릴 롱치마 페미닌룩",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트, 치마",
+        "attributes": "기장: 롱←롱; 디자인: 프릴←프릴, 캉캉←캉캉; 패턴: 체크←체크",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1617,
+      "productNo": "69357556",
+      "product": "로맨틱무드 꽃무늬 셔링 롱 원피스 (2color)",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 디자인: 셔링←셔링; 패턴: 플라워←꽃무늬",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1629,
+      "productNo": "69357555",
+      "product": "여리함 끝판왕! 살랑살랑 플리츠 레이어드 롱 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 롱←롱; 디자인: 플리츠←플리츠",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1641,
+      "productNo": "69357551",
+      "product": "스티치 포인트 인생 데님 딥블루 와이드 일자 데님 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "핏: 일자←일자, 와이드←와이드; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1653,
+      "productNo": "69357164",
+      "product": "플랩 메쉬 위빙 스퀘어 미디 숄더백",
+      "expected": {
+        "primaryCategory": "가방",
+        "secondaryCategory": "가방",
+        "categoryEvidence": "숄더백",
+        "attributes": "소재표현: 메쉬←메쉬",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1665,
+      "productNo": "69357068",
+      "product": "플랫 잔체크 배색 스트링 와이드 롱 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "기장: 롱←롱; 핏: 와이드←와이드; 패턴: 체크←체크",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1677,
+      "productNo": "69304531",
+      "product": "샌드 스트라이프 리본 반팔 니트 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "디자인: 리본←리본; 패턴: 스트라이프←스트라이프; 소재표현: 니트←니트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1689,
+      "productNo": "69154850",
+      "product": "[소장가치] 퐁실한 실루엣 도트 벌룬 리본 밴딩 미니스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미니←미니; 핏: 벌룬←벌룬; 디자인: 리본←리본; 패턴: 도트←도트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1701,
+      "productNo": "69154499",
+      "product": "[발레코어룩] 레이어드 찰떡 자수 나비 레이스 밴딩 숏팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "숏팬츠",
+        "attributes": "기장: 숏←숏; 디자인: 자수←자수, 레이스←레이스",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1713,
+      "productNo": "69154183",
+      "product": "잔꽃 프릴 민소매 블라우스 페플럼 셔링 나시 (2color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "블라우스",
+        "categoryEvidence": "블라우스",
+        "attributes": "디자인: 셔링←셔링, 프릴←프릴; 패턴: 플라워←잔꽃",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1725,
+      "productNo": "69154137",
+      "product": "리본 레이스 브이넥 슬림 반팔 니트",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "니트",
+        "categoryEvidence": "니트",
+        "attributes": "핏: 슬림←슬림; 디자인: 리본←리본, 레이스←레이스; 넥라인: 브이넥←브이넥; 소재표현: 니트←니트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1737,
+      "productNo": "69154112",
+      "product": "데일리 트레이닝 밴딩 돌핀 숏팬츠 [3color]",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "숏팬츠",
+        "attributes": "기장: 숏←숏",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1749,
+      "productNo": "69154070",
+      "product": "빈티지 핑크 플라워 나시 미니 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "미니원피스",
+        "categoryEvidence": "원피스, 미니",
+        "attributes": "기장: 미니←미니; 패턴: 플라워←플라워",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1761,
+      "productNo": "69077520",
+      "product": "러블리핏 체크 퍼프 소매 카라 셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "셔츠",
+        "categoryEvidence": "셔츠",
+        "attributes": "디자인: 퍼프←퍼프; 넥라인: 카라←카라; 패턴: 체크←체크",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1773,
+      "productNo": "69076663",
+      "product": "하이틴 무드 체크 밴딩 리본 미니 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미니←미니; 디자인: 리본←리본; 패턴: 체크←체크",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1785,
+      "productNo": "69075478",
+      "product": "하트 버튼 레이스 트라이앵글 반팔 가디건 [2color]",
+      "expected": {
+        "primaryCategory": "아우터",
+        "secondaryCategory": "가디건",
+        "categoryEvidence": "가디건",
+        "attributes": "디자인: 레이스←레이스",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1797,
+      "productNo": "69036566",
+      "product": "러블리 플라워 패턴 밴딩 캉캉 미니스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미니←미니; 디자인: 캉캉←캉캉; 패턴: 플라워←플라워",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1809,
+      "productNo": "69035961",
+      "product": "여리핏 무드 사이드 버클 랩 맥시 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 맥시←맥시; 디자인: 랩←랩",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1821,
+      "productNo": "69357544",
+      "product": "[여신강림/청순] 살랑살랑 티어드 캉캉 샤 미디 롱 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "디자인: 캉캉←캉캉, 티어드←티어드",
+        "review": "미디/롱 충돌"
+      }
+    },
+    {
+      "row": 1833,
+      "productNo": "69357543",
+      "product": "[미니&롱/2버전] 빈티지 쁘띠 플라워 리본 퍼프 원피스 (2color)",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "원피스(기장선택)",
+        "categoryEvidence": "원피스, 미니&롱",
+        "attributes": "디자인: 리본←리본, 퍼프←퍼프; 패턴: 플라워←플라워",
+        "review": "기장 옵션 선택: 단일 기장 확정 금지"
+      }
+    },
+    {
+      "row": 1845,
+      "productNo": "69357542",
+      "product": "여리핏 쫀쫀탄탄 체형보정 브이넥 슬림 데일리 반팔 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "핏: 슬림←슬림; 넥라인: 브이넥←브이넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1857,
+      "productNo": "69357539",
+      "product": "탄탄데님 4부 빈티지 워싱 데님 반바지 하프 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "반바지, 하프 팬츠",
+        "attributes": "소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1869,
+      "productNo": "68933961",
+      "product": "청순발랄 벨트SET 하이웨스트 A라인 미니 프렌치무드 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미니←미니; 핏: A라인←A라인; 디자인: 벨트←벨트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1881,
+      "productNo": "68933958",
+      "product": "체형커버 프릴 벌룬 롱 스커트 밴딩 벌룬 치마",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트, 치마",
+        "attributes": "기장: 롱←롱; 핏: 벌룬←벌룬; 디자인: 프릴←프릴",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1893,
+      "productNo": "68933950",
+      "product": "여리핏 끝판왕 데이트룩추천 리본 반팔 셔츠 & 셔링 캉캉 스커트 셋업",
+      "expected": {
+        "primaryCategory": "세트",
+        "secondaryCategory": "의류세트",
+        "categoryEvidence": "셋업",
+        "attributes": "미확인",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1905,
+      "productNo": "68933893",
+      "product": "여리핏 자수포인트 클래식 꽈배기 카라 반팔 니트",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "니트",
+        "categoryEvidence": "니트",
+        "attributes": "디자인: 자수←자수; 넥라인: 카라←카라; 소재표현: 니트←니트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1917,
+      "productNo": "68933837",
+      "product": "기본템 꾸안꾸 캡내장 유넥 쫀쫀 골지 슬림핏 나시",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "나시·슬리브리스",
+        "categoryEvidence": "나시",
+        "attributes": "핏: 슬림←슬림핏; 넥라인: 유넥←유넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1929,
+      "productNo": "68933818",
+      "product": "청량무드 시어서커 여리핏 잔체크 셔링 캉캉 나시 롱 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 디자인: 셔링←셔링, 캉캉←캉캉; 패턴: 체크←체크; 소재표현: 시어서커←시어서커",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1941,
+      "productNo": "68933805",
+      "product": "감성무드 데일리 포켓 롤업 코튼 반팔 셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "셔츠",
+        "categoryEvidence": "셔츠",
+        "attributes": "소재표현: 코튼←코튼",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1953,
+      "productNo": "68933748",
+      "product": "심플 러블리 레이스 셔링 슬림핏 크롭 나시 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "나시·슬리브리스",
+        "categoryEvidence": "나시",
+        "attributes": "기장: 크롭←크롭; 핏: 슬림←슬림핏; 디자인: 셔링←셔링, 레이스←레이스",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1965,
+      "productNo": "68933693",
+      "product": "여리글램 캡내장 슬림핏 무드 V넥 심리스 크롭 캡 나시 2color",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "나시·슬리브리스",
+        "categoryEvidence": "나시",
+        "attributes": "기장: 크롭←크롭; 핏: 슬림←슬림핏; 넥라인: 브이넥←V넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1977,
+      "productNo": "68933635",
+      "product": "힙 와이드 벌룬핏 스포티 넘버링 조거 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "핏: 벌룬←벌룬핏, 와이드←와이드",
+        "review": "—"
+      }
+    },
+    {
+      "row": 1989,
+      "productNo": "68933560",
+      "product": "스트릿 피그먼트 그래픽 보트넥 반팔 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "넥라인: 보트넥←보트넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2001,
+      "productNo": "68933525",
+      "product": "여리핏 깔끔 기본템 U넥 슬리브 루즈핏 반팔 티셔츠 5color",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "핏: 루즈←루즈핏; 넥라인: 유넥←U넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2013,
+      "productNo": "68933451",
+      "product": "[여리핏] 로맨틱 빈티지 플라워 셔링 스퀘어넥 반팔 탑",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "탑(세부미확인)",
+        "categoryEvidence": "탑",
+        "attributes": "디자인: 셔링←셔링; 넥라인: 스퀘어넥←스퀘어넥; 패턴: 플라워←플라워",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2025,
+      "productNo": "68914397",
+      "product": "[데일리/스트릿] 빈티지 워싱 카고 데님 숏팬츠 반바지 (3color)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "숏팬츠, 반바지",
+        "attributes": "기장: 숏←숏; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2037,
+      "productNo": "68914352",
+      "product": "편안함 끝판왕! 와플 포켓 5부 트레이닝 팬츠 (아이보리, 블랙, 브라운)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "5부",
+        "attributes": "미확인",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2049,
+      "productNo": "68914301",
+      "product": "귀여움뿜뿜! 도트 패턴 밑단 레이스 밴딩 스커트 (네이비, 화이트)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "디자인: 레이스←레이스; 패턴: 도트←도트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2061,
+      "productNo": "68914241",
+      "product": "[시스루/여리핏] 언발 레이스 캉캉 밴딩 롱 스커트 2color",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 롱←롱; 디자인: 캉캉←캉캉, 레이스←레이스",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2073,
+      "productNo": "68914084",
+      "product": "[슬림핏/오피스룩] 라인 스트라이프 반팔 셔츠 블라우스",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "미확인",
+        "categoryEvidence": "셔츠, 블라우스",
+        "attributes": "핏: 슬림←슬림핏; 패턴: 스트라이프←스트라이프",
+        "review": "셔츠/블라우스 경쟁"
+      }
+    },
+    {
+      "row": 2085,
+      "productNo": "68914042",
+      "product": "아웃포켓 하이웨스트 데님 숏팬츠 반바지",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "숏팬츠, 반바지",
+        "attributes": "기장: 숏←숏; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2097,
+      "productNo": "68914016",
+      "product": "[바캉스/인생샷] 빈티지 워싱 데님 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2109,
+      "productNo": "68911554",
+      "product": "[인생비율/투버튼] 롤업 데님 숏팬츠 반바지 (3color)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "숏팬츠, 반바지",
+        "attributes": "기장: 숏←숏; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2121,
+      "productNo": "68911522",
+      "product": "[체형커버] 핀스트라이프 밴딩 와이드 슬랙스 팬츠 (3 color)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "슬랙스",
+        "categoryEvidence": "슬랙스",
+        "attributes": "핏: 와이드←와이드; 패턴: 스트라이프←스트라이프",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2133,
+      "productNo": "68911397",
+      "product": "하이웨스트 워싱 데님 백포켓 숏팬츠 핫팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "숏팬츠, 핫팬츠",
+        "attributes": "기장: 숏←숏; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2145,
+      "productNo": "68911202",
+      "product": "[여신핏] 살랑살랑 보헤미안 플라워 패턴 밴딩 롱 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 롱←롱; 패턴: 플라워←플라워",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2157,
+      "productNo": "68911123",
+      "product": "[여름필수/인생핏] 하이웨스트 실루엣 핀턱 와이드 롱 슬랙스",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "슬랙스",
+        "categoryEvidence": "슬랙스",
+        "attributes": "기장: 롱←롱; 핏: 와이드←와이드; 디자인: 핀턱←핀턱",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2169,
+      "productNo": "68911029",
+      "product": "[감성룩/레이어드] 빈티지 체크 버튼 뷔스티에 나시 탑",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "나시·슬리브리스",
+        "categoryEvidence": "나시",
+        "attributes": "패턴: 체크←체크",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2181,
+      "productNo": "68910986",
+      "product": "캉캉 프릴 셔링 미니 스커트 치마바지",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "치마바지",
+        "categoryEvidence": "치마바지",
+        "attributes": "기장: 미니←미니; 디자인: 셔링←셔링, 프릴←프릴, 캉캉←캉캉",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2193,
+      "productNo": "68746948",
+      "product": "빈티지 워싱 와이드 데님 버뮤다 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "버뮤다",
+        "attributes": "핏: 와이드←와이드; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2205,
+      "productNo": "68746724",
+      "product": "[하객룩/바캉스] 살랑살랑 플라워 잔꽃 프릴 스퀘어넥 롱 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 디자인: 프릴←프릴; 넥라인: 스퀘어넥←스퀘어넥; 패턴: 플라워←플라워/잔꽃",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2217,
+      "productNo": "68590045",
+      "product": "캘리포니아 배색 셔링 크롭 반팔 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "기장: 크롭←크롭; 디자인: 셔링←셔링",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2229,
+      "productNo": "68587734",
+      "product": "[청순가득/여신핏] 도트 캉캉 티어드 프릴 미디스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미디←미디; 디자인: 프릴←프릴, 캉캉←캉캉, 티어드←티어드; 패턴: 도트←도트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2241,
+      "productNo": "68585175",
+      "product": "비율천재 로맨틱 사이드 스트랩 셔링 티어드 미니스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미니←미니; 디자인: 셔링←셔링, 티어드←티어드",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2253,
+      "productNo": "68460262",
+      "product": "[단품/세트]러블리 무드 유럽감성 리본 레이스 블라우스 + 프릴 롱 스커트 셋업 2color",
+      "expected": {
+        "primaryCategory": "미확인",
+        "secondaryCategory": "미확인",
+        "categoryEvidence": "단품/세트, 블라우스, 스커트, 셋업",
+        "attributes": "미확인",
+        "review": "단품/세트 판매구성 혼합"
+      }
+    },
+    {
+      "row": 2265,
+      "productNo": "68460236",
+      "product": "키치 빈티지 여리무드 스퀘어넥 펀칭 레이스 나시 블라우스",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "블라우스",
+        "categoryEvidence": "블라우스",
+        "attributes": "디자인: 펀칭←펀칭, 레이스←레이스; 넥라인: 스퀘어넥←스퀘어넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2277,
+      "productNo": "68460226",
+      "product": "트렌디 벌룬 실루엣 나일론 바스락 스트링 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "핏: 벌룬←벌룬; 소재표현: 나일론←나일론",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2289,
+      "productNo": "68460214",
+      "product": "꾸안꾸 정석 배색 3줄 라인 오버핏 반팔 반바지 셋업 세트",
+      "expected": {
+        "primaryCategory": "세트",
+        "secondaryCategory": "의류세트",
+        "categoryEvidence": "셋업, 세트",
+        "attributes": "미확인",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2301,
+      "productNo": "68460198",
+      "product": "찰랑거리는 핏 여리핏 내추럴 세로 줄무늬 롱 와이드 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "기장: 롱←롱; 핏: 와이드←와이드; 패턴: 스트라이프←줄무늬",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2313,
+      "productNo": "68460169",
+      "product": "여리핏 밴딩 꾸안꾸 필수템 체형커버 데님 숏 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "숏 팬츠",
+        "attributes": "기장: 숏←숏; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2325,
+      "productNo": "68460124",
+      "product": "키치무드 빈티지 플라워 라인 루즈핏 긴팔 여름 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "핏: 루즈←루즈핏; 패턴: 플라워←플라워",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2337,
+      "productNo": "68333334",
+      "product": "나일론 스트링 카고 밴딩 미니스커트 (3color)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미니←미니; 소재표현: 나일론←나일론",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2349,
+      "productNo": "68330550",
+      "product": "스티치 핀턱 하이웨스트 와이드 숏팬츠 반바지",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "숏팬츠, 반바지",
+        "attributes": "기장: 숏←숏; 핏: 와이드←와이드; 디자인: 핀턱←핀턱",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2361,
+      "productNo": "68328485",
+      "product": "빈티지 레트로 워싱 데미지 미니 스커트 (3color)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미니←미니",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2373,
+      "productNo": "68327490",
+      "product": "[인생스커트] 시선강탈 플리츠 테니스 미니 스커트 (2color)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미니←미니; 디자인: 플리츠←플리츠",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2385,
+      "productNo": "68324352",
+      "product": "[하객룩/데이트룩] 포켓 링 벨티드 카라 셔츠 롱 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 디자인: 벨트←벨티드; 넥라인: 카라←카라; 형태: 셔츠형←셔츠",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2397,
+      "productNo": "68314820",
+      "product": "[바캉스룩/체형커버] 잔꽃 패턴 뷔스티에 롱 와이드 점프수트 멜빵 바지",
+      "expected": {
+        "primaryCategory": "기타",
+        "secondaryCategory": "점프수트",
+        "categoryEvidence": "점프수트",
+        "attributes": "기장: 롱←롱; 핏: 와이드←와이드; 패턴: 플라워←잔꽃",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2409,
+      "productNo": "68313364",
+      "product": "[여리핏/글램] 스퀘어 헨리넥 슬림 골지 반팔 티셔츠 (4color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "핏: 슬림←슬림; 넥라인: 헨리넥←헨리넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2421,
+      "productNo": "68311174",
+      "product": "꾸안꾸 2WAY 포켓 크롭 반팔 집업 셔츠 자켓",
+      "expected": {
+        "primaryCategory": "미확인",
+        "secondaryCategory": "미확인",
+        "categoryEvidence": "셔츠, 자켓",
+        "attributes": "미확인",
+        "review": "셔츠/자켓 경쟁"
+      }
+    },
+    {
+      "row": 2433,
+      "productNo": "68253430",
+      "product": "키치무드 빈티지 워싱 언발 밑단 리본 반팔 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "디자인: 리본←리본",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2445,
+      "productNo": "68250527",
+      "product": "[체형커버/러블리] 하이웨스트 벌룬 핀턱 숏팬츠 (2color)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "숏팬츠",
+        "attributes": "기장: 숏←숏; 핏: 벌룬←벌룬; 디자인: 핀턱←핀턱",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2457,
+      "productNo": "68249381",
+      "product": "인생핏 러블리 리본 하이웨스트 A라인 데님 숏팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "숏팬츠",
+        "attributes": "기장: 숏←숏; 핏: A라인←A라인; 디자인: 리본←리본; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2469,
+      "productNo": "68247369",
+      "product": "데일리 무드 롤업 치노 반바지 숏팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "반바지, 숏팬츠",
+        "attributes": "기장: 숏←숏",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2481,
+      "productNo": "68194444",
+      "product": "[무드갑/휴양지룩] 여신 강림 언밸런스 손수건 라인 롱 스커트 (2color)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 롱←롱",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2493,
+      "productNo": "68194443",
+      "product": "[러블리/데일리] 리본 밴딩 셔링 A라인 플레어 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "핏: A라인←A라인, 플레어←플레어; 디자인: 셔링←셔링, 리본←리본",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2505,
+      "productNo": "68149309",
+      "product": "[비율천재] 하이웨스트 투포켓 카고 청반바지 데님 숏팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "반바지, 숏팬츠",
+        "attributes": "기장: 숏←숏; 소재표현: 데님←청반바지/데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2517,
+      "productNo": "68146128",
+      "product": "발레코어 하이틴 로우라이즈 셔링 프릴 레이어드 캉캉 치마",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "치마",
+        "attributes": "디자인: 셔링←셔링, 프릴←프릴, 캉캉←캉캉",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2529,
+      "productNo": "68065017",
+      "product": "[데일리/출근룩] 슬랙스 무드 A라인 핀턱 반바지 숏팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "반바지, 숏팬츠",
+        "attributes": "기장: 숏←숏; 핏: A라인←A라인; 디자인: 핀턱←핀턱",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2541,
+      "productNo": null,
+      "product": "[여리핏/힙스터] 숄더 트임 빈티지 프린팅 박시 반팔티 스트릿룩",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "반팔티",
+        "attributes": "핏: 박시←박시; 디자인: 트임←트임",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2553,
+      "productNo": "68063059",
+      "product": "스트릿 NMB 레터링 배색 오버핏 반팔 티셔츠 (2color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "핏: 오버핏←오버핏",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2565,
+      "productNo": "68063336",
+      "product": "[감성 스트릿] 빈티지 피그먼트 M 레터링 오버핏 민소매 나시 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "나시·슬리브리스",
+        "categoryEvidence": "나시",
+        "attributes": "핏: 오버핏←오버핏",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2577,
+      "productNo": "67935356",
+      "product": "하체커버 하이웨스트 와이드 밴딩 치마바지 반바지",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "치마바지",
+        "categoryEvidence": "치마바지",
+        "attributes": "핏: 와이드←와이드",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2589,
+      "productNo": "67933825",
+      "product": "웰던 도그 유니크 그래픽 루즈핏 반팔 티셔츠 (2color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "핏: 루즈←루즈핏",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2601,
+      "productNo": "67933077",
+      "product": "데일리템 레이어드 이너 골지 민소매 나시 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "나시·슬리브리스",
+        "categoryEvidence": "나시",
+        "attributes": "미확인",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2613,
+      "productNo": "67932423",
+      "product": "로맨틱 플라워 플레어 캉캉 티어드 미니 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미니←미니; 핏: 플레어←플레어; 디자인: 캉캉←캉캉, 티어드←티어드; 패턴: 플라워←플라워",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2625,
+      "productNo": "67890306",
+      "product": "인생비율 비대칭 플리츠 언발 미니스커트 치마바지",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "치마바지",
+        "categoryEvidence": "치마바지",
+        "attributes": "기장: 미니←미니; 디자인: 플리츠←플리츠",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2637,
+      "productNo": "67889277",
+      "product": "색감깡패 라인 배색 단가라 스트라이프 반팔 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "패턴: 스트라이프←단가라/스트라이프",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2649,
+      "productNo": "67887722",
+      "product": "여리핏 스트라이프 오프숄더 리본 니트 (4color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "니트",
+        "categoryEvidence": "니트",
+        "attributes": "디자인: 리본←리본; 넥라인: 오프숄더←오프숄더; 패턴: 스트라이프←스트라이프; 소재표현: 니트←니트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2661,
+      "productNo": "67886442",
+      "product": "체형커버 피크닉 깅엄체크 멜빵 롱 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 패턴: 체크←체크",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2673,
+      "productNo": "67886122",
+      "product": "로맨틱 셔링 퍼프 소매 반팔 블라우스 데이트룩",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "블라우스",
+        "categoryEvidence": "블라우스",
+        "attributes": "디자인: 셔링←셔링, 퍼프←퍼프",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2685,
+      "productNo": "67886111",
+      "product": "스트릿 벌룬 와이트 카고 밴딩 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "핏: 벌룬←벌룬",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2697,
+      "productNo": "67886063",
+      "product": "컬러맛집 스퀘어넥 골지 슬림핏 니트 나시 (7color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "나시·슬리브리스",
+        "categoryEvidence": "나시",
+        "attributes": "핏: 슬림←슬림핏; 넥라인: 스퀘어넥←스퀘어넥; 소재표현: 니트←니트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2709,
+      "productNo": "67885946",
+      "product": "데일리 여리무드 U넥 스쿱넥 반팔 여름 니트 (6color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "니트",
+        "categoryEvidence": "니트",
+        "attributes": "넥라인: 유넥←U넥/스쿱넥; 소재표현: 니트←니트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2721,
+      "productNo": "67885412",
+      "product": "꾸안꾸 정석 하이웨스트 밴딩 와이드 팬츠 스트링 롱바지",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠, 바지",
+        "attributes": "기장: 롱←롱; 핏: 와이드←와이드",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2733,
+      "productNo": "67884972",
+      "product": "무드 가득 벌룬 와이드 절개 핀턱 코튼 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "핏: 벌룬←벌룬, 와이드←와이드; 디자인: 핀턱←핀턱; 소재표현: 코튼←코튼",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2745,
+      "productNo": "67722338",
+      "product": "빈티지 핀스트라이프 와이드 롱 슬랙스",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "슬랙스",
+        "categoryEvidence": "슬랙스",
+        "attributes": "기장: 롱←롱; 핏: 와이드←와이드; 패턴: 스트라이프←스트라이프",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2757,
+      "productNo": "67721150",
+      "product": "힙한 무드 레오파드 프릴 캉캉 미니스커트 (속바지내장)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미니←미니; 디자인: 프릴←프릴, 캉캉←캉캉; 패턴: 레오파드←레오파드",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2769,
+      "productNo": "67720061",
+      "product": "슬림핏 골지 나시 원피스 + 볼레로 가디건 SET (3color)",
+      "expected": {
+        "primaryCategory": "세트",
+        "secondaryCategory": "의류세트",
+        "categoryEvidence": "SET",
+        "attributes": "미확인",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2781,
+      "productNo": "67718663",
+      "product": "꾸안꾸 피케 카라 반팔 미니 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "미니원피스",
+        "categoryEvidence": "원피스, 미니",
+        "attributes": "기장: 미니←미니; 넥라인: 카라←카라",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2793,
+      "productNo": "67622358",
+      "product": "와플 반팔 티셔츠 밴딩 반바지 트레이닝 세트",
+      "expected": {
+        "primaryCategory": "세트",
+        "secondaryCategory": "의류세트",
+        "categoryEvidence": "세트",
+        "attributes": "미확인",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2805,
+      "productNo": "67620550",
+      "product": "핏보장 허리잘록 크롭 카라 노버튼 반팔 니트 (4color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "니트",
+        "categoryEvidence": "니트",
+        "attributes": "기장: 크롭←크롭; 넥라인: 카라←카라; 소재표현: 니트←니트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2817,
+      "productNo": "67618319",
+      "product": "찢청 와이드 데님  하이웨스트 버뮤다 팬츠 반바지",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "버뮤다, 반바지",
+        "attributes": "핏: 와이드←와이드; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2829,
+      "productNo": "67548212",
+      "product": "튤립 퍼프 소매 핀턱 롱 원피스 데이트룩 (2color)",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 디자인: 퍼프←퍼프, 핀턱←핀턱",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2841,
+      "productNo": "67547922",
+      "product": "여리핏 잔체크 캉캉 밴딩 롱 스커트 (2color)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 롱←롱; 디자인: 캉캉←캉캉; 패턴: 체크←체크",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2853,
+      "productNo": "67547740",
+      "product": "보더리스 레터링 크롭 나시 슬리브리스 민소매 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "나시·슬리브리스",
+        "categoryEvidence": "나시, 슬리브리스",
+        "attributes": "기장: 크롭←크롭",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2865,
+      "productNo": "67547518",
+      "product": "와이드 투라인 밴딩 트레이닝 트랙 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "핏: 와이드←와이드",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2877,
+      "productNo": "67547136",
+      "product": "썸머 아이스 벌룬 밴딩 와이드 팬츠 (5color)",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "핏: 벌룬←벌룬, 와이드←와이드",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2889,
+      "productNo": "67545180",
+      "product": "체형 커버 스트라이프 오버핏 롱 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 핏: 오버핏←오버핏; 패턴: 스트라이프←스트라이프",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2901,
+      "productNo": "68460064",
+      "product": "여리핏 잔꽃 레이스 리본 뷔스티에 슬립 나시 (2color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "나시·슬리브리스",
+        "categoryEvidence": "나시",
+        "attributes": "디자인: 리본←리본, 레이스←레이스; 패턴: 플라워←잔꽃",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2913,
+      "productNo": "68460034",
+      "product": "다리길어보이는 탄탄데님 하이웨스트 앞트림 롱 맥시 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 롱←롱, 맥시←맥시; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2925,
+      "productNo": "67630779",
+      "product": "하이웨스트 A라인 빈티지무드 미니 데님 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "기장: 미니←미니; 핏: A라인←A라인; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2937,
+      "productNo": "67431102",
+      "product": "여신무드 원숄더 도트 프릴 블라우스",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "블라우스",
+        "categoryEvidence": "블라우스",
+        "attributes": "디자인: 프릴←프릴; 넥라인: 원숄더←원숄더; 패턴: 도트←도트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2949,
+      "productNo": "67431095",
+      "product": "핏예쁜 노카라 골드버튼 2color 자켓",
+      "expected": {
+        "primaryCategory": "아우터",
+        "secondaryCategory": "자켓",
+        "categoryEvidence": "자켓",
+        "attributes": "넥라인: 노카라←노카라",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2961,
+      "productNo": "67431087",
+      "product": "와이드핏 여리핏 세로 스트라이프 롱 슬랙스 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "슬랙스",
+        "categoryEvidence": "슬랙스",
+        "attributes": "기장: 롱←롱; 핏: 와이드←와이드; 패턴: 스트라이프←스트라이프",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2973,
+      "productNo": "67431080",
+      "product": "여리루즈핏 체형조절 모던 베이직 카라 셔츠 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "원피스(기장미확인)",
+        "categoryEvidence": "원피스",
+        "attributes": "핏: 루즈←루즈핏; 넥라인: 카라←카라; 형태: 셔츠형←셔츠",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2985,
+      "productNo": "67431077",
+      "product": "인생와이드 빈티지 샌드 워싱 로우라이즈 데님 팬츠 스트릿룩",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 2997,
+      "productNo": "67431071",
+      "product": "휘뚜루마뚜루 볼드 스트라이프 단가라 라운드 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "넥라인: 라운드←라운드; 패턴: 스트라이프←스트라이프/단가라",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3009,
+      "productNo": "67431067",
+      "product": "프렌치무드 슬림 루즈핏 스트라이프 꾸안꾸 티셔츠 1color",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "패턴: 스트라이프←스트라이프",
+        "review": "슬림/루즈 충돌"
+      }
+    },
+    {
+      "row": 3021,
+      "productNo": "67431062",
+      "product": "여리여리 배색 라운드 스트라이프 반팔 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "넥라인: 라운드←라운드; 패턴: 스트라이프←스트라이프",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3033,
+      "productNo": "67431057",
+      "product": "공주무드 샤랄라 레이스 스퀘어넥 블라우스",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "블라우스",
+        "categoryEvidence": "블라우스",
+        "attributes": "디자인: 레이스←레이스; 넥라인: 스퀘어넥←스퀘어넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3045,
+      "productNo": "67431039",
+      "product": "페미닌 셔링 웨이스트 라운드넥 도트 실키 블라우스",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "블라우스",
+        "categoryEvidence": "블라우스",
+        "attributes": "디자인: 셔링←셔링; 넥라인: 라운드←라운드넥; 패턴: 도트←도트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3057,
+      "productNo": "67431018",
+      "product": "딥블루 생지 와이드 롱 데님 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "기장: 롱←롱; 핏: 와이드←와이드; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3069,
+      "productNo": "67431012",
+      "product": "퓨어무드 러블리 땡땡이 도트 민소매 롱 루즈핏 바캉스 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 핏: 루즈←루즈핏; 패턴: 도트←땡땡이/도트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3081,
+      "productNo": "67431002",
+      "product": "여리핏 슬림핏 스트라이프 셔츠형 랩 블라우스 하객룩 오피스룩 데이트룩",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "블라우스",
+        "categoryEvidence": "블라우스",
+        "attributes": "핏: 슬림←슬림핏; 디자인: 랩←랩; 패턴: 스트라이프←스트라이프",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3093,
+      "productNo": "67430911",
+      "product": "꾸안꾸종결 데일리 배색 와이드 밴딩 반바지 3color",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "숏·하프팬츠",
+        "categoryEvidence": "반바지",
+        "attributes": "핏: 와이드←와이드",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3105,
+      "productNo": "67430876",
+      "product": "꾸안꾸 데일리룩 하비클럽 레터링 반팔 티셔츠 2color",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "미확인",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3117,
+      "productNo": "67430828",
+      "product": "체형커버룩 데일리룩 하이웨스트 핀턱 데님 롱 스커트 A라인 진청치마",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트, 치마",
+        "attributes": "기장: 롱←롱; 핏: A라인←A라인; 디자인: 핀턱←핀턱; 소재표현: 데님←데님",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3129,
+      "productNo": "67426986",
+      "product": "체형커버 나일론 벌룬팬츠 핀턱 와이드 트레이닝 스트릿 조거 팬츠",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "팬츠(세부미확인)",
+        "categoryEvidence": "팬츠",
+        "attributes": "핏: 벌룬←벌룬, 와이드←와이드; 디자인: 핀턱←핀턱; 소재표현: 나일론←나일론",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3141,
+      "productNo": "67409434",
+      "product": "체형커버 끝판왕 [셋업] 스트릿 배색 카라 반팔 + 반바지 세트 (2 color)",
+      "expected": {
+        "primaryCategory": "세트",
+        "secondaryCategory": "의류세트",
+        "categoryEvidence": "셋업, 세트",
+        "attributes": "미확인",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3153,
+      "productNo": "67430676",
+      "product": "하이웨스트 포인트 버튼 A라인 플리츠 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "핏: A라인←A라인; 디자인: 플리츠←플리츠",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3165,
+      "productNo": "67428544",
+      "product": "뒷태반전 셔링 뷔스티에 미니 원피스 썸머 바캉스룩",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "미니원피스",
+        "categoryEvidence": "원피스, 미니",
+        "attributes": "기장: 미니←미니; 디자인: 셔링←셔링",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3177,
+      "productNo": "67395158",
+      "product": "레이스 스커트 캉캉치마 미니 셔링 프릴 자수 코튼 밴딩",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트, 치마",
+        "attributes": "기장: 미니←미니; 디자인: 셔링←셔링, 프릴←프릴, 캉캉←캉캉, 자수←자수, 레이스←레이스; 소재표현: 코튼←코튼",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3189,
+      "productNo": "67394546",
+      "product": "레이스 반바지 펀칭 자수 치마바지 허리밴딩 A라인 여리핏",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "치마바지",
+        "categoryEvidence": "치마바지",
+        "attributes": "핏: A라인←A라인; 디자인: 펀칭←펀칭, 자수←자수, 레이스←레이스",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3201,
+      "productNo": "67394320",
+      "product": "발레코어 러블리 무드 리본 포인트 셔링 벌룬 스커트",
+      "expected": {
+        "primaryCategory": "하의",
+        "secondaryCategory": "스커트",
+        "categoryEvidence": "스커트",
+        "attributes": "핏: 벌룬←벌룬; 디자인: 셔링←셔링, 리본←리본",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3213,
+      "productNo": "67393542",
+      "product": "여리여리 스퀘어넥 리본 퍼프 소매 블라우스",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "블라우스",
+        "categoryEvidence": "블라우스",
+        "attributes": "디자인: 리본←리본, 퍼프←퍼프; 넥라인: 스퀘어넥←스퀘어넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3225,
+      "productNo": "67251659",
+      "product": "여리핏 무드 셔링 브이넥 반소매 플레어 롱 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 핏: 플레어←플레어; 디자인: 셔링←셔링; 넥라인: 브이넥←브이넥",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3237,
+      "productNo": "67251185",
+      "product": "슬림핏 유니크 버튼 골지 크롭 카라 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "기장: 크롭←크롭; 핏: 슬림←슬림핏; 넥라인: 카라←카라",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3249,
+      "productNo": "67250963",
+      "product": "청순/러블리 레이스 리본 펀칭 퍼프 핀턱 블라우스 (3color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "블라우스",
+        "categoryEvidence": "블라우스",
+        "attributes": "디자인: 리본←리본, 퍼프←퍼프, 핀턱←핀턱, 펀칭←펀칭, 레이스←레이스",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3261,
+      "productNo": "67250610",
+      "product": "키치 무드 레이스 배색 세로 스트라이프 셔링 블라우스",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "블라우스",
+        "categoryEvidence": "블라우스",
+        "attributes": "디자인: 셔링←셔링, 레이스←레이스; 패턴: 스트라이프←스트라이프",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3273,
+      "productNo": "67225964",
+      "product": "슬림핏 골지 라운드넥 반팔 카디건 티셔츠 (8 color)",
+      "expected": {
+        "primaryCategory": "미확인",
+        "secondaryCategory": "미확인",
+        "categoryEvidence": "카디건, 티셔츠",
+        "attributes": "미확인",
+        "review": "카디건/티셔츠 경쟁"
+      }
+    },
+    {
+      "row": 3285,
+      "productNo": "67225360",
+      "product": "Y2K 마가리타빌 빈티지 워싱 반팔 크롭티",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "크롭티",
+        "attributes": "기장: 크롭←크롭",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3297,
+      "productNo": "67183230",
+      "product": "꽈배기 패턴 슬림핏 카라 반팔 니트 (그레이/화이트)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "니트",
+        "categoryEvidence": "니트",
+        "attributes": "핏: 슬림←슬림핏; 넥라인: 카라←카라; 소재표현: 니트←니트",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3309,
+      "productNo": "67182654",
+      "product": "러블리/분위기깡패/주문폭주 은은한 수채화 플라워 퍼프 쉬폰 롱 원피스 (Yellow/Pink)",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 디자인: 퍼프←퍼프; 패턴: 플라워←플라워; 소재표현: 쉬폰←쉬폰",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3321,
+      "productNo": "67182128",
+      "product": "여리핏/인생샷/인간포카리룩 청순 핀턱 셔링 퍼프 롱 원피스",
+      "expected": {
+        "primaryCategory": "원피스",
+        "secondaryCategory": "롱원피스",
+        "categoryEvidence": "원피스, 롱",
+        "attributes": "기장: 롱←롱; 디자인: 셔링←셔링, 퍼프←퍼프, 핀턱←핀턱",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3333,
+      "productNo": "67118227",
+      "product": "귀염뽀짝 애플 체크 자수 중량 반팔 티셔츠",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "디자인: 자수←자수; 패턴: 체크←체크",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3346,
+      "productNo": null,
+      "product": "청량감 끝판왕! 스퀘어넥 린넨 니트 단가라 티",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티",
+        "attributes": "넥라인: 스퀘어넥←스퀘어넥; 패턴: 스트라이프←단가라; 소재표현: 니트←니트, 린넨←린넨",
+        "review": "—"
+      }
+    },
+    {
+      "row": 3359,
+      "productNo": null,
+      "product": "여리핏 쫀쫀 배색 나그랑 슬림 반팔 티셔츠 (5color)",
+      "expected": {
+        "primaryCategory": "상의",
+        "secondaryCategory": "티셔츠",
+        "categoryEvidence": "티셔츠",
+        "attributes": "핏: 슬림←슬림",
+        "review": "—"
+      }
+    }
+  ]
+}

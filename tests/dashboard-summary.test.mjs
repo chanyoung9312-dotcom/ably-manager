@@ -54,10 +54,13 @@ test("매출 화면은 취소를 하나로 합치고 취소 반품 시트 매칭
   );
   assert.match(source, /const claims = \(data\.claims \|\| \[\]\)\.filter\(inPeriod\)/);
   assert.match(source, /const cancel = claims\.filter\(isCancellationClaim\)/);
-  assert.match(source, /const returns = claims\.filter\(\(item\) => !isCancellationClaim\(item\)\)/);
-  assert.match(source, />취소</);
-  assert.match(source, />반품</);
+  assert.match(source, /const returns = claims\.filter\(\(item\) => item\.kind === "return"\)/);
+  assert.match(source, />취소 접수</);
+  assert.match(source, />반품 접수</);
   assert.match(source, />실매출</);
+  assert.match(source, /net: sum\(orders, "netSales"\)/);
+  assert.match(source, /finalQty = sum\(orders, "netQty"\)/);
+  assert.doesNotMatch(source, /cancelText|uniqueClaims/);
   assert.match(source, /취소·반품 시트와 원주문이 매칭된 건/);
   assert.doesNotMatch(source, />발주 전 취소</);
   assert.doesNotMatch(source, />발주 후 취소</);

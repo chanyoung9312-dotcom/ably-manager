@@ -34,9 +34,9 @@ test("query tool navigation resolves sms, post, and tracking modes", () => {
   assert.match(nav, /\["송장 매칭", "\/\?tool=tracking"\]/);
   assert.match(nav, /window\.location\.assign\(href\)/);
   assert.match(home, /\["sms", "post", "tracking"\]\.includes\(tool\)/);
-  assert.match(home, /location\.href = "\/\?tool=sms"/);
-  assert.match(home, /location\.href = "\/\?tool=post"/);
-  assert.match(home, /location\.href = "\/\?tool=tracking"/);
+  // Root-page duplicate buttons were removed; the global menu owns navigation.
+  assert.match(nav, /onClick=\{\(\) => go\(href\)\}/);
+  assert.match(home, /setMode\(\["sms", "post", "tracking"\]\.includes\(tool\) \? tool : "home"\)/);
 });
 
 test("feature pages rely on the single global home action", () => {
