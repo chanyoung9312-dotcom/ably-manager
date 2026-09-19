@@ -180,6 +180,7 @@ test("readiness metadata is translated without activating strong or weak sourcin
 test("the UI fetches live diagnostics and avoids recommendation ranking language", () => {
   const page = fs.readFileSync(new URL("../app/sourcing/page.js", import.meta.url), "utf8");
   const route = fs.readFileSync(new URL("../app/api/sourcing-signals/route.js", import.meta.url), "utf8");
+  const candidateView = fs.readFileSync(new URL("../lib/sourcing-candidate-view.mjs", import.meta.url), "utf8");
   assert.match(page, /fetch\("\/api\/sourcing-signals"/);
   assert.match(route, /loadDashboard\(\)/);
   assert.match(route, /buildLiveSourcingDiagnostics/);
@@ -193,10 +194,10 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
   assert.match(page, /주문 수집 완전성·노출수·테스트 기간/);
   assert.match(page, /판정 준비 상태/);
   assert.match(page, /소싱 검토 분류/);
-  assert.match(page, /소싱 검토 후보/);
-  assert.match(page, /히트 구조 참고/);
-  assert.match(page, /추가 관찰/);
-  assert.match(page, /데이터 보류/);
+  assert.match(candidateView, /소싱 검토 후보/);
+  assert.match(candidateView, /히트 구조 참고/);
+  assert.match(candidateView, /추가 관찰/);
+  assert.match(candidateView, /데이터 보류/);
   assert.match(page, /현재 판매 가능 여부/);
   assert.doesNotMatch(page, /사입 판단용 수량/);
   assert.match(page, /판단 반영 수량/);
