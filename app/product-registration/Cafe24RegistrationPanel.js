@@ -2,6 +2,9 @@
 
 import { useMemo, useState } from "react";
 import {
+  FIXED_SUPPLY_PRICE,
+  calculateNetMargin,
+  calculateSalePrice,
   makeOptionGroups,
   normalizeProductTags,
   parseRegistrationPaste,
@@ -82,13 +85,23 @@ function numberText(value) {
   return String(value || "").replace(/[^0-9]/g, "");
 }
 
+function decimalText(value) {
+  const normalized = String(value || "")
+    .replace(/,/g, ".")
+    .replace(/[^0-9.]/g, "");
+  const [whole = "", ...rest] = normalized.split(".");
+  return rest.length ? `${whole}.${rest.join("")}` : whole;
+}
+
 export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }) {
   const [pasteText, setPasteText] = useState("");
   const [productNames, setProductNames] = useState([]);
   const [form, setForm] = useState({
     productName: "",
+    yuanCost: "",
+    targetMargin: "",
     price: "",
-    supplyPrice: "",
+    supplyPrice: String(FIXED_SUPPLY_PRICE),
     colors: "",
     sizes: "",
     hashtags: "",
@@ -104,19 +117,38 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
     [form.colors, form.sizes],
   );
   const tags = useMemo(() => normalizeProductTags(form.hashtags), [form.hashtags]);
+  const actualMargin = useMemo(
+    () => calculateNetMargin(form.yuanCost, form.price),
+    [form.yuanCost, form.price],
+  );
 
   function patch(key, value) {
-    setForm((current) => ({ ...current, [key]: value }));
+    setForm((current) => {
+      const next = { ...current, [key]: value };
+      if (key === "yuanCost" || key === "targetMargin") {
+        const calculated = calculateSalePrice(next.yuanCost, next.targetMargin);
+        if (calculated !== null) next.price = String(calculated);
+      }
+      return next;
+    });
     setResult(null);
   }
 
   function applyPaste() {
     const parsed = parseRegistrationPaste(pasteText);
+    const yuanCost = decimalText(parsed.yuanCost);
+    const targetMargin = numberText(parsed.targetMargin);
+    const calculatedPrice = calculateSalePrice(yuanCost, targetMargin);
     setProductNames(parsed.productNames || []);
     setForm({
       productName: parsed.productName || "",
-      price: numberText(parsed.price),
-      supplyPrice: numberText(parsed.supplyPrice),
+      yuanCost,
+      targetMargin,
+      price:
+        calculatedPrice !== null
+          ? String(calculatedPrice)
+          : numberText(parsed.price),
+      supplyPrice: String(FIXED_SUPPLY_PRICE),
       colors: parsed.colors || "",
       sizes: parsed.sizes || "",
       hashtags: parsed.hashtags || "",
@@ -173,11 +205,6 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
       setStatus("판매가를 입력해주세요.");
       return;
     }
-    if (!numberText(form.supplyPrice)) {
-      setStatus("공급가를 입력해주세요.");
-      return;
-    }
-
     setBusy(true);
     setConnectUrl("");
     setStatus("정리 이미지를 등록용으로 준비하는 중...");
@@ -208,7 +235,7 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
       const { response, data } = await postJson("/api/cafe24/products", {
         productName: form.productName.trim(),
         price: Number(numberText(form.price)),
-        supplyPrice: Number(numberText(form.supplyPrice)),
+        supplyPrice: FIXED_SUPPLY_PRICE,
         description: form.description,
         tags,
         optionGroups,
@@ -266,7 +293,7 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
           aria-label="ChatGPT 상품정보 붙여넣기"
           value={pasteText}
           onChange={(event) => setPasteText(event.target.value)}
-          placeholder={"[OARS 등록용]\n상품명 1: ...\n상품명 2: ...\n상품명 3: ...\n판매가: ...\n공급가: ...\n색상: ...\n사이즈: ...\n해시태그: ...\n상세페이지 문구:\n..."}
+          placeholder={"[OARS 등록용]\n상품명 1: ...\n상품명 2: ...\n상품명 3: ...\n중국 원가: 53\n목표 순마진: 8000\n색상: ...\n사이즈: ...\n해시태그: ...\n상세페이지 문구:\n..."}
           rows={10}
         />
       </label>
@@ -295,14 +322,39 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
           />
         </label>
         <label>
+          <span>중국 원가 (위안)</span>
+          <input
+            aria-label="중국 원가 위안"
+            inputMode="decimal"
+            value={form.yuanCost}
+            onChange={(event) => patch("yuanCost", decimalText(event.target.value))}
+            placeholder="53"
+          />
+        </label>
+        <label>
+          <span>목표 순마진</span>
+          <input
+            aria-label="목표 순마진"
+            inputMode="numeric"
+            value={form.targetMargin}
+            onChange={(event) => patch("targetMargin", numberText(event.target.value))}
+            placeholder="8000"
+          />
+        </label>
+        <label>
           <span>판매가</span>
           <input
             aria-label="카페24 판매가"
             inputMode="numeric"
             value={form.price}
             onChange={(event) => patch("price", numberText(event.target.value))}
-            placeholder="29900"
+            placeholder="자동 계산"
           />
+          <small>
+            {actualMargin === null
+              ? "원가와 목표 순마진을 넣으면 100원 단위로 자동 계산됩니다."
+              : `현재 계산 순마진 ${actualMargin.toLocaleString("ko-KR")}원 · 판매가는 직접 수정 가능`}
+          </small>
         </label>
         <label>
           <span>공급가</span>
@@ -310,10 +362,13 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
             aria-label="카페24 공급가"
             inputMode="numeric"
             value={form.supplyPrice}
-            onChange={(event) => patch("supplyPrice", numberText(event.target.value))}
-            placeholder="12000"
+            readOnly
           />
+          <small>항상 10,000원으로 등록됩니다.</small>
         </label>
+        <p className="price-rule wide">
+          주문시트 MD 기준: 위안 원가 × 230 · 판매가의 8.5% + 10% + 10% · 원화원가의 5% · 5,000원을 반영해 목표 순마진을 맞춥니다.
+        </p>
         <label>
           <span>색상 옵션</span>
           <input
@@ -424,7 +479,7 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
         textarea{resize:vertical;line-height:1.55}.paste-box textarea{min-height:190px}
         .connection-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 14px;padding:10px 12px;border:1px solid #374247;border-radius:10px;background:#121719}.connection-row span{font-size:12px;color:#9eaaae}.connection-row button{white-space:nowrap;background:#293235;font-weight:800}
         .apply{margin:10px 0 18px;background:#293235;font-weight:900}
-        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.wide{grid-column:1/-1}.wide select{margin-bottom:2px}.wide small{color:#879397}
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.wide{grid-column:1/-1}.wide select{margin-bottom:2px}.form-grid small{color:#879397;line-height:1.45}.price-rule{margin:0;padding:10px 12px;border:1px solid #354044;border-radius:10px;background:#121719;color:#9eaaae;font-size:12px;line-height:1.55}
         .review{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}.review>div{padding:12px;border:1px solid #354044;border-radius:11px;background:#121719}.review span{display:block;font-size:12px;color:#8f9b9f}.review b{display:block;margin-top:4px;font-size:13px}
         .status{padding:11px 12px;border-radius:10px;background:#20282b;color:#e4eaec}.status.warn{border:1px solid #8a7546}
         .reconnect{width:100%;margin:0 0 10px;background:#3a3030;font-weight:900}.result{display:flex;flex-direction:column;gap:4px;padding:14px;border-radius:12px;margin:10px 0}.result.success{border:1px solid #52675d;background:#18221e}.result.partial{border:1px solid #8a7546;background:#282216}.result span{font-size:13px;color:#c2cbce}

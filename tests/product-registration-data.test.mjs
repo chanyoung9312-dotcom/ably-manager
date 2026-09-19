@@ -1,7 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  FIXED_SUPPLY_PRICE,
   buildCafe24Description,
+  calculateNetMargin,
+  calculateSalePrice,
   makeOptionGroups,
   normalizeProductTags,
   parseRegistrationPaste,
@@ -13,6 +16,8 @@ test("registration paste keeps one-copy workflow readable", () => {
 **상품명 1:** [가을신상] 슬림 골지 니트
 - 상품명 2: 데일리 골지 슬림 니트
 상품명 3: 가을 골지 라운드 니트
+중국 원가: 53
+목표 순마진: 5,295
 판매가: 29,900
 공급가: 12000
 색상: 블랙, 크림 / 브라운
@@ -25,6 +30,8 @@ test("registration paste keeps one-copy workflow readable", () => {
 [OARS 끝]
 `);
   assert.equal(parsed.productName, "[가을신상] 슬림 골지 니트");
+  assert.equal(parsed.yuanCost, "53");
+  assert.equal(parsed.targetMargin, "5,295");
   assert.equal(parsed.price, "29,900");
   assert.deepEqual(parsed.productNames, [
     "[가을신상] 슬림 골지 니트",
@@ -65,4 +72,13 @@ test("product tags remove hash signs and cap at 100", () => {
   );
   assert.equal(tags.length, 100);
   assert.equal(tags[0], "태그0");
+});
+
+
+test("price calculator mirrors the MD sheet formula and rounds up to 100 won", () => {
+  assert.equal(FIXED_SUPPLY_PRICE, 10000);
+  assert.equal(calculateSalePrice(53, 5295), 32300);
+  assert.equal(calculateNetMargin(53, 32300), 5295);
+  assert.equal(calculateSalePrice(53, 8000), 36100);
+  assert.ok(calculateNetMargin(53, 36100) >= 8000);
 });
