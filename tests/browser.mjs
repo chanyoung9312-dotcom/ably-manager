@@ -226,6 +226,21 @@ try {
   assert.equal(registrationEntries.some((entry) => entry.name.includes("颜色属性图")), false);
   assert.equal(registrationEntries.some((entry) => entry.name.includes("尺码图")), false);
 
+  await page.getByRole("button", { name: "상품정보 생성 준비 →", exact: true }).first().click();
+  await page.getByRole("heading", { name: "ChatGPT에서 상품정보 만들기", exact: true }).waitFor();
+  await page.getByLabel("ChatGPT 상품정보 결과").fill(JSON.stringify({
+    productNames: ["테스트 원피스 1", "테스트 원피스 2", "테스트 원피스 3"],
+    detailText: "테스트 상세페이지 문구",
+    hashtags: Array.from({ length: 30 }, (_, index) => `키워드${index + 1}`),
+    colors: ["블랙"],
+    sizeRows: [{ size: "FREE", values: { "총길이": "80" } }],
+    notes: "실상품 확인",
+  }));
+  await page.getByRole("button", { name: "상품정보 불러오기", exact: true }).click();
+  await page.getByRole("heading", { name: "카페24 등록용 상품정보", exact: true }).waitFor();
+  await page.getByText("테스트 원피스 1", { exact: true }).waitFor();
+  assert.equal(await page.getByText("해시태그", { exact: false }).count() > 0, true);
+
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto(base); await applyFont();
   await page.getByRole("heading", { name: "오늘 할 일", exact: true }).waitFor();
