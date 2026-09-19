@@ -187,6 +187,8 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
   assert.match(route, /buildSourcingView/);
   assert.match(route, /buildSourcingCandidates/);
   assert.match(route, /buildSourcingCandidateView/);
+  assert.match(route, /buildSourcingCandidateEvidence/);
+  assert.match(route, /products: dashboard\.mdProducts/);
   assert.doesNotMatch(route, /fixtures\/sourcing-signals/);
   assert.doesNotMatch(page, /추천순|비추천|BEST/);
   assert.equal(view.notice, "추천 점수나 자동 소싱 결정이 아닌 관측 데이터입니다.");
@@ -216,6 +218,9 @@ test("the screen exposes details, shared evidence, filters, and mobile one-colum
   assert.match(page, /INITIAL_VISIBLE = 18/);
   assert.match(page, /candidate-grid/);
   assert.match(page, /품목 안의 조합 관측/);
+  assert.match(page, /근거 상품 보기/);
+  assert.match(page, /상품번호/);
+  assert.match(page, /판단 반영/);
 });
 
 test("global navigation exposes the sourcing diagnostics page", () => {
