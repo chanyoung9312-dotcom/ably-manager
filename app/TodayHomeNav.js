@@ -9,6 +9,7 @@ const menu = [
   ["소싱 진단", "/sourcing"],
   ["재고", "/products"],
   ["상품 매칭", "/product-match"],
+  ["상품 등록", "/product-registration"],
   ["우체국 엑셀", "/?tool=post"],
   ["송장 매칭", "/?tool=tracking"],
 ];
