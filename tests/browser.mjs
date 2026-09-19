@@ -259,6 +259,38 @@ try {
   );
   await page.getByText("하단 크롭", { exact: true }).waitFor();
 
+  await page.evaluate(() => {
+    window.__savedFolderPaths = [];
+    const makeDirectory = (path) => ({
+      async getDirectoryHandle(name) {
+        const nextPath = path ? `${path}/${name}` : name;
+        window.__savedFolderPaths.push(nextPath + "/");
+        return makeDirectory(nextPath);
+      },
+      async getFileHandle(name) {
+        const filePath = path ? `${path}/${name}` : name;
+        window.__savedFolderPaths.push(filePath);
+        return {
+          async createWritable() {
+            return {
+              async write() {},
+              async close() {},
+            };
+          },
+        };
+      },
+    });
+    window.showDirectoryPicker = async () => makeDirectory("");
+  });
+  await page.getByRole("button", { name: "정리 폴더 저장", exact: true }).first().click();
+  await page.getByText(/폴더 저장 완료: fixture-vvic/, { exact: false }).waitFor();
+  const savedFolderPaths = await page.evaluate(() => window.__savedFolderPaths);
+  assert.ok(savedFolderPaths.includes("fixture-vvic/"));
+  assert.ok(savedFolderPaths.includes("fixture-vvic/01_메인_GIF용/"));
+  assert.ok(savedFolderPaths.includes("fixture-vvic/02_상세이미지/"));
+  assert.ok(savedFolderPaths.some((path) => path.startsWith("fixture-vvic/01_메인_GIF용/") && !path.endsWith("/")));
+  assert.ok(savedFolderPaths.some((path) => path.startsWith("fixture-vvic/02_상세이미지/") && !path.endsWith("/")));
+
   const registrationDownload = page.waitForEvent("download");
   await page.getByRole("button", { name: "ZIP 저장", exact: true }).first().click();
   const registrationFile = await registrationDownload;
