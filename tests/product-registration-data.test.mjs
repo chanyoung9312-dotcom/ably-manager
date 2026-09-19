@@ -82,3 +82,66 @@ test("price calculator mirrors the MD sheet formula and rounds up to 100 won", (
   assert.equal(calculateSalePrice(53, 8000), 36100);
   assert.ok(calculateNetMargin(53, 36100) >= 8000);
 });
+
+
+test("registration parser ignores normal answer text outside the OARS block", () => {
+  const parsed = parseRegistrationPaste(`
+추천 상품명
+상품명 1: 1번
+상품명 2: 2번
+
+사이즈:
+S 32 47 39
+M 34 49 40
+신축성: 없음, 두께감: 적당함, 핏: 기본~슬림
+
+해시태그:
+잘못된태그, 일반설명
+
+[OARS 등록용]
+상품명 1: [가을신상] A라인 미니 스커트
+상품명 2: 하이웨스트 플리츠 미니 스커트
+상품명 3: 데일리 A라인 미니스커트
+중국 원가: 53
+목표 순마진: 7000
+색상: 블랙, 브라운, 차콜
+사이즈: S, M, L, XL
+해시태그: 플리츠스커트, 미니스커트, A라인스커트
+상세페이지 문구:
+코디에 확실한 포인트를 줄 수 있는 미니 스커트예요.
+하이웨스트 핏으로 깔끔하게 떨어져요.
+[OARS 끝]
+
+상품명 1: 이 뒤 내용도 무시
+사이즈: FREE
+`);
+
+  assert.equal(parsed.productName, "[가을신상] A라인 미니 스커트");
+  assert.deepEqual(parsed.productNames, [
+    "[가을신상] A라인 미니 스커트",
+    "하이웨스트 플리츠 미니 스커트",
+    "데일리 A라인 미니스커트",
+  ]);
+  assert.equal(parsed.yuanCost, "53");
+  assert.equal(parsed.targetMargin, "7000");
+  assert.equal(parsed.colors, "블랙, 브라운, 차콜");
+  assert.equal(parsed.sizes, "S, M, L, XL");
+  assert.equal(parsed.hashtags, "플리츠스커트, 미니스커트, A라인스커트");
+  assert.doesNotMatch(parsed.sizes, /신축성|두께감|핏/);
+  assert.doesNotMatch(parsed.productName, /1번/);
+});
+
+test("single-line color and size fields do not absorb unlabeled text", () => {
+  const parsed = parseRegistrationPaste(`
+[OARS 등록용]
+상품명 1: 테스트 스커트
+색상: 블랙, 브라운
+사이즈: S, M, L
+S 32 47 39
+M 34 49 40
+해시태그: 스커트, 데일리룩
+[OARS 끝]
+`);
+  assert.equal(parsed.colors, "블랙, 브라운");
+  assert.equal(parsed.sizes, "S, M, L");
+});
