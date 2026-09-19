@@ -181,6 +181,7 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
   const page = fs.readFileSync(new URL("../app/sourcing/page.js", import.meta.url), "utf8");
   const route = fs.readFileSync(new URL("../app/api/sourcing-signals/route.js", import.meta.url), "utf8");
   const candidateView = fs.readFileSync(new URL("../lib/sourcing-candidate-view.mjs", import.meta.url), "utf8");
+  const briefView = fs.readFileSync(new URL("../lib/sourcing-brief-view.mjs", import.meta.url), "utf8");
   assert.match(page, /fetch\("\/api\/sourcing-signals"/);
   assert.match(route, /loadDashboard\(\)/);
   assert.match(route, /buildLiveSourcingDiagnostics/);
@@ -188,6 +189,8 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
   assert.match(route, /buildSourcingCandidates/);
   assert.match(route, /buildSourcingCandidateView/);
   assert.match(route, /buildSourcingCandidateEvidence/);
+  assert.match(route, /buildSourcingReviewBriefs/);
+  assert.match(route, /buildSourcingReviewBriefView/);
   assert.match(route, /products: dashboard\.mdProducts/);
   assert.doesNotMatch(route, /fixtures\/sourcing-signals/);
   assert.doesNotMatch(page, /추천순|비추천|BEST/);
@@ -196,6 +199,9 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
   assert.match(page, /주문 수집 완전성·노출수·테스트 기간/);
   assert.match(page, /판정 준비 상태/);
   assert.match(page, /소싱 검토 분류/);
+  assert.match(page, /SourcingBriefBoard/);
+  assert.match(briefView, /이번 소싱 검토 브리프/);
+  assert.match(briefView, /추천 점수·추천 순위·사입 수량이 아니라/);
   assert.match(candidateView, /소싱 검토 후보/);
   assert.match(candidateView, /히트 구조 참고/);
   assert.match(candidateView, /추가 관찰/);
@@ -219,6 +225,9 @@ test("the screen exposes details, shared evidence, filters, and mobile one-colum
   assert.match(page, /candidate-grid/);
   assert.match(page, /품목 안의 조합 관측/);
   assert.match(page, /근거 상품 보기/);
+  assert.match(page, /대표 근거 상품/);
+  assert.match(page, /품목 수준 근거/);
+  assert.match(page, /조합 근거/);
   assert.match(page, /상품번호/);
   assert.match(page, /판단 반영/);
 });
