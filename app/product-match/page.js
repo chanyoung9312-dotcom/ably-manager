@@ -65,7 +65,15 @@ export default function ProductMatch() {
         productNo: x.productNo,
         product: x.product,
       }));
-    if (!approved.length) return;
+    const approvedRegistration = (result?.results || [])
+      .filter((x) => x.registration?.status === "확정")
+      .map((x) => ({
+        cell: x.registration.cell,
+        registeredAt: x.registration.value,
+        productNo: x.productNo,
+        product: x.product,
+      }));
+    if (!approved.length && !approvedRegistration.length) return;
     setLoading(true);
     setError("");
     try {
@@ -76,6 +84,7 @@ export default function ProductMatch() {
             goods,
             mode: "write",
             approved,
+            approvedRegistration,
             snapshot: result.snapshot,
           }),
         }),
@@ -119,7 +128,7 @@ export default function ProductMatch() {
         </p>
         {files.length > 0 && (
           <div>
-            <b>선택 파일 {files.length}개</b> · 고유 상품 {goods.length}개
+            <b>선택 파일 {files.length}개</b> · 고유 상품 {goods.length}개 · 상품등록일 포함 {goods.filter((x) => x.registeredAt).length}개
           </div>
         )}
       </section>
@@ -147,9 +156,11 @@ export default function ProductMatch() {
             >
               {[
                 ["MD 상품", result.total],
-                ["확정 매칭", result.matched],
-                ["기존값 유지", result.existing],
-                ["확인 필요", result.needsReview],
+                ["상품번호 확정", result.matched],
+                ["상품번호 기존", result.existing],
+                ["등록일 확정", result.registrationMatched || 0],
+                ["등록일 기존", result.registrationExisting || 0],
+                ["등록일 확인 필요", result.registrationNeedsReview || 0],
               ].map(([a, b]) => (
                 <div
                   key={a}
@@ -168,7 +179,7 @@ export default function ProductMatch() {
             </div>
             {result.mode === "write" && (
               <p style={{ color: "#4ade80", fontWeight: 800 }}>
-                MD 시트 상품번호 {result.written}개 입력 완료
+                MD 시트 상품번호 {result.written}개 · 상품등록일 {result.registrationWritten || 0}개 입력 완료
               </p>
             )}
           </section>
@@ -192,6 +203,24 @@ export default function ProductMatch() {
               <p style={{ color: "#a1a1aa" }}>확정 매칭이 없습니다.</p>
             )}
           </section>
+          {(result.registrationMatched || 0) > 0 && (
+            <section style={{ ...box, marginTop: 14 }}>
+              <h2 style={{ marginTop: 0 }}>상품등록일 입력 미리보기</h2>
+              <p style={{ color: "#a1a1aa" }}>
+                에이블리 상품목록의 상품번호·상품명이 MD 카드와 확실히 연결되고, MD의 상품등록일이 비어 있는 항목만 표시합니다. 기존 날짜는 덮어쓰지 않습니다.
+              </p>
+              {result.results
+                .filter((x) => x.registration?.status === "확정")
+                .map((x, i) => (
+                  <div key={i} style={rowStyle}>
+                    <b>{x.product}</b>
+                    <div style={{ color: "#a1a1aa", marginTop: 4 }}>
+                      → 상품등록일 <b style={{ color: "#fff" }}>{x.registration.value}</b> · 입력 셀 {x.registration.cell}
+                    </div>
+                  </div>
+                ))}
+            </section>
+          )}
           {result.needsReview > 0 && (
             <section style={{ ...box, marginTop: 14 }}>
               <h2 style={{ marginTop: 0 }}>확인 필요 — 자동 입력 안 함</h2>
@@ -210,17 +239,16 @@ export default function ProductMatch() {
                 ))}
             </section>
           )}
-          {result.mode !== "write" && result.matched > 0 && (
+          {result.mode !== "write" && ((result.matched || 0) > 0 || (result.registrationMatched || 0) > 0) && (
             <section style={{ ...box, marginTop: 14, borderColor: "#4ade80" }}>
               <h2 style={{ marginTop: 0 }}>3. 확정 항목만 시트에 입력</h2>
               <p style={{ color: "#a1a1aa" }}>
-                ‘상품번호’ 라벨 바로 아래의 빈칸만 수정합니다. 기존 값과 확인
-                필요 항목은 건드리지 않습니다.
+                상품번호와 상품등록일의 빈칸만 수정합니다. 기존 값과 확인 필요 항목은 덮어쓰지 않습니다.
               </p>
               <button onClick={write} disabled={loading}>
                 {loading
                   ? "입력 중..."
-                  : `확정 ${result.matched}개 상품번호 입력`}
+                  : `상품번호 ${result.matched || 0}개 · 등록일 ${result.registrationMatched || 0}개 입력`}
               </button>
             </section>
           )}
