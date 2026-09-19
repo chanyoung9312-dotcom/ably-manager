@@ -5,6 +5,10 @@ import fs from "node:fs";
 const nav = fs.readFileSync(new URL("../app/TodayHomeNav.js", import.meta.url), "utf8");
 const layout = fs.readFileSync(new URL("../app/layout.js", import.meta.url), "utf8");
 const home = fs.readFileSync(new URL("../app/page.js", import.meta.url), "utf8");
+const registrationPanel = fs.readFileSync(
+  new URL("../app/product-registration/Cafe24RegistrationPanel.js", import.meta.url),
+  "utf8",
+);
 const featurePages = [
   "../app/products/page.js",
   "../app/product-reaction/page.js",
@@ -64,10 +68,14 @@ test("product registration helper keeps desktop folder and ZIP processing local 
   assert.match(page, /무시/);
   assert.match(page, /상단 자르기/);
   assert.match(page, /ChatGPT 분석/);
-  assert.match(page, /다음은 지금 하던 방식 그대로/);
-  assert.match(page, /정리한 메인·상세 이미지를 ChatGPT에 올리면/);
-  assert.doesNotMatch(page, /ChatGPT 결과 붙여넣기/);
-  assert.doesNotMatch(page, /상품정보 불러오기/);
+  assert.match(page, /OARS 등록용 블록/);
+  assert.match(page, /Cafe24RegistrationPanel/);
+  assert.match(registrationPanel, /ChatGPT 상품정보 붙여넣기/);
+  assert.match(registrationPanel, /내용 채우기/);
+  assert.match(registrationPanel, /카페24 임시등록/);
+  assert.match(registrationPanel, /진열안함 · 판매안함/);
+  assert.match(registrationPanel, /\/api\/cafe24\/product-image/);
+  assert.match(registrationPanel, /\/api\/cafe24\/products/);
   assert.match(page, /buildStoredZip/);
   assert.doesNotMatch(page, /fetch\(/);
 });
