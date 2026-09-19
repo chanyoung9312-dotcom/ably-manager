@@ -296,7 +296,7 @@ function SourcingCard({ card }) {
               <p><span>주문번호 반복 상품</span><b>{value(all.O)}</b></p>
               <p><span>다른 날짜 반복 상품</span><b>{value(all.D)}</b></p>
               <p><span>순판매 반복 상품</span><b>{value(all.DN)}</b></p>
-              <p><span>사입 판단용 반복 상품</span><b>{value(all.DE)}</b></p>
+              <p><span>판단 반영 반복 상품</span><b>{value(all.DE)}</b></p>
             </div>
           </section>
 
