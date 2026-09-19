@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { diagnoseSourcingSignals } from "../lib/sourcing-signals.mjs";
+import { assessSourcingReadiness } from "../lib/sourcing-readiness.mjs";
 import {
   buildSourcingView,
   SOURCING_FLAG_COPY,
@@ -154,6 +155,27 @@ test("unknown metrics remain 확인 필요 rather than silently becoming zero", 
   assert.equal(synthetic.cards[0].keyFacts[1].value, "확인 필요");
 });
 
+test("readiness metadata is translated without activating strong or weak sourcing states", () => {
+  const enriched = structuredClone(diagnostics);
+  enriched.sourceMeta = {
+    readiness: assessSourcingReadiness({
+      asOf: "2026-09-19",
+      coverageStart: "2026-04-15",
+      periods: fixture.snapshot.periods,
+      products: fixture.products,
+      issues: [],
+    }),
+    coverageVerified: true,
+    exposureAvailable: false,
+    testDurationAvailable: false,
+  };
+  const enrichedView = buildSourcingView(enriched);
+  assert.equal(enrichedView.readiness.requirements.find((item) => item.key === "coverage").statusLabel, "확인됨");
+  assert.equal(enrichedView.readiness.requirements.find((item) => item.key === "exposure").statusLabel, "미확인");
+  assert.equal(enrichedView.readiness.activationReady, false);
+  assert.equal(enrichedView.summary.coverageVerified, true);
+});
+
 test("the UI fetches live diagnostics and avoids recommendation ranking language", () => {
   const page = fs.readFileSync(new URL("../app/sourcing/page.js", import.meta.url), "utf8");
   const route = fs.readFileSync(new URL("../app/api/sourcing-signals/route.js", import.meta.url), "utf8");
@@ -166,6 +188,8 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
   assert.equal(view.notice, "추천 점수나 자동 소싱 결정이 아닌 관측 데이터입니다.");
   assert.match(page, /report\.notice/);
   assert.match(page, /주문 수집 완전성·노출수·테스트 기간/);
+  assert.match(page, /판정 준비 상태/);
+  assert.match(page, /현재 판매 가능 여부/);
   assert.doesNotMatch(page, /사입 판단용 수량/);
   assert.match(page, /판단 반영 수량/);
 });
