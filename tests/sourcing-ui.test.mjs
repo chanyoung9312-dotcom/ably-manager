@@ -238,7 +238,7 @@ test("the screen exposes details, shared evidence, filters, and mobile one-colum
   assert.match(page, /대표 근거 상품/);
   assert.match(page, /품목 수준 근거/);
   assert.match(page, /조합 근거/);
-  assert.match(page, /공급처 링크/);
+  assert.match(researchView, /공급처 링크/);
   assert.match(page, /템플릿 복사/);
   assert.match(page, /상품번호/);
   assert.match(page, /판단 반영/);
