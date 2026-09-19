@@ -90,6 +90,18 @@ test("missing catalog names fall back later without inventing a title", () => {
   assert.equal(longDress.products[0].catalogStatus, "missing");
 });
 
+test("blank catalog names stay unresolved even when the product number exists", () => {
+  const blank = buildSourcingCandidateEvidence({
+    diagnostics,
+    candidates,
+    products: [{ productNo: "67545180", product: "", row: 1 }],
+  });
+  const longDress = blank.items.find((item) => item.groupId === "secondaryCategory:롱원피스");
+  const product = longDress.products.find((item) => item.productNo === "67545180");
+  assert.equal(product.productName, null);
+  assert.equal(product.catalogStatus, "missing");
+});
+
 test("conflicting catalog names are surfaced rather than arbitrarily choosing one", () => {
   const conflicted = buildSourcingCandidateEvidence({
     diagnostics,
