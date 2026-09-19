@@ -94,15 +94,23 @@ try {
     }],
   };
   const researchPlan = {
-    title: "소싱 조사 작업목록",
-    description: "브라우저 회귀용 조사 작업목록",
-    notice: "현재는 읽기 전용 작업목록입니다. 공급처 링크·가격·옵션 저장은 별도 원장을 만든 뒤 연결합니다.",
+    title: "다음 소싱 검색 키워드",
+    description: "브라우저 회귀용 키워드 중심 조사 화면",
+    notice: "키워드는 외부 인기 검색어가 아니라 우리 판매 데이터에서 나온 소싱 방향입니다.",
     count: 1,
     tasks: [{
       id: "research:test",
       label: "숏·하프팬츠",
-      confidenceLabel: "현재 관측 기준",
+      confidenceLabel: "우리 판매 데이터 기준",
       purpose: "신규 소싱 상품 조사",
+      keywordTitle: "추천 검색 키워드",
+      keywordGuide: "반복 근거는 아직 부족합니다. 초기 반응 조합부터 가볍게 탐색해보세요.",
+      searchKeywords: [
+        { keyword: "숏·하프팬츠 데님", evidence: "emerging", evidenceLabel: "초기 반응" },
+        { keyword: "숏·하프팬츠", evidence: "item", evidenceLabel: "품목 기본" },
+      ],
+      cautionKeywords: [],
+      copyKeywords: "숏·하프팬츠 데님\n숏·하프팬츠",
       facts: { reactingProducts: 8, repeatedDateProducts: 2, recent30ActiveProducts: 3 },
       combinationLines: [{ key: "supported", label: "반복 근거 확인", value: "현재 확인된 조합 없음" }],
       referenceProducts: [],
@@ -111,7 +119,7 @@ try {
         { key: "supplyPrice", label: "공급가", requirementLabel: "필수" },
       ],
       guardrails: ["초기 관측 조합을 반복 근거로 승격하지 않음"],
-      copyTemplate: "[소싱 조사] 숏·하프팬츠\n공급처 링크: \n공급가: ",
+      copyTemplate: "[소싱 조사] 숏·하프팬츠\n추천 검색 키워드: 숏·하프팬츠 데님, 숏·하프팬츠\n공급처 링크: \n공급가: ",
     }],
   };
   if (process.env.AGENT_BROWSER_CLI) {
@@ -162,7 +170,8 @@ try {
         await page.getByText("상품 노출", { exact: true }).waitFor();
         await page.getByRole("heading", { name: "이번 소싱 검토 브리프", exact: true }).waitFor();
         await page.getByText("품목 수준 근거", { exact: true }).first().waitFor();
-        await page.getByRole("heading", { name: "소싱 조사 작업목록", exact: true }).waitFor();
+        await page.getByRole("heading", { name: "다음 소싱 검색 키워드", exact: true }).waitFor();
+        await page.getByText("숏·하프팬츠 데님", { exact: true }).first().waitFor();
         await page.getByText("공급처 링크", { exact: true }).first().waitFor();
         await page.getByRole("heading", { name: "소싱 검토 분류", exact: true }).waitFor();
         await page.getByText("소싱 검토 후보", { exact: true }).first().waitFor();
