@@ -167,7 +167,7 @@ try {
       assert.equal(await page.locator("[data-nextjs-dialog]").count(), 0);
       if (path === "/product-registration") {
         await page.getByRole("heading", { name: "VVIC 상품 이미지 정리 도우미", exact: true }).waitFor();
-        await page.getByText("추가 비용 0원 · 외부 업로드 없음", { exact: true }).waitFor();
+        await page.getByText("추가 비용 0원 · 이미지 정리는 로컬 처리", { exact: true }).waitFor();
       }
       if (path === "/sourcing") {
         await page.getByText("판정 준비 상태", { exact: true }).waitFor();
