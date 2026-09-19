@@ -190,7 +190,7 @@ export default function SourcingPage() {
 
   const cards = useMemo(() => {
     const source = [...(report?.cards || [])].filter((card) =>
-      (category === "all" || card.filterBucket === category)
+      (category === "all" || (card.filterBuckets || [card.filterBucket]).includes(category))
       && (state === "all" || card.primaryState === state),
     );
     source.sort((a, b) => {
