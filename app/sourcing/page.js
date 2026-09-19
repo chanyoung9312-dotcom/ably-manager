@@ -37,7 +37,7 @@ function PeriodBlock({ title, current, previous }) {
       <CompareRow label="반응 상품" previous={previous?.A} current={current?.A} />
       <CompareRow label="주문 반응" previous={previous?.Q} current={current?.Q} />
       <CompareRow label="순판매" previous={previous?.N} current={current?.N} />
-      <CompareRow label="사입 판단용 수량" previous={previous?.E} current={current?.E} />
+      <CompareRow label="판단 반영 수량" previous={previous?.E} current={current?.E} />
     </div>
   );
 }
@@ -238,6 +238,12 @@ export default function SourcingPage() {
         <span>동일 상품 집합은 대표 카드 하나로 묶어 표시합니다. 원 분석 그룹 {summary.rawGroupCount ?? "?"}개 → 화면 카드 {summary.visibleGroupCount ?? "?"}개</span>
       </div>
 
+      {(!summary.coverageVerified || !summary.exposureAvailable || !summary.testDurationAvailable) && (
+        <div className="data-caution" role="note">
+          주문 수집 완전성·노출수·테스트 기간이 모두 확인된 상태가 아닙니다. 최근 증감과 주문 0건은 관측값으로만 보고, 실패나 비추천으로 해석하지 않습니다.
+        </div>
+      )}
+
       <section className="controls" aria-label="소싱 진단 필터">
         <div className="filter-row">
           {report.filters.map((item) => (
@@ -279,7 +285,7 @@ export default function SourcingPage() {
         .sourcing-head small,.sourcing-head p{color:#aeb5b8}.sourcing-head h1{font-size:34px;margin:5px 0}.sourcing-head p{max-width:760px;margin:0}
         .sourcing-head .notice{margin-top:7px;color:#d3d8da;font-size:13px}.sourcing-head>button,.more{padding:11px 16px;border-radius:12px}
         .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:24px 0 10px}.summary-grid>div{padding:15px;border:1px solid #343a3d;border-radius:15px;background:#191d1f;display:flex;flex-direction:column;gap:4px}.summary-grid span{font-size:12px;color:#aeb5b8}.summary-grid b{font-size:23px}
-        .observation-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 13px;border-radius:12px;background:#202527;color:#c8ced0;font-size:13px}.observation-line b{color:#f3f4f6}
+        .observation-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 13px;border-radius:12px;background:#202527;color:#c8ced0;font-size:13px}.observation-line b{color:#f3f4f6}.data-caution{margin-top:8px;padding:11px 13px;border:1px solid #4a4435;border-radius:12px;background:#262319;color:#d7d0bb;font-size:12px;line-height:1.55}
         .controls{margin:18px 0;padding:14px;border:1px solid #343a3d;border-radius:15px;background:#191d1f}.filter-row{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:10px}.filter-row::-webkit-scrollbar{display:none}.filter-row button{white-space:nowrap;border:1px solid #343c40;background:#1a1f21;color:inherit;border-radius:10px;padding:8px 11px}.filter-row button.active{background:#313a3e;border-color:#8b9aa0}.select-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.select-row label{display:flex;align-items:center;gap:7px;color:#aeb5b8;font-size:13px}.select-row select{background:#202628;color:inherit;border:1px solid #3b4447;border-radius:9px;padding:7px 9px}.select-row>span{margin-left:auto;color:#aeb5b8;font-size:13px}
         .card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.sourcing-card{border:1px solid #343a3d;border-radius:17px;background:#191d1f;padding:17px;min-width:0}.card-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.card-head small{color:#929b9f}.card-head h2{font-size:20px;margin:4px 0 0}.state-badge{border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800;white-space:nowrap}.state-badge.explore{background:#294936}.state-badge.concentrated{background:#4a4025}.state-badge.insufficient{background:#353a3c}.state-description{margin:10px 0;color:#b6bec1;font-size:13px;line-height:1.55}
         .key-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.key-facts>div,.detail-grid>p{background:#22282a;border-radius:11px;padding:10px;margin:0;display:flex;flex-direction:column;gap:3px}.key-facts span,.detail-grid span,.detail-grid small{font-size:11px;color:#aeb5b8}.key-facts b{font-size:17px}.narrative{margin-top:10px;background:#202527;border-radius:12px;padding:12px}.narrative>b{font-size:12px}.narrative p{margin:5px 0 0;color:#c6ccce;font-size:13px;line-height:1.6}.recent-line{margin:9px 0 0;color:#c6ccce;font-size:13px;line-height:1.5}
