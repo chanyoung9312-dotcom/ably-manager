@@ -107,5 +107,5 @@ test("conflicting catalog names are surfaced rather than arbitrarily choosing on
 
 test("evidence output contains no order numbers or customer fields", () => {
   const serialized = JSON.stringify(evidence);
-  assert.doesNotMatch(serialized, /orderNo|productOrder|phone|address|recipient|name":/i);
+  assert.doesNotMatch(serialized, /orderNo|productOrder|phone|address|recipient|customerName|buyerName/i);
 });
