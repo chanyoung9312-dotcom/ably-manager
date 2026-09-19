@@ -93,6 +93,35 @@ try {
       note: "자동 소싱 결정이 아닙니다.",
     }],
   };
+  const researchPlan = {
+    title: "다음 소싱 검색 키워드",
+    description: "브라우저 회귀용 키워드 중심 조사 화면",
+    notice: "키워드는 외부 인기 검색어가 아니라 우리 판매 데이터에서 나온 소싱 방향입니다.",
+    count: 1,
+    tasks: [{
+      id: "research:test",
+      label: "숏·하프팬츠",
+      confidenceLabel: "우리 판매 데이터 기준",
+      purpose: "신규 소싱 상품 조사",
+      keywordTitle: "추천 검색 키워드",
+      keywordGuide: "반복 근거는 아직 부족합니다. 초기 반응 조합부터 가볍게 탐색해보세요.",
+      searchKeywords: [
+        { keyword: "숏·하프팬츠 데님", evidence: "emerging", evidenceLabel: "초기 반응" },
+        { keyword: "숏·하프팬츠", evidence: "item", evidenceLabel: "품목 기본" },
+      ],
+      cautionKeywords: [],
+      copyKeywords: "숏·하프팬츠 데님\n숏·하프팬츠",
+      facts: { reactingProducts: 8, repeatedDateProducts: 2, recent30ActiveProducts: 3 },
+      combinationLines: [{ key: "supported", label: "반복 근거 확인", value: "현재 확인된 조합 없음" }],
+      referenceProducts: [],
+      captureFields: [
+        { key: "sourceUrl", label: "공급처 링크", requirementLabel: "필수" },
+        { key: "supplyPrice", label: "공급가", requirementLabel: "필수" },
+      ],
+      guardrails: ["초기 관측 조합을 반복 근거로 승격하지 않음"],
+      copyTemplate: "[소싱 조사] 숏·하프팬츠\n추천 검색 키워드: 숏·하프팬츠 데님, 숏·하프팬츠\n공급처 링크: \n공급가: ",
+    }],
+  };
   if (process.env.AGENT_BROWSER_CLI) {
     const cli = (...args) => execFileSync(process.execPath, [process.env.AGENT_BROWSER_CLI, ...args], { env: { ...process.env, AGENT_BROWSER_EXECUTABLE_PATH: process.env.BROWSER_EXECUTABLE_PATH }, encoding: "utf8", timeout: 30000 });
     try {
@@ -118,7 +147,7 @@ try {
   async function applyFont() { if (fontCss) { await page.addStyleTag({ content: fontCss }); await page.evaluate(() => document.fonts.ready); } }
   await page.route("**/api/oars-analysis", (r) => r.fulfill({ json: { report } }));
   await page.route("**/api/dashboard-data", (r) => r.fulfill({ json: d }));
-  await page.route("**/api/sourcing-signals", (r) => r.fulfill({ json: { report: sourcingReport, candidateReport, briefReport } }));
+  await page.route("**/api/sourcing-signals", (r) => r.fulfill({ json: { report: sourcingReport, candidateReport, briefReport, researchPlan } }));
   const ship = { productOrderNo: "po0", orderNo: "order1", name: "테스트고객", phone: "01000000000", zip: "01234", address: "서울시 테스트로 10", detail: ".", rowNumber: 2, shipping: "우체국 배송" };
   ship.snapshot = shippingSnapshot(ship);
   await page.route("**/api/google-orders", (r) => r.fulfill({ json: { rows: [ship] } }));
@@ -141,6 +170,9 @@ try {
         await page.getByText("상품 노출", { exact: true }).waitFor();
         await page.getByRole("heading", { name: "이번 소싱 검토 브리프", exact: true }).waitFor();
         await page.getByText("품목 수준 근거", { exact: true }).first().waitFor();
+        await page.getByRole("heading", { name: "다음 소싱 검색 키워드", exact: true }).waitFor();
+        await page.getByText("숏·하프팬츠 데님", { exact: true }).first().waitFor();
+        await page.getByText("찾은 상품에서 확인할 것", { exact: true }).first().waitFor();
         await page.getByRole("heading", { name: "소싱 검토 분류", exact: true }).waitFor();
         await page.getByText("소싱 검토 후보", { exact: true }).first().waitFor();
         const allEvidence = page.locator(".candidate-evidence > summary");

@@ -183,6 +183,7 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
   const route = fs.readFileSync(new URL("../app/api/sourcing-signals/route.js", import.meta.url), "utf8");
   const candidateView = fs.readFileSync(new URL("../lib/sourcing-candidate-view.mjs", import.meta.url), "utf8");
   const briefView = fs.readFileSync(new URL("../lib/sourcing-brief-view.mjs", import.meta.url), "utf8");
+  const researchView = fs.readFileSync(new URL("../lib/sourcing-research-view.mjs", import.meta.url), "utf8");
   assert.match(page, /fetch\("\/api\/sourcing-signals"/);
   assert.match(route, /loadDashboard\(\)/);
   assert.match(route, /buildLiveSourcingDiagnostics/);
@@ -193,6 +194,8 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
   assert.match(route, /buildSourcingCandidateEvidence/);
   assert.match(route, /buildSourcingReviewBriefs/);
   assert.match(route, /buildSourcingReviewBriefView/);
+  assert.match(route, /buildSourcingResearchPlan/);
+  assert.match(route, /buildSourcingResearchPlanView/);
   assert.match(route, /products: dashboard\.mdProducts/);
   assert.doesNotMatch(route, /fixtures\/sourcing-signals/);
   assert.doesNotMatch(page, /추천순|비추천|BEST/);
@@ -202,6 +205,14 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
   assert.match(page, /판정 준비 상태/);
   assert.match(page, /소싱 검토 분류/);
   assert.match(page, /SourcingBriefBoard/);
+  assert.match(page, /ResearchPlanBoard/);
+  assert.ok(
+    page.indexOf("<ResearchPlanBoard researchPlan={researchPlan} />") <
+      page.indexOf("<ReadinessPanel readiness={report.readiness} />"),
+    "추천 검색 키워드가 판정 준비 상태보다 먼저 보여야 함",
+  );
+  assert.match(researchView, /다음 소싱 검색 키워드/);
+  assert.match(researchView, /외부 인기 검색어가 아니라 우리 판매 데이터/);
   assert.match(briefView, /이번 소싱 검토 브리프/);
   assert.match(briefView, /추천 점수·추천 순위·사입 수량이 아니라/);
   assert.match(candidateView, /소싱 검토 후보/);
@@ -216,12 +227,15 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
 
 test("the screen exposes details, shared evidence, filters, and mobile one-column cards", () => {
   const page = fs.readFileSync(new URL("../app/sourcing/page.js", import.meta.url), "utf8");
+  const researchView = fs.readFileSync(new URL("../lib/sourcing-research-view.mjs", import.meta.url), "utf8");
   assert.match(page, />자세히 보기</);
   assert.match(page, />근거 상품 공유</);
   assert.match(page, /최근 활성 상품 수/);
   assert.match(page, /filterBuckets/);
   assert.doesNotMatch(page, /stateOrder/);
   assert.match(page, /@media\(max-width:760px\)/);
+  assert.match(page, /state === "evidence_strong"/);
+  assert.match(page, /\.state-badge\.strong/);
   assert.match(page, /\.card-grid\{grid-template-columns:1fr\}/);
   assert.match(page, /INITIAL_VISIBLE = 18/);
   assert.match(page, /candidate-grid/);
@@ -230,6 +244,12 @@ test("the screen exposes details, shared evidence, filters, and mobile one-colum
   assert.match(page, /대표 근거 상품/);
   assert.match(page, /품목 수준 근거/);
   assert.match(page, /조합 근거/);
+  assert.match(researchView, /공급처 링크/);
+  assert.match(page, /research-keywords/);
+  assert.match(researchView, /추천 검색 키워드/);
+  assert.match(page, /전체 복사/);
+  assert.match(page, /왜 이 키워드인가요/);
+  assert.match(page, /템플릿 복사/);
   assert.match(page, /상품번호/);
   assert.match(page, /판단 반영/);
 });
