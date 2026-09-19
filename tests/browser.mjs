@@ -101,6 +101,12 @@ try {
       assert.ok((await page.locator("body").innerText()).length > 60, path);
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `overflow ${path} ${size.width}`);
       assert.equal(await page.locator("[data-nextjs-dialog]").count(), 0);
+      if (path === "/sourcing") {
+        await page.getByText("판정 준비 상태", { exact: true }).waitFor();
+        await page.getByText("판정 준비 상태", { exact: true }).click();
+        await page.getByText("상품 노출", { exact: true }).waitFor();
+        assert.equal(await page.getByText("추천순", { exact: true }).count(), 0);
+      }
     }
   }
   await page.setViewportSize({ width: 375, height: 812 });
