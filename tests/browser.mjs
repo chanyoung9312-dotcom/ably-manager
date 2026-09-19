@@ -172,7 +172,7 @@ try {
         await page.getByText("품목 수준 근거", { exact: true }).first().waitFor();
         await page.getByRole("heading", { name: "다음 소싱 검색 키워드", exact: true }).waitFor();
         await page.getByText("숏·하프팬츠 데님", { exact: true }).first().waitFor();
-        await page.getByText("공급처 링크", { exact: true }).first().waitFor();
+        await page.getByText("찾은 상품에서 확인할 것", { exact: true }).first().waitFor();
         await page.getByRole("heading", { name: "소싱 검토 분류", exact: true }).waitFor();
         await page.getByText("소싱 검토 후보", { exact: true }).first().waitFor();
         const allEvidence = page.locator(".candidate-evidence > summary");
