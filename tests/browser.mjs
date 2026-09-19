@@ -170,14 +170,18 @@ try {
         await page.getByText("추가 비용 0원 · 이미지 정리는 로컬 처리", { exact: true }).waitFor();
       }
       if (path === "/sourcing") {
+        await page.getByRole("heading", { name: "소싱 키워드 추천", exact: true }).waitFor();
+        await page.getByRole("heading", { name: "지금 찾아볼 키워드", exact: true }).waitFor();
+        await page.getByText("숏·하프팬츠 데님", { exact: true }).first().waitFor();
+        await page.getByText("반응 8개", { exact: false }).first().waitFor();
+        assert.equal(await page.getByText("찾은 상품에서 확인할 것", { exact: true }).count(), 0);
+
+        await page.getByText("상세 진단 보기", { exact: true }).click();
         await page.getByText("판정 준비 상태", { exact: true }).waitFor();
         await page.getByText("판정 준비 상태", { exact: true }).click();
         await page.getByText("상품 노출", { exact: true }).waitFor();
         await page.getByRole("heading", { name: "이번 소싱 검토 브리프", exact: true }).waitFor();
         await page.getByText("품목 수준 근거", { exact: true }).first().waitFor();
-        await page.getByRole("heading", { name: "다음 소싱 검색 키워드", exact: true }).waitFor();
-        await page.getByText("숏·하프팬츠 데님", { exact: true }).first().waitFor();
-        await page.getByText("찾은 상품에서 확인할 것", { exact: true }).first().waitFor();
         await page.getByRole("heading", { name: "소싱 검토 분류", exact: true }).waitFor();
         await page.getByText("소싱 검토 후보", { exact: true }).first().waitFor();
         const allEvidence = page.locator(".candidate-evidence > summary");
