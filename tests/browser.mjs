@@ -238,7 +238,7 @@ try {
   }));
   await page.getByRole("button", { name: "상품정보 불러오기", exact: true }).click();
   await page.getByRole("heading", { name: "카페24 등록용 상품정보", exact: true }).waitFor();
-  await page.getByText("테스트 원피스 1", { exact: true }).waitFor();
+  await page.locator(".copy-row").filter({ hasText: "테스트 원피스 1" }).waitFor();
   assert.equal(await page.getByText("해시태그", { exact: false }).count() > 0, true);
 
   await page.setViewportSize({ width: 375, height: 812 });
