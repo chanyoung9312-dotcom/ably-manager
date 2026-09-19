@@ -84,6 +84,8 @@ test("equivalent member sets collapse into one representative card with aliases"
   assert.ok(!view.cards.some((item) => item.id === "combination:원피스 ∩ 롱"));
   const long = card("secondaryCategory:롱원피스");
   assert.ok(long.aliases.includes("원피스 ∩ 롱"));
+  assert.ok(long.filterBuckets.includes("item"));
+  assert.ok(long.filterBuckets.includes("combination"));
 });
 
 test("shared hit products are exposed as related evidence, not independent wins", () => {
@@ -173,6 +175,7 @@ test("the screen exposes details, shared evidence, filters, and mobile one-colum
   assert.match(page, />자세히 보기</);
   assert.match(page, />근거 상품 공유</);
   assert.match(page, /최근 활성 상품 수/);
+  assert.match(page, /filterBuckets/);
   assert.doesNotMatch(page, /stateOrder/);
   assert.match(page, /@media\(max-width:760px\)/);
   assert.match(page, /\.card-grid\{grid-template-columns:1fr\}/);
