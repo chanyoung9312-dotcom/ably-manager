@@ -340,8 +340,8 @@ try {
 상품명 1: 슬림 골지 니트 A
 상품명 2: 슬림 골지 니트 B
 상품명 3: 슬림 골지 니트 C
-판매가: 29900
-공급가: 12000
+중국 원가: 53
+목표 순마진: 5295
 색상: 블랙, 크림
 사이즈: FREE
 해시태그: #골지니트, 가을니트
@@ -351,15 +351,21 @@ try {
 [OARS 끝]`);
   await page.getByRole("button", { name: "내용 채우기", exact: true }).click();
   assert.equal(await page.getByLabel("카페24 상품명").inputValue(), "슬림 골지 니트 A");
-  assert.equal(await page.getByLabel("카페24 판매가").inputValue(), "29900");
-  assert.equal(await page.getByLabel("카페24 공급가").inputValue(), "12000");
+  assert.equal(await page.getByLabel("중국 원가 위안").inputValue(), "53");
+  assert.equal(await page.getByLabel("목표 순마진").inputValue(), "5295");
+  assert.equal(await page.getByLabel("카페24 판매가").inputValue(), "32300");
+  assert.equal(await page.getByLabel("카페24 공급가").inputValue(), "10000");
+  assert.equal(await page.getByLabel("카페24 공급가").isEditable(), false);
+  await page.getByLabel("목표 순마진").fill("8000");
+  assert.equal(await page.getByLabel("카페24 판매가").inputValue(), "36100");
+  await page.getByText(/현재 계산 순마진 8,012원/, { exact: false }).waitFor();
   await page.getByLabel("추천 상품명 선택").selectOption({ label: "슬림 골지 니트 B" });
   await page.getByRole("button", { name: "카페24 등록", exact: true }).click();
   await page.getByText(/카페24 등록 완료 · 상품번호 4321/, { exact: false }).waitFor();
   assert.equal(productImageUploadCount, 2);
   assert.equal(productRegistrationBody.productName, "슬림 골지 니트 B");
-  assert.equal(productRegistrationBody.price, 29900);
-  assert.equal(productRegistrationBody.supplyPrice, 12000);
+  assert.equal(productRegistrationBody.price, 36100);
+  assert.equal(productRegistrationBody.supplyPrice, 10000);
   assert.deepEqual(productRegistrationBody.optionGroups, [
     { name: "색상", values: ["블랙", "크림"] },
     { name: "사이즈", values: ["FREE"] },
