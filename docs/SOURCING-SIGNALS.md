@@ -124,3 +124,13 @@ O는 서로 다른 주문번호 2개 이상, D는 서로 다른 유효 주문일
 ## 게시 상태
 
 작업 시작 시 GitHub 조회 결과 PR #17은 2026-09-19 02:22:34 UTC에 이미 병합돼 있었다. head는 a2cf451, merge commit은 864086d였다. 병합된 PR에 새 커밋을 반영할 수 없으므로 해당 head를 기반으로 로컬 `feat/sourcing-signals-stage6` 브랜치에서 구현·검증한다. main 병합, 원격 push, 새 PR, UI 연결 및 배포는 이번 작업에서 하지 않는다. 게시 경로는 사용자 확인이 필요하다.
+
+## PR #18 리뷰 보정: 검증 필드와 잔존 반복 게이트
+
+- taxonomy 검증은 `definition`의 필드만 사용한다. `dataFitness.taxonomyFields`로 의존 필드를 확인할 수 있다. primary/base/secondary는 해당 필드, attribute는 해당 속성, combination은 AND 조건의 필드만 검증한다. total은 taxonomy 필드를 사용하지 않는다.
+- 관계없는 conflict/option/unscoped와 review issue는 taxonomyPartial, optionUnallocated, validation/promotion에 전파하지 않는다. 원래 상품/필드 issue는 `issues`에 그대로 남긴다. 버전 불일치는 taxonomy를 사용하는 그룹에 적용한다.
+- `promotion.evidence_strong.gates.residualReplication`은 concentration candidate와 독립적으로 TOP1/TOP2 제거 결과를 확인한다. Q 비중이 정책의 과반 경계(기본 50%)를 초과하면 `remainingRanges.DE.min >= 2`(정책 residualDE)가 필요하다. 핵심 상품의 D가 0이어도 생략하지 않는다. 모든 동률 경우에서 보장돼야 하며 unknown은 통과시키지 않는다. 과반 집합이 없는 경우에는 통과 가능하다.
+- primaryState 로직 및 strong/weak 비활성화는 유지한다. 실제 142그룹의 모든 기간 출력과 primaryState는 수정 전과 동일하다. taxonomyPartial 25그룹은 불필요한 전파가 해소됐고, residualReplication 29그룹은 true에서 false로 보정됐다.
+- 신규 회귀 12개 추가: 넥라인 conflict/option/unscoped, 품목 충돌의 필드 범위, 교집합 필드 범위, 옵션 기장과 secondary, 핵심 D 없는 과반, TOP1만 통과하는 경우, 대표값은 통과하지만 동률 최소값은 미달하는 경우, 동률 전체 통과, 정확히 50%, unknown 잔존 근거.
+- 최신 검증: sourcing-signals **210/210**, taxonomy **309/309**, 전체 **607/607**, skip 0. Production build 성공(18/18). 기존 15,904개 수치 및 25개 수동 primaryState 차이 0.
+- 이 보정은 PR #18에 추가하며 main merge, UI 연결, 추천 점수/행동은 포함하지 않는다.

@@ -100,7 +100,7 @@ test('taxonomy field conflict preserves other fields, order facts and product po
 test('option length and unscoped set attributes are not allocated', () => {
   const r=run([p('a','미니&롱 원피스'),p('b','셔링 블라우스 스커트 세트')]);
   assert.ok(!r.groups.some(g=>g.level==='attribute:length')); assert.ok(!r.groups.some(g=>g.id==='attribute:design:셔링'));
-  assert.equal(all(r).periods.all.R,2); assert.ok(all(r).flags.includes('option_unallocated'));
+  assert.equal(all(r).periods.all.R,2); assert.ok(!all(r).flags.includes('option_unallocated')); // total uses no taxonomy fields
 });
 test('TOPk tie changes possible state: all permutations hold, ranges preserve alternatives', () => {
   const products=[p('a'),p('b'),p('c')];
@@ -197,4 +197,101 @@ test('upstream product issue is scoped to its own groups', () => {
   const r=run([p('a','원피스'),p('b','티셔츠')],[f('a','2026-09-01',1,{issue:{code:'SOURCE_ERROR'}}),f('b','2026-09-01')]);
   assert.equal(group('baseType:원피스',r).validationStatus,'blocked');
   assert.equal(group('baseType:티셔츠',r).validationStatus,'observed_provisional');
+});
+
+const verifiedRun = (products, facts = [], extra = {}) => run(products.map(product => ({ ...product,
+  observation: { exposure: 'verified', testDuration: 'verified', availability: 'verified' } })), facts,
+  { ...extra, snapshot: { ...input.snapshot, collectionCompleteness: 'verified' } });
+for (const status of ['conflict', 'option', 'unscoped']) test(`unrelated neckline ${status} cannot block category/design/combination validation`, () => {
+  const product = p('a','롱 리본 원피스');
+  product.taxonomy.attributes.neckline = { status, values: [], candidates: ['라운드','유넥'] };
+  product.taxonomy.review.push({ scope:'field', field:'attributes.neckline', code: status === 'conflict' ? 'ATTRIBUTE_CONFLICT' : status === 'unscoped' ? 'ATTRIBUTE_SCOPE_UNRESOLVED' : 'ATTRIBUTE_OPTION' });
+  const combos = [{ label:'원피스 ∩ 리본', all:[{field:'baseType',value:'원피스'},{field:'attributes.design',value:'리본'}] }];
+  const r = verifiedRun([product],[f('a','2026-09-01')],{combinations:combos});
+  const fields = {
+    'total:전체': [], 'primaryCategory:원피스':['primaryCategory'], 'baseType:원피스':['baseType'],
+    'secondaryCategory:롱원피스':['secondaryCategory'], 'attribute:design:리본':['attributes.design'],
+    'combination:원피스 ∩ 리본':['attributes.design','baseType'],
+  };
+  for (const [name, used] of Object.entries(fields)) {
+    const g=group(name,r);
+    assert.deepEqual(g.dataFitness.taxonomyFields,used);
+    assert.equal(g.dataFitness.taxonomyPartial,false,name);
+    assert.equal(g.promotion.evidence_strong.gates.taxonomy,true,name);
+    assert.equal(g.validationStatus,'validated',name);
+    assert.ok(!g.flags.includes('option_unallocated'));
+    assert.ok(g.issues.some(i=>i.field==='attributes.neckline')); // original issue remains visible
+  }
+});
+test('category ambiguity only blocks category fields actually used; confirmed design survives', () => {
+  const r=verifiedRun([p('a','리본 셔츠 블라우스')]);
+  for(const name of ['primaryCategory:상의','attribute:design:리본','total:전체']) {
+    assert.equal(group(name,r).dataFitness.taxonomyPartial,false,name);
+    assert.equal(group(name,r).validationStatus,'validated',name);
+  }
+  for(const name of ['baseType:미확인','secondaryCategory:미확인']) {
+    assert.equal(group(name,r).dataFitness.taxonomyPartial,true,name);
+    assert.equal(group(name,r).promotion.evidence_strong.gates.taxonomy,false,name);
+  }
+});
+test('combination only validates its terms and exact-field review issues stay local', () => {
+  const product=p('a','롱 리본 원피스');
+  product.taxonomy.review.push({scope:'field',field:'attributes.design',code:'TAXONOMY_REVIEW_REQUIRED'});
+  const r=verifiedRun([product],[],{combinations:[
+    {label:'원피스 ∩ 리본',all:[{field:'baseType',value:'원피스'},{field:'attributes.design',value:'리본'}]},
+    {label:'원피스 ∩ 롱',all:[{field:'baseType',value:'원피스'},{field:'attributes.length',value:'롱'}]},
+  ]});
+  for(const name of ['attribute:design:리본','combination:원피스 ∩ 리본']) assert.equal(group(name,r).dataFitness.taxonomyPartial,true,name);
+  for(const name of ['baseType:원피스','combination:원피스 ∩ 롱']) assert.equal(group(name,r).dataFitness.taxonomyPartial,false,name);
+});
+test('length option does not block secondary category or other confirmed fields', () => {
+  const r=verifiedRun([p('a','미니&롱 리본 원피스')]);
+  const g=group('secondaryCategory:원피스(기장선택)',r);
+  assert.equal(g.validationStatus,'validated'); assert.equal(g.promotion.evidence_strong.gates.taxonomy,true);
+  assert.ok(!g.flags.includes('option_unallocated'));
+  assert.ok(!r.groups.some(g=>g.level==='attribute:length'));
+});
+test('majority without core date repetition still fails residual gate when DE is absent', () => {
+  const g=all(run([p('a'),p('b')],[f('a','2026-09-01',8),f('b','2026-09-01')]));
+  assert.equal(g.periods.all.top[1].candidate,'no');
+  assert.equal(g.primaryState,'exploration_signal');
+  assert.equal(g.promotion.evidence_strong.gates.residualReplication,false);
+  assert.equal(g.promotion.evidence_strong.enabled,false);
+});
+test('both majority TOP1 and TOP2 must preserve DE, not just TOP1', () => {
+  const g=all(run([p('a'),p('b'),p('c')],[f('a','2026-09-01',10),f('b','2026-09-01'),f('b','2026-09-02'),f('c','2026-09-01'),f('c','2026-09-02')]));
+  assert.equal(g.periods.all.top[1].remainingRanges.DE.min,2);
+  assert.equal(g.periods.all.top[2].remainingRanges.DE.min,1);
+  assert.equal(g.promotion.evidence_strong.gates.residualReplication,false);
+});
+test('tied majority gate uses minimum remaining DE, even when representative removal passes', () => {
+  // a is selected by representative ID order at the tie boundary, but b/c are repeats.
+  const products=[p('z'),p('a'),p('b'),p('c')];
+  const facts=[f('z','2026-09-01',10),f('a','2026-09-01',2),f('b','2026-09-01'),f('b','2026-09-02'),f('c','2026-09-01'),f('c','2026-09-02')];
+  const g=all(run(products,facts));
+  assert.equal(g.periods.all.top[2].remaining.DE,2);
+  assert.deepEqual(g.periods.all.top[2].remainingRanges.DE,{min:1,max:2});
+  assert.equal(g.promotion.evidence_strong.gates.residualReplication,false);
+  assert.equal(all(run([...products].reverse(),[...facts].reverse())).promotion.evidence_strong.gates.residualReplication,false);
+});
+test('majority removals with certain residual DE >= 2 pass even with ties; strong stays disabled', () => {
+  const products=['a','b','c','d'].map(x=>p(x));
+  const facts=[f('a','2026-09-01',10),...['b','c','d'].flatMap(x=>[f(x,'2026-09-01'),f(x,'2026-09-02')])];
+  const g=all(run(products,facts));
+  assert.equal(g.periods.all.top[2].tie.boundary,true);
+  assert.deepEqual(g.periods.all.top[2].remainingRanges.DE,{min:2,max:2});
+  assert.equal(g.promotion.evidence_strong.gates.residualReplication,true);
+  assert.equal(g.promotion.evidence_strong.enabled,false);
+});
+test('exactly 50% TOP2 and no majority may pass residual gate with DE=0', () => {
+  const products=['a','b','c','d'].map(x=>p(x));
+  const g=all(run(products,products.map(x=>f(x.productNo,'2026-09-01'))));
+  assert.equal(g.periods.all.top[2].share,0.5);
+  assert.equal(g.periods.all.top[2].remainingRanges.DE.min,0);
+  assert.equal(g.promotion.evidence_strong.gates.residualReplication,true);
+});
+test('unknown residual repetition cannot pass the gate', () => {
+  const g=all(run([p('a'),p('b')],[f('a','2026-09-01',8),f('b','2026-09-01',1,{orderNo:''})]));
+  assert.equal(g.periods.all.top[1].remainingRanges.DE.min,null);
+  assert.equal(g.promotion.evidence_strong.gates.residualReplication,false);
 });
