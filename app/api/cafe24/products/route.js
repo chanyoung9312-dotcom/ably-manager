@@ -123,6 +123,9 @@ async function handlePOST(req) {
         data: {
           error: "카페24 상품 생성에 실패했습니다.",
           cafe24: created.data?.error || created.data?.error_description || "",
+          ...(created.status === 401 || created.status === 403
+            ? { connectUrl: "/api/cafe24/connect" }
+            : {}),
         },
       };
 
