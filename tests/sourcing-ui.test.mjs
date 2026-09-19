@@ -21,6 +21,7 @@ const card = (id) => {
 
 test("state and flag enums are translated into neutral Korean observation copy", () => {
   assert.equal(SOURCING_STATE_COPY.exploration_signal.label, "탐색 신호");
+  assert.match(SOURCING_STATE_COPY.exploration_signal.description, /반복성과 최근 흐름, 집중도/);
   assert.equal(SOURCING_STATE_COPY.concentration_dependent.label, "특정 상품 의존");
   assert.equal(SOURCING_STATE_COPY.insufficient_data.label, "판단 자료 부족");
   assert.equal(SOURCING_FLAG_COPY.cooling_observed, "최근 반응 둔화 관측");
@@ -162,6 +163,9 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
   assert.doesNotMatch(page, /추천순|비추천|BEST/);
   assert.equal(view.notice, "추천 점수나 자동 소싱 결정이 아닌 관측 데이터입니다.");
   assert.match(page, /report\.notice/);
+  assert.match(page, /주문 수집 완전성·노출수·테스트 기간/);
+  assert.doesNotMatch(page, /사입 판단용 수량/);
+  assert.match(page, /판단 반영 수량/);
 });
 
 test("the screen exposes details, shared evidence, filters, and mobile one-column cards", () => {
