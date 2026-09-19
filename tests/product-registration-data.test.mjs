@@ -145,3 +145,33 @@ M 34 49 40
   assert.equal(parsed.colors, "블랙, 브라운");
   assert.equal(parsed.sizes, "S, M, L");
 });
+
+
+test("registration parser refuses prose that has no OARS block", () => {
+  const parsed = parseRegistrationPaste(`
+오어즈 등록용으로 바로 넣을 수 있게 정리했어.
+
+상품명 후보
+1. [핏보장] 하이웨스트 A라인 플리츠 미니스커트
+2. 데일리 하이웨스트 주름 플리츠 미니스커트
+
+추천 상품명: 1번
+원가: 42위안
+공급가: 10,000원
+추천 판매가: 31,000원
+목표 순마진: 7,000원
+
+색상: 블랙 / 브라운 / 차콜
+사이즈: S / M / L / XL
+신축성: 없음
+두께감: 적당함
+
+해시태그 30개
+플리츠스커트, 미니스커트
+`);
+  assert.equal(parsed.hasRegistrationBlock, false);
+  assert.equal(parsed.productName, "");
+  assert.equal(parsed.colors, "");
+  assert.equal(parsed.sizes, "");
+  assert.equal(parsed.targetMargin, "");
+});
