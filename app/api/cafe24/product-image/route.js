@@ -38,6 +38,9 @@ async function handlePOST(req) {
         data: {
           error: "카페24 이미지 업로드에 실패했습니다.",
           cafe24: uploaded.data?.error || uploaded.data?.error_description || "",
+          ...(uploaded.status === 401 || uploaded.status === 403
+            ? { connectUrl: "/api/cafe24/connect" }
+            : {}),
         },
       };
 
