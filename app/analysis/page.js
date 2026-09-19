@@ -22,10 +22,8 @@ const easyCheck = (text = "") => {
 
 function claimStats(claims = []) {
   return {
-    before: claims.filter((claim) => claim.type === "before").length,
-    after: claims.filter((claim) => claim.type === "after").length,
-    returns: claims.filter((claim) => claim.type === "return").length,
-    unknown: claims.filter((claim) => claim.type === "unknown").length,
+    cancels: claims.filter((claim) => claim.kind === "cancel").length,
+    returns: claims.filter((claim) => claim.kind === "return").length,
   };
 }
 
@@ -64,7 +62,7 @@ function nextAction(row) {
 function ProductRow({ row }) {
   const checks = checksFor(row);
   const claims = claimStats(row.claims || []);
-  const hasClaims = claims.before + claims.after + claims.returns + claims.unknown > 0;
+  const hasClaims = claims.cancels + claims.returns > 0;
   return (
     <article className="md-analysis-card">
       <div className="md-analysis-card-head">
@@ -86,10 +84,8 @@ function ProductRow({ row }) {
       {hasClaims && (
         <div className="claim-line" aria-label="상품 취소 반품 현황">
           <b>취소·반품</b>
-          {claims.before > 0 && <span>발주 전 취소 {claims.before}건</span>}
-          {claims.after > 0 && <span>발주 후 취소 {claims.after}건</span>}
+          {claims.cancels > 0 && <span>취소 {claims.cancels}건</span>}
           {claims.returns > 0 && <span>반품 {claims.returns}건</span>}
-          {claims.unknown > 0 && <span>구분 확인 {claims.unknown}건</span>}
         </div>
       )}
 
@@ -114,10 +110,8 @@ function ProductRow({ row }) {
         {hasClaims && (
           <div className="claim-detail">
             <b>취소·반품 기록</b>
-            <span>발주 전 취소 {claims.before}건</span>
-            <span>발주 후 취소 {claims.after}건</span>
+            <span>취소 {claims.cancels}건</span>
             <span>반품 {claims.returns}건</span>
-            {claims.unknown > 0 && <span>구분 확인 {claims.unknown}건</span>}
           </div>
         )}
         {row.quantities && (
@@ -213,10 +207,8 @@ export default function AnalysisPage() {
       <section className="claim-summary" aria-label="취소 반품 집계">
         <div className="claim-summary-title"><b>취소·반품 현황</b><span>취소 반품 시트에 기록된 건 기준</span></div>
         <div className="claim-summary-grid">
-          <div><span>발주 전 취소</span><b>{summary.before}건</b></div>
-          <div><span>발주 후 취소</span><b>{summary.after}건</b></div>
+          <div><span>취소</span><b>{summary.cancels}건</b></div>
           <div><span>반품</span><b>{summary.returns}건</b></div>
-          <div><span>구분 확인</span><b>{summary.unknown}건</b></div>
         </div>
       </section>
 
@@ -233,7 +225,7 @@ export default function AnalysisPage() {
       )}
 
       <style jsx global>{`
-        .md-analysis-page{max-width:1080px;margin:auto;padding:26px 18px 70px;color:inherit}.md-analysis-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}.md-analysis-head small,.md-analysis-head p{color:#aeb5b8}.md-analysis-head h1{font-size:34px;margin:5px 0}.md-analysis-head p{margin:0;max-width:760px}.md-analysis-head button{padding:11px 16px;border-radius:12px}.decision-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0 12px}.decision-summary>div,.claim-summary,.md-analysis-section,.md-analysis-warning{border:1px solid #343a3d;border-radius:16px;background:#191d1f}.decision-summary>div{padding:17px;display:flex;flex-direction:column;gap:5px}.decision-summary span{font-weight:800}.decision-summary b{font-size:25px}.decision-summary small{color:#aeb5b8}.claim-summary{padding:17px;margin-bottom:12px}.claim-summary-title{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}.claim-summary-title span{font-size:13px;color:#aeb5b8}.claim-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.claim-summary-grid>div{padding:12px;border-radius:12px;background:#22282a;display:flex;justify-content:space-between;gap:8px;align-items:center}.claim-summary-grid span{font-size:13px;color:#aeb5b8}.claim-summary-grid b{font-size:18px}.md-analysis-section{padding:18px;margin:14px 0}.md-analysis-section-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;border-bottom:1px solid #303638;padding:2px 2px 14px}.md-analysis-section-head h2{margin:0 0 4px;font-size:21px}.md-analysis-section-head p{margin:0;color:#aeb5b8}.md-analysis-section-head>b{white-space:nowrap}.md-analysis-card{padding:20px 2px;border-bottom:1px solid #303638}.md-analysis-card:last-child{border-bottom:0}.md-analysis-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}.md-analysis-card-head small{color:#929b9f}.md-analysis-card-head h3{margin:5px 0 0;font-size:18px;line-height:1.45}.md-analysis-badge{border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800;white-space:nowrap}.md-analysis-badge.buy{background:#294936}.md-analysis-badge.watch{background:#4a4025}.md-analysis-badge.stop{background:#493032}.md-analysis-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:16px 0}.md-analysis-metrics>div{background:#22282a;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:3px}.md-analysis-metrics span{color:#aeb5b8;font-size:12px}.md-analysis-metrics b{font-size:19px}.claim-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-2px 0 10px}.claim-line>b{font-size:12px;color:#aeb5b8}.claim-line span{padding:6px 8px;border-radius:8px;background:#3b2d2f;font-size:12px;font-weight:700}.md-analysis-status{background:#202527;border-radius:13px;padding:14px 15px}.md-analysis-status p{margin:6px 0 0;color:#c2c8ca}.md-analysis-action{margin-top:9px;border:1px solid #303638;background:#171b1c;border-radius:13px;padding:14px 15px;display:flex;gap:12px;align-items:flex-start}.md-analysis-action span{font-size:12px;color:#aeb5b8;min-width:68px;padding-top:2px}.md-analysis-card details{margin-top:12px}.md-analysis-card summary,.md-analysis-warning summary{cursor:pointer;font-weight:800}.md-analysis-detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.md-analysis-detail-grid p{margin:0;padding:11px;border-radius:11px;background:#22282a;display:flex;flex-direction:column;gap:3px}.md-analysis-detail-grid span{font-size:12px;color:#aeb5b8}.claim-detail,.md-analysis-quantity{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;padding:13px;border-radius:11px;background:#202527}.claim-detail>b,.md-analysis-quantity>b{width:100%}.claim-detail span,.md-analysis-quantity span{padding:6px 8px;border-radius:8px;background:#272d2f;font-size:13px}.md-analysis-checks{margin-top:12px;padding:13px;border-radius:11px;background:#202527}.md-analysis-checks ul{margin:8px 0 0;padding-left:20px}.md-analysis-empty{color:#aeb5b8;padding:16px 2px;margin:0}.md-analysis-warning{margin-top:14px;padding:16px;font-size:13px;color:#aeb5b8}@media(max-width:760px){.decision-summary{grid-template-columns:1fr 1fr}.claim-summary-grid{grid-template-columns:1fr 1fr}.md-analysis-metrics{grid-template-columns:1fr 1fr}.md-analysis-detail-grid{grid-template-columns:1fr 1fr}.md-analysis-card-head{flex-direction:column}.md-analysis-head h1{font-size:28px}}@media(max-width:440px){.decision-summary{grid-template-columns:1fr}.claim-summary-title{align-items:flex-start;flex-direction:column}.claim-summary-grid{grid-template-columns:1fr}.md-analysis-detail-grid{grid-template-columns:1fr}.md-analysis-action{flex-direction:column;gap:4px}}
+        .md-analysis-page{max-width:1080px;margin:auto;padding:26px 18px 70px;color:inherit}.md-analysis-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}.md-analysis-head small,.md-analysis-head p{color:#aeb5b8}.md-analysis-head h1{font-size:34px;margin:5px 0}.md-analysis-head p{margin:0;max-width:760px}.md-analysis-head button{padding:11px 16px;border-radius:12px}.decision-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0 12px}.decision-summary>div,.claim-summary,.md-analysis-section,.md-analysis-warning{border:1px solid #343a3d;border-radius:16px;background:#191d1f}.decision-summary>div{padding:17px;display:flex;flex-direction:column;gap:5px}.decision-summary span{font-weight:800}.decision-summary b{font-size:25px}.decision-summary small{color:#aeb5b8}.claim-summary{padding:17px;margin-bottom:12px}.claim-summary-title{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}.claim-summary-title span{font-size:13px;color:#aeb5b8}.claim-summary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.claim-summary-grid>div{padding:12px;border-radius:12px;background:#22282a;display:flex;justify-content:space-between;gap:8px;align-items:center}.claim-summary-grid span{font-size:13px;color:#aeb5b8}.claim-summary-grid b{font-size:18px}.md-analysis-section{padding:18px;margin:14px 0}.md-analysis-section-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;border-bottom:1px solid #303638;padding:2px 2px 14px}.md-analysis-section-head h2{margin:0 0 4px;font-size:21px}.md-analysis-section-head p{margin:0;color:#aeb5b8}.md-analysis-section-head>b{white-space:nowrap}.md-analysis-card{padding:20px 2px;border-bottom:1px solid #303638}.md-analysis-card:last-child{border-bottom:0}.md-analysis-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}.md-analysis-card-head small{color:#929b9f}.md-analysis-card-head h3{margin:5px 0 0;font-size:18px;line-height:1.45}.md-analysis-badge{border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800;white-space:nowrap}.md-analysis-badge.buy{background:#294936}.md-analysis-badge.watch{background:#4a4025}.md-analysis-badge.stop{background:#493032}.md-analysis-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:16px 0}.md-analysis-metrics>div{background:#22282a;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:3px}.md-analysis-metrics span{color:#aeb5b8;font-size:12px}.md-analysis-metrics b{font-size:19px}.claim-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-2px 0 10px}.claim-line>b{font-size:12px;color:#aeb5b8}.claim-line span{padding:6px 8px;border-radius:8px;background:#3b2d2f;font-size:12px;font-weight:700}.md-analysis-status{background:#202527;border-radius:13px;padding:14px 15px}.md-analysis-status p{margin:6px 0 0;color:#c2c8ca}.md-analysis-action{margin-top:9px;border:1px solid #303638;background:#171b1c;border-radius:13px;padding:14px 15px;display:flex;gap:12px;align-items:flex-start}.md-analysis-action span{font-size:12px;color:#aeb5b8;min-width:68px;padding-top:2px}.md-analysis-card details{margin-top:12px}.md-analysis-card summary,.md-analysis-warning summary{cursor:pointer;font-weight:800}.md-analysis-detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.md-analysis-detail-grid p{margin:0;padding:11px;border-radius:11px;background:#22282a;display:flex;flex-direction:column;gap:3px}.md-analysis-detail-grid span{font-size:12px;color:#aeb5b8}.claim-detail,.md-analysis-quantity{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;padding:13px;border-radius:11px;background:#202527}.claim-detail>b,.md-analysis-quantity>b{width:100%}.claim-detail span,.md-analysis-quantity span{padding:6px 8px;border-radius:8px;background:#272d2f;font-size:13px}.md-analysis-checks{margin-top:12px;padding:13px;border-radius:11px;background:#202527}.md-analysis-checks ul{margin:8px 0 0;padding-left:20px}.md-analysis-empty{color:#aeb5b8;padding:16px 2px;margin:0}.md-analysis-warning{margin-top:14px;padding:16px;font-size:13px;color:#aeb5b8}@media(max-width:760px){.decision-summary{grid-template-columns:1fr 1fr}.claim-summary-grid{grid-template-columns:1fr 1fr}.md-analysis-metrics{grid-template-columns:1fr 1fr}.md-analysis-detail-grid{grid-template-columns:1fr 1fr}.md-analysis-card-head{flex-direction:column}.md-analysis-head h1{font-size:28px}}@media(max-width:440px){.decision-summary{grid-template-columns:1fr}.claim-summary-title{align-items:flex-start;flex-direction:column}.claim-summary-grid{grid-template-columns:1fr}.md-analysis-detail-grid{grid-template-columns:1fr}.md-analysis-action{flex-direction:column;gap:4px}}
       `}</style>
     </main>
   );
