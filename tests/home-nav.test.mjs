@@ -67,6 +67,8 @@ test("product registration helper keeps desktop folder and ZIP processing local 
   assert.match(page, /사이즈 참고/);
   assert.match(page, /무시/);
   assert.match(page, /상단 자르기/);
+  assert.match(page, /grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/);
+  assert.match(page, /@media\(max-width:850px\)\{\.image-grid\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\)\}/);
   assert.match(page, /ChatGPT 분석/);
   assert.match(page, /OARS 등록용 블록/);
   assert.match(page, /Cafe24RegistrationPanel/);

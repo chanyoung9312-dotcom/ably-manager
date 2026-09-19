@@ -220,6 +220,20 @@ try {
   await page.getByRole("button", { name: "이 분류로 이미지 정리 시작", exact: true }).click();
   await page.getByRole("heading", { name: "메인 썸네일 / GIF 이미지", exact: true }).waitFor();
   await page.getByRole("heading", { name: "상세페이지에 넣을 이미지", exact: true }).waitFor();
+
+  const firstImageCard = page.locator(".image-card").first();
+  await firstImageCard.scrollIntoViewIfNeeded();
+  const editorScrollTop = await page.evaluate(() => window.scrollY);
+  assert.ok(editorScrollTop > 100, "image editor should be below the page top");
+  for (const stateLabel of ["상단 자르기", "사용", "제외", "사용"]) {
+    await firstImageCard.getByRole("button", { name: stateLabel, exact: true }).click();
+    await page.waitForTimeout(50);
+    const scrollTop = await page.evaluate(() => window.scrollY);
+    assert.ok(
+      scrollTop > 100,
+      `image state button ${stateLabel} must not jump the page to the top`,
+    );
+  }
   const registrationDownload = page.waitForEvent("download");
   await page.getByRole("button", { name: "ZIP 저장", exact: true }).first().click();
   const registrationFile = await registrationDownload;

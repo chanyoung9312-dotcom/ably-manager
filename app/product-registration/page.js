@@ -97,6 +97,73 @@ function sorted(list) {
   return [...list].sort((a, b) => collator.compare(a.name, b.name));
 }
 
+function ImageCard({ item, onPatch, onSaveCrop }) {
+  const state = STATES[item.state];
+  return (
+    <article className={`image-card ${state.tone}`}>
+      <div className="image-wrap">
+        <img src={item.url} alt={item.fileName} />
+        {item.state === "crop" && (
+          <div
+            className="crop-mask"
+            style={{ height: `${item.cropTop}%` }}
+            aria-hidden="true"
+          >
+            잘라낼 영역
+          </div>
+        )}
+        {item.state === "exclude" && <div className="exclude-mask">제외</div>}
+      </div>
+      <div className="card-body">
+        <b className="file-name" title={item.fileName}>{item.fileName}</b>
+        <div className="state-buttons" aria-label={`${item.fileName} 처리 선택`}>
+          {Object.entries(STATES).map(([key, value]) => (
+            <button
+              type="button"
+              key={key}
+              className={item.state === key ? "selected" : ""}
+              onClick={() => onPatch(item.id, { state: key })}
+            >
+              {value.label}
+            </button>
+          ))}
+        </div>
+        {item.state === "crop" && (
+          <div className="crop-control">
+            <div>
+              <b>위에서 {item.cropTop}% 제거</b>
+              <span>모델 얼굴이 포함된 상단 전체를 잘라냅니다.</span>
+            </div>
+            <input
+              aria-label={`${item.fileName} 상단 크롭 비율`}
+              type="range"
+              min="5"
+              max="45"
+              step="1"
+              value={item.cropTop}
+              onChange={(event) => onPatch(item.id, { cropTop: Number(event.target.value) })}
+            />
+            <div className="presets">
+              {[10, 15, 20, 25, 30].map((value) => (
+                <button
+                  type="button"
+                  key={value}
+                  onClick={() => onPatch(item.id, { cropTop: value })}
+                >
+                  {value}%
+                </button>
+              ))}
+            </div>
+            <button type="button" className="save" onClick={() => onSaveCrop(item)}>
+              이 이미지만 크롭 저장
+            </button>
+          </div>
+        )}
+      </div>
+    </article>
+  );
+}
+
 export default function ProductRegistrationHelperPage() {
   const [zipName, setZipName] = useState("");
   const [items, setItems] = useState([]);
@@ -373,68 +440,6 @@ export default function ProductRegistrationHelperPage() {
     setNotice("새 상품 폴더를 열거나 VVIC ZIP을 선택해주세요.");
   }
 
-  function ImageCard({ item }) {
-    const state = STATES[item.state];
-    return (
-      <article className={`image-card ${state.tone}`}>
-        <div className="image-wrap">
-          <img src={item.url} alt={item.fileName} />
-          {item.state === "crop" && (
-            <div
-              className="crop-mask"
-              style={{ height: `${item.cropTop}%` }}
-              aria-hidden="true"
-            >
-              잘라낼 영역
-            </div>
-          )}
-          {item.state === "exclude" && <div className="exclude-mask">제외</div>}
-        </div>
-        <div className="card-body">
-          <b className="file-name" title={item.fileName}>{item.fileName}</b>
-          <div className="state-buttons" aria-label={`${item.fileName} 처리 선택`}>
-            {Object.entries(STATES).map(([key, value]) => (
-              <button
-                key={key}
-                className={item.state === key ? "selected" : ""}
-                onClick={() => patch(item.id, { state: key })}
-              >
-                {value.label}
-              </button>
-            ))}
-          </div>
-          {item.state === "crop" && (
-            <div className="crop-control">
-              <div>
-                <b>위에서 {item.cropTop}% 제거</b>
-                <span>모델 얼굴이 포함된 상단 전체를 잘라냅니다.</span>
-              </div>
-              <input
-                aria-label={`${item.fileName} 상단 크롭 비율`}
-                type="range"
-                min="5"
-                max="45"
-                step="1"
-                value={item.cropTop}
-                onChange={(event) => patch(item.id, { cropTop: Number(event.target.value) })}
-              />
-              <div className="presets">
-                {[10, 15, 20, 25, 30].map((value) => (
-                  <button key={value} onClick={() => patch(item.id, { cropTop: value })}>
-                    {value}%
-                  </button>
-                ))}
-              </div>
-              <button className="save" onClick={() => saveCrop(item)}>
-                이 이미지만 크롭 저장
-              </button>
-            </div>
-          )}
-        </div>
-      </article>
-    );
-  }
-
   const mainItems = activeItems.filter((item) => item.role === "main");
   const detailItems = activeItems.filter((item) => item.role === "detail");
   const sizeItems = items.filter((item) => folderRoles[item.folder] === "size");
@@ -490,7 +495,7 @@ export default function ProductRegistrationHelperPage() {
           <strong>ZIP 그대로 열기</strong>
           <span>아직 압축을 풀지 않은 경우에만 사용합니다.</span>
         </label>
-        {items.length > 0 && <button className="secondary" onClick={resetAll}>초기화</button>}
+        {items.length > 0 && <button type="button" className="secondary" onClick={resetAll}>초기화</button>}
       </section>
 
       {notice && <p className="notice" role="status">{notice}</p>}
@@ -551,7 +556,7 @@ export default function ProductRegistrationHelperPage() {
               <b>최종 결과에는 2개 폴더만 생성됩니다.</b>
               <span>01_메인_GIF용 / 02_상세이미지 · 사이즈 참고와 무시는 결과 ZIP에서 제외</span>
             </div>
-            <button onClick={startEditing}>이 분류로 이미지 정리 시작</button>
+            <button type="button" onClick={startEditing}>이 분류로 이미지 정리 시작</button>
           </section>
         </>
       )}
@@ -566,12 +571,12 @@ export default function ProductRegistrationHelperPage() {
           </section>
 
           <div className="edit-actions">
-            <button className="secondary" onClick={() => setStage("folders")}>← 폴더 분류 다시 보기</button>
+            <button type="button" className="secondary" onClick={() => setStage("folders")}>← 폴더 분류 다시 보기</button>
             <div className="action-pair">
-              <button className="export" onClick={exportFolder} disabled={busy}>
+              <button type="button" className="export" onClick={exportFolder} disabled={busy}>
                 {busy ? "저장 중..." : "정리 폴더 저장"}
               </button>
-              <button className="secondary" onClick={exportZip} disabled={busy}>ZIP 저장</button>
+              <button type="button" className="secondary" onClick={exportZip} disabled={busy}>ZIP 저장</button>
             </div>
           </div>
 
@@ -585,7 +590,7 @@ export default function ProductRegistrationHelperPage() {
               <b>{mainItems.length}장</b>
             </div>
             <div className="image-grid">
-              {mainItems.map((item) => <ImageCard item={item} key={item.id} />)}
+              {mainItems.map((item) => <ImageCard item={item} key={item.id} onPatch={patch} onSaveCrop={saveCrop} />)}
             </div>
           </section>
 
@@ -599,7 +604,7 @@ export default function ProductRegistrationHelperPage() {
               <b>{detailItems.length}장</b>
             </div>
             <div className="image-grid">
-              {detailItems.map((item) => <ImageCard item={item} key={item.id} />)}
+              {detailItems.map((item) => <ImageCard item={item} key={item.id} onPatch={patch} onSaveCrop={saveCrop} />)}
             </div>
           </section>
 
@@ -619,10 +624,10 @@ export default function ProductRegistrationHelperPage() {
               <span>제외 이미지는 빠지고, 크롭 이미지는 수정본으로 교체됩니다.</span>
             </div>
             <div className="action-pair">
-              <button className="export" onClick={exportFolder} disabled={busy}>
+              <button type="button" className="export" onClick={exportFolder} disabled={busy}>
                 {busy ? "저장 중..." : "정리 폴더 저장"}
               </button>
-              <button className="secondary" onClick={exportZip} disabled={busy}>ZIP 저장</button>
+              <button type="button" className="secondary" onClick={exportZip} disabled={busy}>ZIP 저장</button>
             </div>
           </section>
 
@@ -672,12 +677,13 @@ export default function ProductRegistrationHelperPage() {
         .samples{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:12px 0}.samples img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;background:#0f1314}.role-select{display:flex;justify-content:space-between;align-items:center;gap:10px}.role-select span{color:#aeb7bb;font-size:13px}.role-select select{min-width:160px;padding:8px;border-radius:9px}
         .confirm-bar{display:flex;justify-content:space-between;gap:18px;align-items:center;margin:18px 0;padding:16px;border:1px solid #435055;border-radius:15px;background:#1b2224}.confirm-bar>div{display:flex;flex-direction:column;gap:4px}.confirm-bar span{color:#9da8ac;font-size:13px}.confirm-bar button{font-weight:900}.confirm-bar.bottom{margin-top:28px}
         .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.summary div{padding:14px;border:1px solid #333d41;border-radius:13px;background:#171c1e}.summary span{display:block;color:#98a3a7;font-size:13px}.summary b{font-size:24px;display:block;margin-top:4px}.edit-actions{display:flex;justify-content:space-between;gap:10px;margin:12px 0}.action-pair{display:flex;gap:8px;flex-wrap:wrap}.export{background:#edf1f2;color:#111719;font-weight:900}
-        .image-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.image-card{overflow:hidden;border:1px solid #354044;border-radius:16px;background:#171c1e}.image-card.crop{border-color:#8a7546}.image-card.bad{border-color:#694549}.image-wrap{position:relative;aspect-ratio:4/5;background:#0e1213;display:flex;align-items:center;justify-content:center;overflow:hidden}.image-wrap img{width:100%;height:100%;object-fit:contain}.crop-mask{position:absolute;left:0;top:0;width:100%;display:grid;place-items:center;background:rgba(190,135,24,.46);border-bottom:2px dashed #ffd981;font-weight:900;color:white;text-shadow:0 1px 2px #000}.exclude-mask{position:absolute;inset:0;display:grid;place-items:center;background:rgba(64,20,24,.62);font-size:24px;font-weight:900}
+        .image-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.image-card{overflow:hidden;border:1px solid #354044;border-radius:16px;background:#171c1e}.image-card.crop{border-color:#8a7546}.image-card.bad{border-color:#694549}.image-wrap{position:relative;aspect-ratio:4/5;background:#0e1213;display:flex;align-items:center;justify-content:center;overflow:hidden}.image-wrap img{width:100%;height:100%;object-fit:contain}.crop-mask{position:absolute;left:0;top:0;width:100%;display:grid;place-items:center;background:rgba(190,135,24,.46);border-bottom:2px dashed #ffd981;font-weight:900;color:white;text-shadow:0 1px 2px #000}.exclude-mask{position:absolute;inset:0;display:grid;place-items:center;background:rgba(64,20,24,.62);font-size:24px;font-weight:900}
         .card-body{padding:12px}.file-name{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}.state-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}.state-buttons button{padding:9px 5px;min-height:40px;font-size:12px}.state-buttons button.selected{background:#eef2f3;color:#121719;border-color:#eef2f3;font-weight:900}.crop-control{border-top:1px solid #333d41;margin-top:12px;padding-top:12px}.crop-control>div:first-child{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.crop-control span{font-size:11px;color:#919ca0;text-align:right}.crop-control input{width:100%;margin:12px 0}.presets{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}.presets button{padding:6px 4px;min-height:34px;font-size:11px}.save{width:100%;margin-top:8px;background:#e9eef0;color:#111719;font-weight:900}
         .size-reference{margin-top:26px;padding:15px;border:1px solid #394448;border-radius:14px;background:#151a1c}.size-reference summary{cursor:pointer;font-weight:900}.size-reference p{color:#aeb7bb}.reference-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.reference-grid img{width:100%;max-height:360px;object-fit:contain;border-radius:10px;background:#0e1213}
         .next-stage{display:flex;flex-direction:column;gap:5px;margin-top:14px;padding:16px;border:1px dashed #4b585d;border-radius:14px;background:#151a1c}.next-stage span{color:#aeb7bb;font-size:13px}.empty{padding:48px 20px;text-align:center;border:1px dashed #465256;border-radius:16px;color:#bac2c5;margin-top:18px}.empty p{margin-bottom:0}.guide{margin-top:22px;padding:18px;border:1px solid #333d41;border-radius:15px;background:#151a1c}.guide h2{margin-top:0;font-size:18px}.guide p{margin:7px 0;color:#b4bdc0;line-height:1.6}
-        @media(max-width:850px){.image-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.flow{grid-template-columns:repeat(2,1fr)}.folder-list{grid-template-columns:1fr}}
-        @media(max-width:560px){.registration-helper{padding:20px 12px 60px}header{display:block}h1{font-size:27px}.privacy{display:inline-block;margin-top:14px}.flow{grid-template-columns:1fr 1fr}.flow>div{padding:10px}.flow small{display:none}.uploader{align-items:stretch;flex-direction:column}.section-head{display:block}.section-head>b{display:block;text-align:left;margin-top:8px}.samples{grid-template-columns:repeat(4,1fr)}.role-select{align-items:stretch;flex-direction:column}.role-select select{width:100%}.confirm-bar{align-items:stretch;flex-direction:column}.confirm-bar button{width:100%}.summary{grid-template-columns:1fr 1fr}.edit-actions{flex-direction:column}.edit-actions button,.action-pair{width:100%}.action-pair{flex-direction:column}.action-pair button{width:100%}.image-grid{grid-template-columns:1fr}.crop-control>div:first-child{display:block}.crop-control span{display:block;text-align:left;margin-top:4px}.reference-grid{grid-template-columns:1fr 1fr}}
+        @media(max-width:850px){.image-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.flow{grid-template-columns:repeat(2,1fr)}.folder-list{grid-template-columns:1fr}}
+        @media(max-width:560px){.registration-helper{padding:20px 12px 60px}header{display:block}h1{font-size:27px}.privacy{display:inline-block;margin-top:14px}.flow{grid-template-columns:1fr 1fr}.flow>div{padding:10px}.flow small{display:none}.uploader{align-items:stretch;flex-direction:column}.section-head{display:block}.section-head>b{display:block;text-align:left;margin-top:8px}.samples{grid-template-columns:repeat(4,1fr)}.role-select{align-items:stretch;flex-direction:column}.role-select select{width:100%}.confirm-bar{align-items:stretch;flex-direction:column}.confirm-bar button{width:100%}.summary{grid-template-columns:1fr 1fr}.edit-actions{flex-direction:column}.edit-actions button,.action-pair{width:100%}.action-pair{flex-direction:column}.action-pair button{width:100%}.image-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.crop-control>div:first-child{display:block}.crop-control span{display:block;text-align:left;margin-top:4px}.reference-grid{grid-template-columns:1fr 1fr}}
+        @media(max-width:420px){.image-grid{grid-template-columns:1fr}}
       `}</style>
     </main>
   );
