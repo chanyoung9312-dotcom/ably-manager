@@ -246,7 +246,7 @@ try {
 
   const excludeButton = firstImageCard.getByRole("button", { name: "제외", exact: true });
   await excludeButton.click();
-  await firstImageCard.getByText("제외", { exact: true }).waitFor();
+  await firstImageCard.locator(".exclude-mask").waitFor();
   assert.equal(await firstImageCard.locator(".exclude-mask").count(), 1);
   const excludedScrollTop = await page.evaluate(() => window.scrollY);
   assert.ok(excludedScrollTop > 100, "exclude must not jump the page to the top");
