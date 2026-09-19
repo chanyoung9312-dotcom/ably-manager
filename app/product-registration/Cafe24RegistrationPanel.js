@@ -251,7 +251,7 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
       </div>
 
       <div className="connection-row">
-        <span>첫 배포 후에는 상품 쓰기 권한을 받기 위해 카페24를 한 번 다시 연결합니다.</span>
+        <span>상품 등록 권한 오류가 날 때만 카페24 권한을 다시 연결하면 됩니다.</span>
         <button
           type="button"
           onClick={() => window.open("/api/cafe24/connect", "_blank", "noopener,noreferrer")}
