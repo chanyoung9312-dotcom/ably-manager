@@ -60,7 +60,7 @@ test("product registration helper keeps desktop folder and ZIP processing local 
   assert.match(page, /showDirectoryPicker/);
   assert.match(page, /정리 폴더 저장/);
   assert.match(page, /ZIP 저장/);
-  assert.match(page, /외부 업로드 없음/);
+  assert.match(page, /이미지 정리는 로컬 처리/);
   assert.match(page, /폴더명은 공급처마다 다를 수 있어 자동 확정하지 않습니다/);
   assert.match(page, /메인·GIF용/);
   assert.match(page, /상세이미지/);
