@@ -304,33 +304,27 @@ function ResearchPlanBoard({ researchPlan }) {
     <section className="research-board" aria-labelledby="research-board-title">
       <div className="research-board-head">
         <div>
-          <small>실제 판매 반응 → 공급처 검색어</small>
-          <h2 id="research-board-title">{researchPlan.title}</h2>
-          <p>{researchPlan.description}</p>
+          <small>판매 데이터 기준</small>
+          <h2 id="research-board-title">지금 찾아볼 키워드</h2>
+          <p>키워드를 누르면 바로 복사됩니다. 공급처에서 그대로 검색해보세요.</p>
         </div>
         <span>{researchPlan.count}개 품목</span>
       </div>
-      <p className="research-notice">{researchPlan.notice}</p>
 
       <div className="research-grid">
         {researchPlan.tasks.map((task) => (
           <article className="research-card" key={task.id}>
             <div className="research-title">
-              <div>
-                <small>{task.confidenceLabel}</small>
-                <h3>{task.label}</h3>
-              </div>
-              <span>{task.purpose}</span>
+              <h3>{task.label}</h3>
             </div>
 
             <section className="research-keywords">
               <div className="research-keywords-head">
-                <b>{task.keywordTitle}</b>
+                <b>추천 검색어</b>
                 {task.copyKeywords && (
                   <button type="button" onClick={() => copy(task.copyKeywords)}>전체 복사</button>
                 )}
               </div>
-              <p>{task.keywordGuide}</p>
               <div className="research-keyword-list">
                 {task.searchKeywords.map((item) => (
                   <button
@@ -348,7 +342,7 @@ function ResearchPlanBoard({ researchPlan }) {
 
               {task.cautionKeywords.length > 0 && (
                 <details className="research-keyword-caution">
-                  <summary>특정 상품 의존 키워드 · 참고만</summary>
+                  <summary>참고만 볼 키워드</summary>
                   <div>
                     {task.cautionKeywords.map((item) => (
                       <span key={item.keyword}>{item.keyword}</span>
@@ -358,14 +352,14 @@ function ResearchPlanBoard({ researchPlan }) {
               )}
             </section>
 
-            <div className="research-facts">
-              <p><span>반응 상품</span><b>{value(task.facts.reactingProducts)}</b></p>
-              <p><span>다른 날짜 반복</span><b>{value(task.facts.repeatedDateProducts)}</b></p>
-              <p><span>최근 30일 활성</span><b>{value(task.facts.recent30ActiveProducts)}</b></p>
+            <div className="research-signal-line" aria-label="키워드 근거 요약">
+              <span>반응 <b>{value(task.facts.reactingProducts)}</b></span>
+              <span>반복 <b>{value(task.facts.repeatedDateProducts)}</b></span>
+              <span>최근 30일 <b>{value(task.facts.recent30ActiveProducts)}</b></span>
             </div>
 
             <details className="research-context">
-              <summary>왜 이 키워드인가요?</summary>
+              <summary>왜 추천됐는지 보기</summary>
               <div>
                 {task.combinationLines.map((line) => (
                   <p key={line.key}><span>{line.label}</span><strong>{line.value}</strong></p>
@@ -373,21 +367,9 @@ function ResearchPlanBoard({ researchPlan }) {
               </div>
             </details>
 
-            <section className="research-fields">
-              <b>찾은 상품에서 확인할 것</b>
-              <div>
-                {task.captureFields.map((field) => (
-                  <span key={field.key}>
-                    {field.label}
-                    <small>{field.requirementLabel}</small>
-                  </span>
-                ))}
-              </div>
-            </section>
-
             {task.referenceProducts.length > 0 && (
               <details className="research-reference">
-                <summary>기존 반응 상품 참고 · {task.referenceProducts.length}개</summary>
+                <summary>반응 상품 참고 · {task.referenceProducts.length}개</summary>
                 <div>
                   {task.referenceProducts.map((product) => (
                     <p key={product.productNo}>
@@ -398,19 +380,6 @@ function ResearchPlanBoard({ researchPlan }) {
                 </div>
               </details>
             )}
-
-            <details className="research-guardrails">
-              <summary>해석 주의사항</summary>
-              <ul>
-                {task.guardrails.map((guardrail) => <li key={guardrail}>{guardrail}</li>)}
-              </ul>
-            </details>
-
-            <details className="research-template">
-              <summary>조사 메모 템플릿</summary>
-              <pre>{task.copyTemplate}</pre>
-              <button type="button" onClick={() => copy(task.copyTemplate)}>템플릿 복사</button>
-            </details>
           </article>
         ))}
       </div>
@@ -636,113 +605,115 @@ export default function SourcingPage() {
     <main className="sourcing-page">
       <header className="sourcing-head">
         <div>
-          <small>실제 판매 반응으로 다음 소싱 방향을 찾는 화면</small>
-          <h1>소싱 반응 진단</h1>
-          <p>먼저 추천 검색 키워드를 확인하고, 필요할 때 아래에서 근거 상품과 세부 진단을 펼쳐보세요.</p>
-          <p className="notice">{report.notice}</p>
+          <small>실제 주문 반응 기준</small>
+          <h1>소싱 키워드 추천</h1>
+          <p>지금 공급처에서 무엇을 검색해볼지 먼저 보여줍니다.</p>
         </div>
         <button onClick={load} disabled={loading}>{loading ? "불러오는 중" : "새로고침"}</button>
       </header>
 
       {error && <p role="alert">{error} · 마지막으로 불러온 데이터를 보여주고 있습니다.</p>}
 
-      <section className="summary-grid" aria-label="소싱 진단 요약">
-        <div><span>분석 상품</span><b>{value(summary.products)}</b></div>
-        <div><span>주문 연결 상품</span><b>{value(summary.linkedProducts)}</b></div>
+      <section className="summary-grid summary-grid-primary" aria-label="소싱 핵심 요약">
         <div><span>주문 반응 상품</span><b>{value(summary.reactingProducts)}</b></div>
-        <div><span>최근 30일 활성 상품</span><b>{value(summary.recent30ActiveProducts)}</b></div>
+        <div><span>최근 30일 활성</span><b>{value(summary.recent30ActiveProducts)}</b></div>
       </section>
 
       <ResearchPlanBoard researchPlan={researchPlan} />
 
-      <SourcingBriefBoard briefReport={briefReport} />
+      <details className="advanced-sourcing">
+        <summary>상세 진단 보기</summary>
+        <div className="advanced-sourcing-body">
+          <p className="advanced-notice">{report.notice}</p>
 
-      <CandidateBoard candidateReport={candidateReport} />
+          <SourcingBriefBoard briefReport={briefReport} />
 
-      <section className="diagnostic-support" aria-label="진단 데이터 상태">
-        <div className="diagnostic-support-head">
-          <div>
-            <small>보조 정보</small>
-            <h2>진단 데이터 상태</h2>
-            <p>추천 키워드를 더 보수적으로 해석해야 하는 이유가 궁금할 때 확인하세요.</p>
-          </div>
+          <CandidateBoard candidateReport={candidateReport} />
+
+          <section className="diagnostic-support" aria-label="진단 데이터 상태">
+            <div className="diagnostic-support-head">
+              <div>
+                <small>데이터 확인</small>
+                <h2>진단 데이터 상태</h2>
+              </div>
+            </div>
+
+            <div className="observation-line">
+              <b>{summary.validationLabel}</b>
+              <span>분석 {value(summary.products)} · 주문 연결 {value(summary.linkedProducts)} · 원 그룹 {summary.rawGroupCount ?? "?"}개 → 화면 카드 {summary.visibleGroupCount ?? "?"}개</span>
+            </div>
+
+            {(!summary.coverageVerified || !summary.exposureAvailable || !summary.testDurationAvailable) && (
+              <div className="data-caution" role="note">
+                주문 수집 완전성·노출수·테스트 기간이 모두 확인된 상태는 아닙니다.
+              </div>
+            )}
+
+            <ReadinessPanel readiness={report.readiness} />
+          </section>
+
+          <section className="diagnostic-section-head">
+            <div>
+              <h2>전체 그룹 보기</h2>
+              <p>필요할 때 품목·속성·조합의 관측값을 확인합니다.</p>
+            </div>
+          </section>
+
+          <section className="controls" aria-label="소싱 진단 필터">
+            <div className="filter-row">
+              {report.filters.map((item) => (
+                <button key={item.key} className={category === item.key ? "active" : ""} onClick={() => setCategory(item.key)}>{item.label}</button>
+              ))}
+            </div>
+            <div className="select-row">
+              <label>상태
+                <select value={state} onChange={(e) => setState(e.target.value)}>
+                  {report.states.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
+                </select>
+              </label>
+              <label>정렬
+                <select value={sort} onChange={(e) => setSort(e.target.value)}>
+                  <option value="recent">최근 활성 상품 수</option>
+                  <option value="reaction">반응 상품 수</option>
+                  <option value="size">등록·연결 상품 수</option>
+                  <option value="name">이름</option>
+                </select>
+              </label>
+              <span>{cards.length}개 그룹</span>
+            </div>
+          </section>
+
+          <section className="card-grid">
+            {shown.map((card) => <SourcingCard key={card.id} card={card} />)}
+          </section>
+
+          {cards.length === 0 && <p className="empty">조건에 맞는 그룹이 없습니다.</p>}
+          {visible < cards.length && (
+            <button className="more" onClick={() => setVisible((count) => count + INITIAL_VISIBLE)}>
+              더 보기 · {cards.length - visible}개 남음
+            </button>
+          )}
         </div>
-
-        <div className="observation-line">
-          <b>{summary.validationLabel}</b>
-          <span>동일 상품 집합은 대표 카드 하나로 묶어 표시합니다. 원 분석 그룹 {summary.rawGroupCount ?? "?"}개 → 화면 카드 {summary.visibleGroupCount ?? "?"}개</span>
-        </div>
-
-        {(!summary.coverageVerified || !summary.exposureAvailable || !summary.testDurationAvailable) && (
-          <div className="data-caution" role="note">
-            주문 수집 완전성·노출수·테스트 기간이 모두 확인된 상태가 아닙니다. 최근 증감과 주문 0건은 관측값으로만 보고, 실패나 낮은 상품성으로 단정하지 않습니다.
-          </div>
-        )}
-
-        <ReadinessPanel readiness={report.readiness} />
-      </section>
-
-      <section className="diagnostic-section-head">
-        <div>
-          <small>전체 관측 그룹</small>
-          <h2>세부 진단 보기</h2>
-          <p>품목·속성·조합의 전체 관측값을 필터로 확인합니다.</p>
-        </div>
-      </section>
-
-      <section className="controls" aria-label="소싱 진단 필터">
-        <div className="filter-row">
-          {report.filters.map((item) => (
-            <button key={item.key} className={category === item.key ? "active" : ""} onClick={() => setCategory(item.key)}>{item.label}</button>
-          ))}
-        </div>
-        <div className="select-row">
-          <label>상태
-            <select value={state} onChange={(e) => setState(e.target.value)}>
-              {report.states.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
-            </select>
-          </label>
-          <label>정렬
-            <select value={sort} onChange={(e) => setSort(e.target.value)}>
-              <option value="recent">최근 활성 상품 수</option>
-              <option value="reaction">반응 상품 수</option>
-              <option value="size">등록·연결 상품 수</option>
-              <option value="name">이름</option>
-            </select>
-          </label>
-          <span>{cards.length}개 그룹</span>
-        </div>
-      </section>
-
-      <section className="card-grid">
-        {shown.map((card) => <SourcingCard key={card.id} card={card} />)}
-      </section>
-
-      {cards.length === 0 && <p className="empty">조건에 맞는 그룹이 없습니다.</p>}
-      {visible < cards.length && (
-        <button className="more" onClick={() => setVisible((count) => count + INITIAL_VISIBLE)}>
-          더 보기 · {cards.length - visible}개 남음
-        </button>
-      )}
+      </details>
 
       <style jsx global>{`
-        .sourcing-page{max-width:1180px;margin:auto;padding:28px 18px 72px;color:inherit}
+        .sourcing-page{max-width:1240px;margin:auto;padding:30px 20px 72px;color:inherit;font-size:16px}
         .sourcing-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;flex-wrap:wrap}
-        .sourcing-head small,.sourcing-head p{color:#aeb5b8}.sourcing-head h1{font-size:34px;margin:5px 0}.sourcing-head p{max-width:760px;margin:0}
-        .sourcing-head .notice{margin-top:7px;color:#d3d8da;font-size:13px}.sourcing-head>button,.more{padding:11px 16px;border-radius:12px}
-        .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:24px 0 10px}.summary-grid>div{padding:15px;border:1px solid #343a3d;border-radius:15px;background:#191d1f;display:flex;flex-direction:column;gap:4px}.summary-grid span{font-size:12px;color:#aeb5b8}.summary-grid b{font-size:23px}
-        .diagnostic-support{margin:28px 0 8px;padding-top:18px;border-top:1px solid #2e3436}.diagnostic-support-head{margin-bottom:10px}.diagnostic-support-head small,.diagnostic-support-head p{color:#aeb5b8}.diagnostic-support-head h2{margin:3px 0;font-size:18px}.diagnostic-support-head p{margin:0;font-size:11px;line-height:1.5}.observation-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 13px;border-radius:12px;background:#202527;color:#c8ced0;font-size:13px}.observation-line b{color:#f3f4f6}.data-caution{margin-top:8px;padding:11px 13px;border:1px solid #4a4435;border-radius:12px;background:#262319;color:#d7d0bb;font-size:12px;line-height:1.55}
+        .sourcing-head small,.sourcing-head p{color:#aeb5b8}.sourcing-head small{font-size:14px}.sourcing-head h1{font-size:36px;line-height:1.2;margin:6px 0}.sourcing-head p{max-width:760px;margin:0;font-size:16px;line-height:1.6}
+        .sourcing-head>button,.more{padding:11px 16px;border-radius:12px;font-size:14px}
+        .summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,260px));gap:10px;margin:24px 0 14px}.summary-grid>div{padding:16px 18px;border:1px solid #343a3d;border-radius:15px;background:#191d1f;display:flex;flex-direction:column;gap:5px}.summary-grid span{font-size:14px;color:#aeb5b8}.summary-grid b{font-size:24px}.summary-grid-primary{justify-content:start}
+        .diagnostic-support{margin:28px 0 8px;padding-top:18px;border-top:1px solid #2e3436}.diagnostic-support-head{margin-bottom:10px}.diagnostic-support-head small,.diagnostic-support-head p{color:#aeb5b8}.diagnostic-support-head h2{margin:3px 0;font-size:20px}.observation-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 13px;border-radius:12px;background:#202527;color:#c8ced0;font-size:13px}.observation-line b{color:#f3f4f6}.data-caution{margin-top:8px;padding:11px 13px;border:1px solid #4a4435;border-radius:12px;background:#262319;color:#d7d0bb;font-size:12px;line-height:1.55}
         .readiness-panel{margin:10px 0 18px;border:1px solid #343a3d;border-radius:15px;background:#191d1f;padding:0 14px}.readiness-panel summary{cursor:pointer;padding:13px 0;display:flex;align-items:center;gap:9px;font-weight:800}.readiness-panel summary small{color:#9da6aa;font-weight:500}.readiness-body{border-top:1px solid #303638;padding:13px 0 15px}.readiness-intro,.readiness-note{font-size:12px;line-height:1.6;color:#b8c0c3;margin:0 0 11px}.readiness-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.readiness-item{background:#22282a;border-radius:11px;padding:11px}.readiness-item>div{display:flex;justify-content:space-between;gap:8px;align-items:center}.readiness-item b{font-size:13px}.readiness-item span{font-size:11px;color:#c7ced0}.readiness-item span.ready{font-weight:800}.readiness-item p{margin:6px 0 0;color:#aeb5b8;font-size:11px;line-height:1.55}.readiness-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}.readiness-meta p{margin:0;background:#202527;border-radius:11px;padding:10px;display:flex;flex-direction:column;gap:3px}.readiness-meta span,.readiness-meta small{font-size:11px;color:#aeb5b8}.readiness-meta b{font-size:13px}.readiness-note{margin:10px 0 0}
         .brief-board{margin:20px 0 18px;padding:18px;border:1px solid #42504a;border-radius:18px;background:#171d1a}.brief-board-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.brief-board-head small,.brief-board-head p{color:#aeb5b8}.brief-board-head h2{font-size:24px;margin:4px 0 5px}.brief-board-head p{margin:0;max-width:760px;font-size:13px;line-height:1.55}.brief-board-head>span{white-space:nowrap;padding:6px 9px;border:1px solid #4c5c54;border-radius:999px;font-size:11px}.brief-notice{margin:12px 0 0;padding:10px 12px;border-radius:10px;background:#202722;color:#c4cbc7;font-size:12px;line-height:1.5}.brief-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.brief-card{border:1px solid #35413b;border-radius:15px;background:#1b211e;padding:14px}.brief-title{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.brief-title small{font-size:10px;color:#9da6a1}.brief-title h3{font-size:19px;margin:4px 0 0}.brief-title>span{font-size:10px;border:1px solid #46544d;border-radius:999px;padding:5px 7px}.brief-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}.brief-facts p{margin:0;background:#222a26;border-radius:9px;padding:9px;display:flex;flex-direction:column;gap:3px}.brief-facts span{font-size:10px;color:#aeb5b1}.brief-facts b{font-size:13px}.brief-copy{margin-top:9px;padding:10px;border-radius:10px;background:#202722}.brief-copy>b{font-size:11px}.brief-copy p{margin:4px 0 0;color:#c6cec9;font-size:12px;line-height:1.55}.brief-products{margin-top:10px;border-top:1px solid #303a35;padding-top:9px}.brief-products summary{cursor:pointer;font-size:11px;font-weight:800}.brief-products>div{margin-top:7px;display:grid;gap:6px}.brief-products p{margin:0;background:#222a26;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:2px}.brief-products p b{font-size:11px}.brief-products p span{font-size:10px;color:#aeb5b1}.brief-flags{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}.brief-flags span{font-size:10px;background:#29312d;border-radius:7px;padding:4px 6px;color:#c9d0cc}.brief-footnote{margin:10px 0 0;color:#9fa8a3;font-size:10px;line-height:1.5}
-        .research-board{margin:18px 0 24px;padding:18px;border:1px solid #3e4854;border-radius:18px;background:#171a1f}.research-board-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.research-board-head small,.research-board-head p{color:#aeb5b8}.research-board-head h2{font-size:23px;margin:4px 0 5px}.research-board-head p{margin:0;max-width:760px;font-size:13px;line-height:1.55}.research-board-head>span{white-space:nowrap;border:1px solid #485463;border-radius:999px;padding:6px 9px;font-size:11px}.research-notice{margin:12px 0 0;padding:10px 12px;border-radius:10px;background:#20252c;color:#c8ced3;font-size:12px;line-height:1.5}.research-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.research-card{border:1px solid #353d47;border-radius:15px;background:#1b1f25;padding:14px}.research-title{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.research-title small{font-size:10px;color:#9fa7af}.research-title h3{font-size:19px;margin:4px 0 0}.research-title>span{font-size:10px;border:1px solid #47515d;border-radius:999px;padding:5px 7px}.research-keywords{margin-top:12px;padding:12px;border:1px solid #465467;border-radius:12px;background:#202731}.research-keywords-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.research-keywords-head>b{font-size:13px}.research-keywords-head button{padding:6px 9px;border-radius:8px;font-size:10px}.research-keywords>p{margin:6px 0 9px;color:#bac3ca;font-size:11px;line-height:1.5}.research-keyword-list{display:flex;flex-wrap:wrap;gap:7px}.research-keyword{display:flex;align-items:center;gap:7px;border:1px solid #536276;border-radius:10px;background:#18202a;color:inherit;padding:8px 10px;text-align:left;cursor:pointer}.research-keyword strong{font-size:13px}.research-keyword small{font-size:9px;color:#aeb8c2}.research-keyword.supported{border-color:#557661;background:#1c2a23}.research-keyword.emerging{border-color:#586b7d;background:#1c2630}.research-keyword.item{border-color:#4b535e;background:#20242a}.research-keyword-caution{margin-top:9px;border-top:1px solid #36414e;padding-top:8px}.research-keyword-caution summary{cursor:pointer;font-size:10px;color:#aeb8c2}.research-keyword-caution>div{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.research-keyword-caution span{font-size:10px;padding:5px 7px;border-radius:7px;background:#2a2925;color:#c8c3b6}.research-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}.research-facts p{margin:0;background:#22272e;border-radius:9px;padding:9px;display:flex;flex-direction:column;gap:3px}.research-facts span{font-size:10px;color:#aeb5bc}.research-facts b{font-size:13px}.research-context,.research-fields{margin-top:9px;padding:10px;border-radius:10px;background:#20252c}.research-context summary,.research-fields>b{font-size:11px;font-weight:800;cursor:pointer}.research-context>div{margin-top:7px}.research-context p{margin:6px 0 0;display:flex;justify-content:space-between;gap:10px;font-size:11px}.research-context span{color:#aeb5bc}.research-context strong{text-align:right}.research-fields>div{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.research-fields span{display:flex;gap:5px;align-items:center;padding:5px 7px;border-radius:7px;background:#293039;font-size:10px}.research-fields small{color:#9fa7af}.research-reference,.research-guardrails,.research-template{margin-top:10px;border-top:1px solid #303640;padding-top:9px}.research-reference summary,.research-guardrails summary,.research-template summary{cursor:pointer;font-size:11px;font-weight:800}.research-reference>div{display:grid;gap:6px;margin-top:7px}.research-reference p{margin:0;background:#22272e;border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:2px}.research-reference b{font-size:11px}.research-reference span{font-size:10px;color:#aeb5bc}.research-guardrails ul{margin:8px 0 0;padding-left:18px;color:#b8c0c6;font-size:10px;line-height:1.6}.research-template pre{white-space:pre-wrap;word-break:break-word;margin:8px 0;padding:10px;border-radius:9px;background:#15191e;color:#c9d0d5;font-size:10px;line-height:1.55}.research-template button{padding:7px 10px;border-radius:8px;font-size:11px}
-        .candidate-board{margin:20px 0 28px;padding:18px;border:1px solid #3a4245;border-radius:18px;background:#15191b}.candidate-board-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.candidate-board-head small,.candidate-board-head p{color:#aeb5b8}.candidate-board-head h2{font-size:24px;margin:4px 0 5px}.candidate-board-head p{margin:0;max-width:760px;font-size:13px;line-height:1.55}.candidate-board-head>span{white-space:nowrap;padding:6px 9px;border:1px solid #465156;border-radius:999px;font-size:11px;color:#d4d9db}.candidate-counts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:15px 0}.candidate-counts>div{display:flex;justify-content:space-between;gap:8px;align-items:center;background:#202527;border-radius:11px;padding:10px 11px}.candidate-counts span{font-size:11px;color:#aeb5b8}.candidate-counts b{font-size:14px}.candidate-lane{margin-top:16px}.candidate-lane+.candidate-lane{padding-top:16px;border-top:1px solid #303638}.candidate-lane-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:9px}.candidate-lane-head h3{margin:0;font-size:16px}.candidate-lane-head p{margin:4px 0 0;color:#aeb5b8;font-size:12px;line-height:1.5}.candidate-lane-head>span{font-size:12px;color:#aeb5b8}.candidate-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.candidate-card{border:1px solid #343a3d;border-radius:15px;background:#1b2022;padding:14px;min-width:0}.candidate-card-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.candidate-card-head small{color:#929b9f;font-size:11px}.candidate-card-head h3{font-size:18px;margin:4px 0 0}.candidate-badge{padding:5px 8px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap}.candidate-badge.review{background:#294936}.candidate-badge.reference{background:#4a4025}.candidate-badge.watch{background:#293744}.candidate-badge.hold{background:#353a3c}.candidate-description{margin:9px 0;color:#b6bec1;font-size:12px;line-height:1.5}.candidate-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.candidate-facts p{margin:0;background:#22282a;border-radius:9px;padding:9px;display:flex;flex-direction:column;gap:3px}.candidate-facts span{font-size:10px;color:#aeb5b8}.candidate-facts b{font-size:13px}.candidate-reason{margin-top:9px;padding:10px;border-radius:10px;background:#202527}.candidate-reason>b{font-size:11px}.candidate-reason p{margin:4px 0 0;color:#c6ccce;font-size:12px;line-height:1.55}.candidate-flags{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}.candidate-flags span{font-size:10px;color:#c8ced0;background:#272d2f;border-radius:7px;padding:4px 6px}.candidate-alias{margin:8px 0 0;font-size:11px;color:#aeb5b8}.candidate-evidence{margin-top:10px;border-top:1px solid #303638;padding-top:9px}.candidate-evidence summary{cursor:pointer;font-size:11px;font-weight:800}.evidence-list{display:grid;gap:7px;margin-top:7px}.evidence-row{background:#22282a;border-radius:10px;padding:10px}.evidence-title{display:flex;gap:7px;align-items:baseline;flex-wrap:wrap}.evidence-title b{font-size:12px}.evidence-title small{font-size:9px;color:#9da6aa}.evidence-numbers{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:7px}.evidence-numbers p{margin:0;background:#1d2224;border-radius:7px;padding:6px;display:flex;flex-direction:column;gap:2px}.evidence-numbers span{font-size:9px;color:#9da6aa}.evidence-numbers b{font-size:11px}.evidence-roles{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}.evidence-roles span{padding:3px 5px;border-radius:6px;background:#2b3235;font-size:9px;color:#c8ced0}.candidate-hints{margin-top:10px;border-top:1px solid #303638;padding-top:9px}.candidate-hints summary{cursor:pointer;font-size:11px;font-weight:800}.hint-list{margin-top:7px;display:grid;gap:6px}.hint-row{display:flex;justify-content:space-between;gap:10px;background:#22282a;border-radius:9px;padding:9px}.hint-row b{font-size:12px}.hint-row p{margin:3px 0 0;color:#aeb5b8;font-size:10px;line-height:1.45}.hint-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:125px}.hint-meta span{font-size:10px;font-weight:800}.hint-meta small{font-size:9px;color:#aeb5b8;text-align:right}.candidate-empty{margin:0;color:#929b9f;font-size:12px}.candidate-lane-collapsed>summary{cursor:pointer;font-weight:800;padding:5px 0}.candidate-lane-body{margin-top:10px}.diagnostic-section-head{margin:28px 0 8px}.diagnostic-section-head small,.diagnostic-section-head p{color:#aeb5b8}.diagnostic-section-head h2{margin:3px 0;font-size:22px}.diagnostic-section-head p{margin:0;font-size:12px}
+        .research-board{margin:18px 0 24px;padding:22px;border:1px solid #3e4854;border-radius:18px;background:#171a1f}.research-board-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.research-board-head small,.research-board-head p{color:#aeb5b8}.research-board-head small{font-size:13px}.research-board-head h2{font-size:28px;line-height:1.25;margin:5px 0 6px}.research-board-head p{margin:0;max-width:760px;font-size:15px;line-height:1.6}.research-board-head>span{white-space:nowrap;border:1px solid #485463;border-radius:999px;padding:7px 10px;font-size:13px}.research-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:14px;margin-top:16px}.research-card{border:1px solid #3a4552;border-radius:16px;background:#1b1f25;padding:20px}.research-title h3{font-size:28px;line-height:1.3;margin:0}.research-keywords{margin-top:14px;padding:16px;border:1px solid #465467;border-radius:13px;background:#202731}.research-keywords-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.research-keywords-head>b{font-size:17px}.research-keywords-head button{min-height:38px;padding:8px 12px;border-radius:9px;font-size:13px}.research-keyword-list{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}.research-keyword{display:flex;align-items:center;gap:8px;min-height:44px;border:1px solid #536276;border-radius:11px;background:#18202a;color:inherit;padding:10px 14px;text-align:left;cursor:pointer}.research-keyword strong{font-size:16px}.research-keyword small{font-size:12px;color:#aeb8c2}.research-keyword.supported{border-color:#557661;background:#1c2a23}.research-keyword.emerging{border-color:#586b7d;background:#1c2630}.research-keyword.item{border-color:#4b535e;background:#20242a}.research-keyword-caution{margin-top:12px;border-top:1px solid #36414e;padding-top:10px}.research-keyword-caution summary{cursor:pointer;font-size:14px;color:#b7c0c9}.research-keyword-caution>div{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.research-keyword-caution span{font-size:13px;padding:6px 8px;border-radius:7px;background:#2a2925;color:#c8c3b6}.research-signal-line{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px;padding:12px 14px;border-radius:11px;background:#22272e;color:#b9c2c9;font-size:14px}.research-signal-line b{color:#f2f4f5;font-size:16px}.research-context{margin-top:10px;padding-top:10px;border-top:1px solid #303640}.research-context summary,.research-reference summary{cursor:pointer;font-size:15px;font-weight:800}.research-context>div{margin-top:9px}.research-context p{margin:7px 0 0;display:flex;justify-content:space-between;gap:12px;font-size:14px;line-height:1.5}.research-context span{color:#aeb5bc}.research-context strong{text-align:right}.research-reference{margin-top:10px;border-top:1px solid #303640;padding-top:10px}.research-reference>div{display:grid;gap:7px;margin-top:8px}.research-reference p{margin:0;background:#22272e;border-radius:9px;padding:10px;display:flex;flex-direction:column;gap:3px}.research-reference b{font-size:14px}.research-reference span{font-size:13px;color:#aeb5bc}
+        .advanced-sourcing{margin:28px 0 0;border:1px solid #343a3d;border-radius:16px;background:#171b1d;overflow:hidden}.advanced-sourcing>summary{cursor:pointer;padding:16px 18px;font-size:16px;font-weight:800}.advanced-sourcing-body{border-top:1px solid #303638;padding:4px 18px 22px}.advanced-notice{margin:14px 0 4px;color:#aeb5b8;font-size:14px;line-height:1.6}.candidate-board{margin:20px 0 28px;padding:18px;border:1px solid #3a4245;border-radius:18px;background:#15191b}.candidate-board-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.candidate-board-head small,.candidate-board-head p{color:#aeb5b8}.candidate-board-head h2{font-size:24px;margin:4px 0 5px}.candidate-board-head p{margin:0;max-width:760px;font-size:13px;line-height:1.55}.candidate-board-head>span{white-space:nowrap;padding:6px 9px;border:1px solid #465156;border-radius:999px;font-size:11px;color:#d4d9db}.candidate-counts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:15px 0}.candidate-counts>div{display:flex;justify-content:space-between;gap:8px;align-items:center;background:#202527;border-radius:11px;padding:10px 11px}.candidate-counts span{font-size:11px;color:#aeb5b8}.candidate-counts b{font-size:14px}.candidate-lane{margin-top:16px}.candidate-lane+.candidate-lane{padding-top:16px;border-top:1px solid #303638}.candidate-lane-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:9px}.candidate-lane-head h3{margin:0;font-size:16px}.candidate-lane-head p{margin:4px 0 0;color:#aeb5b8;font-size:12px;line-height:1.5}.candidate-lane-head>span{font-size:12px;color:#aeb5b8}.candidate-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.candidate-card{border:1px solid #343a3d;border-radius:15px;background:#1b2022;padding:14px;min-width:0}.candidate-card-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.candidate-card-head small{color:#929b9f;font-size:11px}.candidate-card-head h3{font-size:18px;margin:4px 0 0}.candidate-badge{padding:5px 8px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap}.candidate-badge.review{background:#294936}.candidate-badge.reference{background:#4a4025}.candidate-badge.watch{background:#293744}.candidate-badge.hold{background:#353a3c}.candidate-description{margin:9px 0;color:#b6bec1;font-size:12px;line-height:1.5}.candidate-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.candidate-facts p{margin:0;background:#22282a;border-radius:9px;padding:9px;display:flex;flex-direction:column;gap:3px}.candidate-facts span{font-size:10px;color:#aeb5b8}.candidate-facts b{font-size:13px}.candidate-reason{margin-top:9px;padding:10px;border-radius:10px;background:#202527}.candidate-reason>b{font-size:11px}.candidate-reason p{margin:4px 0 0;color:#c6ccce;font-size:12px;line-height:1.55}.candidate-flags{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}.candidate-flags span{font-size:10px;color:#c8ced0;background:#272d2f;border-radius:7px;padding:4px 6px}.candidate-alias{margin:8px 0 0;font-size:11px;color:#aeb5b8}.candidate-evidence{margin-top:10px;border-top:1px solid #303638;padding-top:9px}.candidate-evidence summary{cursor:pointer;font-size:11px;font-weight:800}.evidence-list{display:grid;gap:7px;margin-top:7px}.evidence-row{background:#22282a;border-radius:10px;padding:10px}.evidence-title{display:flex;gap:7px;align-items:baseline;flex-wrap:wrap}.evidence-title b{font-size:12px}.evidence-title small{font-size:9px;color:#9da6aa}.evidence-numbers{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:7px}.evidence-numbers p{margin:0;background:#1d2224;border-radius:7px;padding:6px;display:flex;flex-direction:column;gap:2px}.evidence-numbers span{font-size:9px;color:#9da6aa}.evidence-numbers b{font-size:11px}.evidence-roles{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}.evidence-roles span{padding:3px 5px;border-radius:6px;background:#2b3235;font-size:9px;color:#c8ced0}.candidate-hints{margin-top:10px;border-top:1px solid #303638;padding-top:9px}.candidate-hints summary{cursor:pointer;font-size:11px;font-weight:800}.hint-list{margin-top:7px;display:grid;gap:6px}.hint-row{display:flex;justify-content:space-between;gap:10px;background:#22282a;border-radius:9px;padding:9px}.hint-row b{font-size:12px}.hint-row p{margin:3px 0 0;color:#aeb5b8;font-size:10px;line-height:1.45}.hint-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:125px}.hint-meta span{font-size:10px;font-weight:800}.hint-meta small{font-size:9px;color:#aeb5b8;text-align:right}.candidate-empty{margin:0;color:#929b9f;font-size:12px}.candidate-lane-collapsed>summary{cursor:pointer;font-weight:800;padding:5px 0}.candidate-lane-body{margin-top:10px}.diagnostic-section-head{margin:28px 0 8px}.diagnostic-section-head small,.diagnostic-section-head p{color:#aeb5b8}.diagnostic-section-head h2{margin:3px 0;font-size:22px}.diagnostic-section-head p{margin:0;font-size:12px}
         .controls{margin:18px 0;padding:14px;border:1px solid #343a3d;border-radius:15px;background:#191d1f}.filter-row{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:10px}.filter-row::-webkit-scrollbar{display:none}.filter-row button{white-space:nowrap;border:1px solid #343c40;background:#1a1f21;color:inherit;border-radius:10px;padding:8px 11px}.filter-row button.active{background:#313a3e;border-color:#8b9aa0}.select-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.select-row label{display:flex;align-items:center;gap:7px;color:#aeb5b8;font-size:13px}.select-row select{background:#202628;color:inherit;border:1px solid #3b4447;border-radius:9px;padding:7px 9px}.select-row>span{margin-left:auto;color:#aeb5b8;font-size:13px}
         .card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.sourcing-card{border:1px solid #343a3d;border-radius:17px;background:#191d1f;padding:17px;min-width:0}.card-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.card-head small{color:#929b9f}.card-head h2{font-size:20px;margin:4px 0 0}.state-badge{border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800;white-space:nowrap}.state-badge.strong{background:#274238}.state-badge.explore{background:#294936}.state-badge.concentrated{background:#4a4025}.state-badge.insufficient{background:#353a3c}.state-description{margin:10px 0;color:#b6bec1;font-size:13px;line-height:1.55}
         .key-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.key-facts>div,.detail-grid>p{background:#22282a;border-radius:11px;padding:10px;margin:0;display:flex;flex-direction:column;gap:3px}.key-facts span,.detail-grid span,.detail-grid small{font-size:11px;color:#aeb5b8}.key-facts b{font-size:17px}.narrative{margin-top:10px;background:#202527;border-radius:12px;padding:12px}.narrative>b{font-size:12px}.narrative p{margin:5px 0 0;color:#c6ccce;font-size:13px;line-height:1.6}.recent-line{margin:9px 0 0;color:#c6ccce;font-size:13px;line-height:1.5}
         .flag-row,.all-flags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.flag-row span,.all-flags span{padding:5px 7px;border-radius:8px;background:#272d2f;font-size:11px;color:#c8ced0}.flag-row .validation{border:1px solid #465156;background:#1b2022}.alias-line,.shared-line{font-size:12px;color:#aeb5b8;margin:9px 0 0}.shared-line b{color:#d7dcde}
         .sourcing-card details{margin-top:12px;border-top:1px solid #303638;padding-top:11px}.sourcing-card summary{cursor:pointer;font-weight:800;font-size:13px}.detail-sections>section{margin-top:14px}.detail-sections h3{font-size:14px;margin:0 0 7px}.detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.detail-grid b{font-size:14px}.period-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.period-block{background:#22282a;border-radius:11px;padding:10px}.period-block>b{font-size:13px}.compare-row{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:11px}.compare-row span{color:#aeb5b8}.compare-row b{text-align:right}.data-state{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.data-state p{margin:0;background:#22282a;border-radius:10px;padding:9px;display:flex;justify-content:space-between;gap:8px;font-size:11px}.data-state span{color:#aeb5b8}.more{display:block;margin:18px auto 0}.empty{text-align:center;color:#aeb5b8;padding:40px}
         @media(min-width:1120px){.brief-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.research-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.candidate-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.card-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.detail-grid{grid-template-columns:repeat(2,1fr)}.period-grid{grid-template-columns:1fr}}
-        @media(max-width:760px){.sourcing-page{padding:20px 12px 60px}.sourcing-head h1{font-size:28px}.summary-grid{grid-template-columns:1fr 1fr}.brief-board{padding:14px}.brief-board-head{flex-direction:column}.brief-grid{grid-template-columns:1fr}.brief-facts{grid-template-columns:1fr 1fr}.research-board{padding:14px}.research-board-head{flex-direction:column}.research-grid{grid-template-columns:1fr}.research-facts{grid-template-columns:1fr 1fr 1fr}.candidate-board{padding:14px}.candidate-board-head{flex-direction:column}.candidate-counts{grid-template-columns:1fr 1fr}.candidate-grid{grid-template-columns:1fr}.candidate-facts{grid-template-columns:1fr 1fr}.evidence-numbers{grid-template-columns:1fr 1fr}.hint-row{flex-direction:column}.hint-meta{align-items:flex-start;min-width:0}.hint-meta small{text-align:left}.card-grid{grid-template-columns:1fr}.detail-grid{grid-template-columns:1fr 1fr}.period-grid{grid-template-columns:1fr}.readiness-grid{grid-template-columns:1fr}.readiness-meta{grid-template-columns:1fr}.select-row>span{width:100%;margin-left:0}.key-facts{grid-template-columns:1fr 1fr}.key-facts>div:last-child{grid-column:1/-1}}
+        @media(max-width:760px){.sourcing-page{padding:20px 12px 60px}.sourcing-head h1{font-size:30px}.sourcing-head p{font-size:15px}.summary-grid{grid-template-columns:1fr 1fr}.research-board{padding:16px}.research-board-head h2{font-size:24px}.research-board-head p{font-size:14px}.research-title h3{font-size:24px}.research-keyword strong{font-size:15px}.research-keyword small{font-size:12px}.research-signal-line{font-size:13px}.advanced-sourcing-body{padding:4px 12px 18px}.brief-board{padding:14px}.brief-board-head{flex-direction:column}.brief-grid{grid-template-columns:1fr}.brief-facts{grid-template-columns:1fr 1fr}.research-board-head{flex-direction:column}.research-grid{grid-template-columns:1fr}.research-facts{grid-template-columns:1fr 1fr 1fr}.candidate-board{padding:14px}.candidate-board-head{flex-direction:column}.candidate-counts{grid-template-columns:1fr 1fr}.candidate-grid{grid-template-columns:1fr}.candidate-facts{grid-template-columns:1fr 1fr}.evidence-numbers{grid-template-columns:1fr 1fr}.hint-row{flex-direction:column}.hint-meta{align-items:flex-start;min-width:0}.hint-meta small{text-align:left}.card-grid{grid-template-columns:1fr}.detail-grid{grid-template-columns:1fr 1fr}.period-grid{grid-template-columns:1fr}.readiness-grid{grid-template-columns:1fr}.readiness-meta{grid-template-columns:1fr}.select-row>span{width:100%;margin-left:0}.key-facts{grid-template-columns:1fr 1fr}.key-facts>div:last-child{grid-column:1/-1}}
         @media(max-width:440px){.summary-grid{grid-template-columns:1fr 1fr}.detail-grid,.data-state{grid-template-columns:1fr}.card-head{flex-direction:column}.state-badge{align-self:flex-start}}
       `}</style>
     </main>
