@@ -7,6 +7,7 @@ import {
   readZipImages,
   roleLabel,
 } from "../../lib/local-zip.mjs";
+import Cafe24RegistrationPanel from "./Cafe24RegistrationPanel";
 
 const collator = new Intl.Collator("ko", { numeric: true, sensitivity: "base" });
 const IMAGE_FILE = /\.(?:jpe?g|png|webp|gif)$/i;
@@ -626,12 +627,18 @@ export default function ProductRegistrationHelperPage() {
           </section>
 
           <section className="next-stage">
-            <b>다음은 지금 하던 방식 그대로</b>
+            <b>3. ChatGPT에서 상품정보 정리</b>
             <span>
-              정리한 메인·상세 이미지를 ChatGPT에 올리면 상품명 3개, 상세페이지 문구,
-              해시태그, 색상·사이즈 정보를 바로 정리합니다. 그 결과를 카페24에 등록하면 됩니다.
+              정리한 메인·상세 이미지를 지금 사용하는 ChatGPT에 올립니다.
+              상품명 3개, 상세페이지 문구, 해시태그, 색상·사이즈와 함께
+              마지막에 OARS 등록용 블록을 받아 아래에 한 번만 붙여넣으면 됩니다.
             </span>
           </section>
+
+          <Cafe24RegistrationPanel
+            buildOutputFiles={buildOutputFiles}
+            sourceName={zipName}
+          />
         </>
       )}
 
@@ -648,8 +655,9 @@ export default function ProductRegistrationHelperPage() {
         <p><b>색상·옵션 이미지는 보통 무시:</b> 중국어 제거와 비율 보정에 시간을 쓰지 않습니다.</p>
         <p><b>사이즈 이미지는 참고자료:</b> 작업 중 확인할 수 있지만 최종 이미지 ZIP에는 넣지 않습니다.</p>
         <p><b>PC 폴더 우선:</b> 압축 푼 폴더를 바로 읽고, 정리 결과도 01_메인_GIF용 / 02_상세이미지 폴더로 로컬 저장합니다.</p>
-        <p><b>유료 API 없음:</b> 폴더 읽기, ZIP 해제, 크롭, 폴더·ZIP 저장까지 전부 현재 브라우저에서 처리합니다.</p>
-        <p><b>다음 작업은 ChatGPT:</b> 정리한 이미지를 지금 사용하는 ChatGPT 대화에 올리면 상품명·상세페이지 문구·해시태그·사이즈 정보를 바로 정리합니다. OARS에 다시 붙여넣는 단계는 없습니다.</p>
+        <p><b>유료 AI API 없음:</b> 이미지 정리와 ChatGPT 분석은 지금 사용하는 방식 그대로 진행합니다. 별도 유료 AI 서비스를 붙이지 않습니다.</p>
+        <p><b>카페24는 한 번 붙여넣기:</b> ChatGPT 답변의 OARS 등록용 블록을 한 번 붙여넣으면 상품명·가격·옵션·태그·상세문구를 검수할 수 있습니다.</p>
+        <p><b>안전한 임시등록:</b> 정리한 메인·상세 이미지를 자동 업로드하고, 카페24에는 항상 진열안함·판매안함 상태로 생성한 뒤 상품번호를 다시 확인합니다.</p>
       </section>
 
       <style jsx>{`
