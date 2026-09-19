@@ -114,11 +114,16 @@ try {
         await page.getByText("상품 노출", { exact: true }).waitFor();
         await page.getByRole("heading", { name: "소싱 검토 분류", exact: true }).waitFor();
         await page.getByText("소싱 검토 후보", { exact: true }).first().waitFor();
-        const evidenceToggle = page.getByText(/근거 상품 보기 · \d+개/, { exact: false }).first();
-        if (await evidenceToggle.count()) {
-          await evidenceToggle.click();
-          await page.getByText(/상품번호 p1/, { exact: false }).first().waitFor();
+        const allEvidence = page.locator(".candidate-evidence > summary");
+        assert.ok((await allEvidence.count()) > 0);
+        let evidenceToggle = page.locator(".candidate-evidence > summary:visible").first();
+        if ((await evidenceToggle.count()) === 0) {
+          const holdToggle = page.locator(".candidate-lane-collapsed > summary").first();
+          if (await holdToggle.count()) await holdToggle.click();
+          evidenceToggle = page.locator(".candidate-evidence > summary:visible").first();
         }
+        await evidenceToggle.click();
+        await page.getByText(/상품번호 p1/, { exact: false }).first().waitFor();
         assert.equal(await page.getByText("추천순", { exact: true }).count(), 0);
       }
     }
