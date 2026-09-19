@@ -221,6 +221,15 @@ try {
   await page.getByRole("heading", { name: "메인 썸네일 / GIF 이미지", exact: true }).waitFor();
   await page.getByRole("heading", { name: "상세페이지에 넣을 이미지", exact: true }).waitFor();
 
+  await page.setViewportSize({ width: 1280, height: 900 });
+  const desktopCard = page.locator(".image-card").first();
+  const desktopCardBox = await desktopCard.boundingBox();
+  const desktopImageBox = await desktopCard.locator(".image-wrap img").boundingBox();
+  assert.ok(desktopCardBox && desktopCardBox.width >= 180 && desktopCardBox.width <= 240, "desktop image cards should render as compact five-column cards");
+  assert.ok(desktopImageBox && desktopImageBox.width <= desktopCardBox.width + 1, "product image must stay inside its card");
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), "product image editor must not overflow horizontally");
+
+  await page.setViewportSize({ width: 375, height: 812 });
   const firstImageCard = page.locator(".image-card").first();
   await firstImageCard.scrollIntoViewIfNeeded();
   const editorScrollTop = await page.evaluate(() => window.scrollY);
