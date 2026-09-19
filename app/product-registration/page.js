@@ -97,6 +97,73 @@ function sorted(list) {
   return [...list].sort((a, b) => collator.compare(a.name, b.name));
 }
 
+function ImageCard({ item, onPatch, onSaveCrop }) {
+  const state = STATES[item.state];
+  return (
+    <article className={`image-card ${state.tone}`}>
+      <div className="image-wrap">
+        <img src={item.url} alt={item.fileName} />
+        {item.state === "crop" && (
+          <div
+            className="crop-mask"
+            style={{ height: `${item.cropTop}%` }}
+            aria-hidden="true"
+          >
+            잘라낼 영역
+          </div>
+        )}
+        {item.state === "exclude" && <div className="exclude-mask">제외</div>}
+      </div>
+      <div className="card-body">
+        <b className="file-name" title={item.fileName}>{item.fileName}</b>
+        <div className="state-buttons" aria-label={`${item.fileName} 처리 선택`}>
+          {Object.entries(STATES).map(([key, value]) => (
+            <button
+              type="button"
+              key={key}
+              className={item.state === key ? "selected" : ""}
+              onClick={() => onPatch(item.id, { state: key })}
+            >
+              {value.label}
+            </button>
+          ))}
+        </div>
+        {item.state === "crop" && (
+          <div className="crop-control">
+            <div>
+              <b>위에서 {item.cropTop}% 제거</b>
+              <span>모델 얼굴이 포함된 상단 전체를 잘라냅니다.</span>
+            </div>
+            <input
+              aria-label={`${item.fileName} 상단 크롭 비율`}
+              type="range"
+              min="5"
+              max="45"
+              step="1"
+              value={item.cropTop}
+              onChange={(event) => onPatch(item.id, { cropTop: Number(event.target.value) })}
+            />
+            <div className="presets">
+              {[10, 15, 20, 25, 30].map((value) => (
+                <button
+                  type="button"
+                  key={value}
+                  onClick={() => onPatch(item.id, { cropTop: value })}
+                >
+                  {value}%
+                </button>
+              ))}
+            </div>
+            <button type="button" className="save" onClick={() => onSaveCrop(item)}>
+              이 이미지만 크롭 저장
+            </button>
+          </div>
+        )}
+      </div>
+    </article>
+  );
+}
+
 export default function ProductRegistrationHelperPage() {
   const [zipName, setZipName] = useState("");
   const [items, setItems] = useState([]);
@@ -373,68 +440,6 @@ export default function ProductRegistrationHelperPage() {
     setNotice("새 상품 폴더를 열거나 VVIC ZIP을 선택해주세요.");
   }
 
-  function ImageCard({ item }) {
-    const state = STATES[item.state];
-    return (
-      <article className={`image-card ${state.tone}`}>
-        <div className="image-wrap">
-          <img src={item.url} alt={item.fileName} />
-          {item.state === "crop" && (
-            <div
-              className="crop-mask"
-              style={{ height: `${item.cropTop}%` }}
-              aria-hidden="true"
-            >
-              잘라낼 영역
-            </div>
-          )}
-          {item.state === "exclude" && <div className="exclude-mask">제외</div>}
-        </div>
-        <div className="card-body">
-          <b className="file-name" title={item.fileName}>{item.fileName}</b>
-          <div className="state-buttons" aria-label={`${item.fileName} 처리 선택`}>
-            {Object.entries(STATES).map(([key, value]) => (
-              <button
-                key={key}
-                className={item.state === key ? "selected" : ""}
-                onClick={() => patch(item.id, { state: key })}
-              >
-                {value.label}
-              </button>
-            ))}
-          </div>
-          {item.state === "crop" && (
-            <div className="crop-control">
-              <div>
-                <b>위에서 {item.cropTop}% 제거</b>
-                <span>모델 얼굴이 포함된 상단 전체를 잘라냅니다.</span>
-              </div>
-              <input
-                aria-label={`${item.fileName} 상단 크롭 비율`}
-                type="range"
-                min="5"
-                max="45"
-                step="1"
-                value={item.cropTop}
-                onChange={(event) => patch(item.id, { cropTop: Number(event.target.value) })}
-              />
-              <div className="presets">
-                {[10, 15, 20, 25, 30].map((value) => (
-                  <button key={value} onClick={() => patch(item.id, { cropTop: value })}>
-                    {value}%
-                  </button>
-                ))}
-              </div>
-              <button className="save" onClick={() => saveCrop(item)}>
-                이 이미지만 크롭 저장
-              </button>
-            </div>
-          )}
-        </div>
-      </article>
-    );
-  }
-
   const mainItems = activeItems.filter((item) => item.role === "main");
   const detailItems = activeItems.filter((item) => item.role === "detail");
   const sizeItems = items.filter((item) => folderRoles[item.folder] === "size");
@@ -490,7 +495,7 @@ export default function ProductRegistrationHelperPage() {
           <strong>ZIP 그대로 열기</strong>
           <span>아직 압축을 풀지 않은 경우에만 사용합니다.</span>
         </label>
-        {items.length > 0 && <button className="secondary" onClick={resetAll}>초기화</button>}
+        {items.length > 0 && <button type="button" className="secondary" onClick={resetAll}>초기화</button>}
       </section>
 
       {notice && <p className="notice" role="status">{notice}</p>}
@@ -551,7 +556,7 @@ export default function ProductRegistrationHelperPage() {
               <b>최종 결과에는 2개 폴더만 생성됩니다.</b>
               <span>01_메인_GIF용 / 02_상세이미지 · 사이즈 참고와 무시는 결과 ZIP에서 제외</span>
             </div>
-            <button onClick={startEditing}>이 분류로 이미지 정리 시작</button>
+            <button type="button" onClick={startEditing}>이 분류로 이미지 정리 시작</button>
           </section>
         </>
       )}
@@ -566,12 +571,12 @@ export default function ProductRegistrationHelperPage() {
           </section>
 
           <div className="edit-actions">
-            <button className="secondary" onClick={() => setStage("folders")}>← 폴더 분류 다시 보기</button>
+            <button type="button" className="secondary" onClick={() => setStage("folders")}>← 폴더 분류 다시 보기</button>
             <div className="action-pair">
-              <button className="export" onClick={exportFolder} disabled={busy}>
+              <button type="button" className="export" onClick={exportFolder} disabled={busy}>
                 {busy ? "저장 중..." : "정리 폴더 저장"}
               </button>
-              <button className="secondary" onClick={exportZip} disabled={busy}>ZIP 저장</button>
+              <button type="button" className="secondary" onClick={exportZip} disabled={busy}>ZIP 저장</button>
             </div>
           </div>
 
@@ -585,7 +590,7 @@ export default function ProductRegistrationHelperPage() {
               <b>{mainItems.length}장</b>
             </div>
             <div className="image-grid">
-              {mainItems.map((item) => <ImageCard item={item} key={item.id} />)}
+              {mainItems.map((item) => <ImageCard item={item} key={item.id} onPatch={patch} onSaveCrop={saveCrop} />)}
             </div>
           </section>
 
@@ -599,7 +604,7 @@ export default function ProductRegistrationHelperPage() {
               <b>{detailItems.length}장</b>
             </div>
             <div className="image-grid">
-              {detailItems.map((item) => <ImageCard item={item} key={item.id} />)}
+              {detailItems.map((item) => <ImageCard item={item} key={item.id} onPatch={patch} onSaveCrop={saveCrop} />)}
             </div>
           </section>
 
@@ -619,10 +624,10 @@ export default function ProductRegistrationHelperPage() {
               <span>제외 이미지는 빠지고, 크롭 이미지는 수정본으로 교체됩니다.</span>
             </div>
             <div className="action-pair">
-              <button className="export" onClick={exportFolder} disabled={busy}>
+              <button type="button" className="export" onClick={exportFolder} disabled={busy}>
                 {busy ? "저장 중..." : "정리 폴더 저장"}
               </button>
-              <button className="secondary" onClick={exportZip} disabled={busy}>ZIP 저장</button>
+              <button type="button" className="secondary" onClick={exportZip} disabled={busy}>ZIP 저장</button>
             </div>
           </section>
 
