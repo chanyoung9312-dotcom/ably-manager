@@ -42,6 +42,16 @@ test("research plan preserves early combination evidence without promoting it", 
   assert.ok(task.guardrails.some((line) => line.includes("초기 관측 조합")));
 });
 
+test("research plan exposes data-backed search keywords before supplier research", () => {
+  const task = plan.tasks[0];
+  assert.deepEqual(
+    task.searchKeywords.map((item) => [item.keyword, item.evidence]),
+    [["숏·하프팬츠 데님", "emerging"], ["숏·하프팬츠", "item"]],
+  );
+  assert.deepEqual(task.cautionKeywords, []);
+  assert.ok(task.guardrails.some((line) => line.includes("우리 판매 데이터")));
+});
+
 test("research plan defines concrete information to collect before later review", () => {
   const fields = Object.fromEntries(
     plan.tasks[0].captureFields.map((field) => [field.key, field]),
@@ -71,14 +81,18 @@ test("research view exposes a copyable template with evidence context and blank 
   const task = view.tasks[0];
   assert.equal(task.label, "숏·하프팬츠");
   assert.match(task.copyTemplate, /\[소싱 조사\] 숏·하프팬츠/);
+  assert.match(task.copyTemplate, /추천 검색 키워드: 숏·하프팬츠 데님, 숏·하프팬츠/);
   assert.match(task.copyTemplate, /초기 관측: 숏·하프팬츠 ∩ 데님/);
+  assert.equal(task.searchKeywords[0].evidenceLabel, "초기 반응");
+  assert.equal(task.copyKeywords, "숏·하프팬츠 데님\n숏·하프팬츠");
   assert.match(task.copyTemplate, /공급처 링크:/);
   assert.match(task.copyTemplate, /공급가:/);
   assert.match(task.copyTemplate, /공급처 배송기간:/);
 });
 
 test("research view explicitly says it is read-only until a persistent source ledger exists", () => {
-  assert.match(view.notice, /현재는 읽기 전용 작업목록/);
+  assert.equal(view.title, "다음 소싱 검색 키워드");
+  assert.match(view.notice, /외부 인기 검색어가 아니라 우리 판매 데이터/);
   assert.match(view.notice, /별도 원장을 만든 뒤/);
   assert.equal(view.rules.autoPurchase, false);
 });
