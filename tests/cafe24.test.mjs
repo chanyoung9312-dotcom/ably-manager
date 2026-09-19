@@ -3,8 +3,17 @@ import assert from "node:assert/strict";
 process.env.CAFE24_MALL_ID = "testmall";
 process.env.CAFE24_CLIENT_ID = "fixture";
 process.env.CAFE24_CLIENT_SECRET = "fixture-secret";
-const { requestCafe24Orders, normalizeCafe24Orders, prepareCafe24Order } =
-  await import("../lib/cafe24.js");
+const {
+  CAFE24_SCOPES,
+  requestCafe24Orders,
+  normalizeCafe24Orders,
+  prepareCafe24Order,
+  uploadCafe24ProductImage,
+  cafe24UploadedImagePath,
+  createCafe24Product,
+  createCafe24ProductOptions,
+  requestCafe24Product,
+} = await import("../lib/cafe24.js");
 const order = (id, status = "N10", paid = "T") => ({
   order_id: id,
   paid,
@@ -94,6 +103,108 @@ test("prepare request contains only supplied item codes", async () => {
   try {
     await prepareCafe24Order("test", "o1", ["o1-01"]);
     assert.deepEqual(body.request.order_item_code, ["o1-01"]);
+  } finally {
+    global.fetch = old;
+  }
+});
+
+
+test("Cafe24 OAuth includes product write permission", () => {
+  assert.match(CAFE24_SCOPES, /(?:^|\s)mall\.write_product(?:\s|$)/);
+});
+
+test("Cafe24 product image upload sends browser image data", async () => {
+  const old = global.fetch;
+  let requestUrl, body;
+  global.fetch = async (url, opts) => {
+    requestUrl = String(url);
+    body = JSON.parse(opts.body);
+    return Response.json({ images: [{ path: "/web/product/oars.jpg" }] });
+  };
+  try {
+    const image = "data:image/jpeg;base64,YWJj";
+    const result = await uploadCafe24ProductImage("token", image);
+    assert.equal(result.ok, true);
+    assert.match(requestUrl, /\/admin\/products\/images$/);
+    assert.equal(body.request.image, image);
+    assert.equal(
+      cafe24UploadedImagePath(result.data),
+      "/web/product/oars.jpg",
+    );
+    assert.equal(
+      cafe24UploadedImagePath({ resource: { path: "/web/product/current.jpg" } }),
+      "/web/product/current.jpg",
+    );
+  } finally {
+    global.fetch = old;
+  }
+});
+
+test("Cafe24 product create always forces hidden and not selling", async () => {
+  const old = global.fetch;
+  let body;
+  global.fetch = async (url, opts) => {
+    body = JSON.parse(opts.body);
+    return Response.json({
+      product: { product_no: 1234, display: "F", selling: "F" },
+    });
+  };
+  try {
+    await createCafe24Product("token", {
+      product_name: "테스트 상품",
+      price: 29900,
+      supply_price: 12000,
+      display: "T",
+      selling: "T",
+    });
+    assert.equal(body.request.product_name, "테스트 상품");
+    assert.equal(body.request.display, "F");
+    assert.equal(body.request.selling, "F");
+  } finally {
+    global.fetch = old;
+  }
+});
+
+test("Cafe24 options preserve color and size values", async () => {
+  const old = global.fetch;
+  let requestUrl, body;
+  global.fetch = async (url, opts) => {
+    requestUrl = String(url);
+    body = JSON.parse(opts.body);
+    return Response.json({ options: [] });
+  };
+  try {
+    await createCafe24ProductOptions("token", "1234", [
+      { name: "색상", values: ["블랙", "크림"] },
+      { name: "사이즈", values: ["S", "M"] },
+    ]);
+    assert.match(requestUrl, /\/admin\/products\/1234\/options$/);
+    assert.equal(body.request.has_option, "T");
+    assert.deepEqual(
+      body.request.options[0].option_value.map((item) => item.option_text),
+      ["블랙", "크림"],
+    );
+    assert.deepEqual(
+      body.request.options[1].option_value.map((item) => item.option_text),
+      ["S", "M"],
+    );
+  } finally {
+    global.fetch = old;
+  }
+});
+
+test("Cafe24 product verification embeds options", async () => {
+  const old = global.fetch;
+  let requestUrl;
+  global.fetch = async (url) => {
+    requestUrl = String(url);
+    return Response.json({
+      product: { product_no: 1234, display: "F", selling: "F" },
+    });
+  };
+  try {
+    await requestCafe24Product("token", "1234");
+    assert.match(requestUrl, /\/admin\/products\/1234\?embed=options$/);
   } finally {
     global.fetch = old;
   }
