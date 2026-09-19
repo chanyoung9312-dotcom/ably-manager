@@ -317,6 +317,17 @@ try {
   await page.getByText("3. ChatGPT에서 상품정보 정리", { exact: true }).waitFor();
   await page.getByRole("heading", { name: "카페24 등록", exact: true }).waitFor();
 
+  await page.getByLabel("ChatGPT 상품정보 붙여넣기").fill(`오어즈 등록용으로 바로 넣을 수 있게 정리했어.
+추천 상품명: 1번
+색상: 블랙 / 브라운 / 차콜
+사이즈: S / M / L / XL
+목표 순마진: 7000`);
+  await page.getByRole("button", { name: "내용 채우기", exact: true }).click();
+  await page.getByText(/\[OARS 등록용\] 블록을 찾지 못했습니다/, { exact: false }).waitFor();
+  assert.equal(await page.getByLabel("카페24 상품명").inputValue(), "");
+  assert.equal(await page.getByLabel("카페24 색상 옵션").inputValue(), "");
+  assert.equal(await page.getByLabel("카페24 사이즈 옵션").inputValue(), "");
+
   let productImageUploadCount = 0, productRegistrationBody;
   await page.route("**/api/cafe24/product-image", async (r) => {
     productImageUploadCount += 1;
