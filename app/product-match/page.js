@@ -28,11 +28,7 @@ export default function ProductMatch() {
             registeredAt: t(r["상품등록일"]),
           });
       }
-      setGoods([
-        ...new Map(
-          all.filter((x) => x.productNo && x.name).map((x) => [x.productNo, x]),
-        ).values(),
-      ]);
+      setGoods(all.filter((x) => x.productNo && x.name));
     } catch {
       setGoods([]);
       setError("상품목록 CSV를 읽지 못했습니다.");
@@ -123,12 +119,11 @@ export default function ProductMatch() {
         <h2 style={{ marginTop: 0 }}>1. 에이블리 상품목록 CSV 선택</h2>
         <input type="file" accept=".csv,.xlsx,.xls" multiple onChange={load} />
         <p style={{ color: "#a1a1aa" }}>
-          여러 파일을 한 번에 선택할 수 있습니다. 옵션 중복은 상품번호 기준으로
-          제거합니다.
+          여러 파일을 한 번에 선택할 수 있습니다. 옵션 중복 행은 서버에서 상품번호·상품명·상품등록일을 함께 검증하고, 서로 다른 값이 섞이면 자동 입력하지 않습니다.
         </p>
         {files.length > 0 && (
           <div>
-            <b>선택 파일 {files.length}개</b> · 고유 상품 {goods.length}개 · 상품등록일 포함 {goods.filter((x) => x.registeredAt).length}개
+            <b>선택 파일 {files.length}개</b> · 상품 행 {goods.length}개 · 고유 상품번호 {new Set(goods.map((x) => x.productNo)).size}개 · 상품등록일 포함 행 {goods.filter((x) => x.registeredAt).length}개
           </div>
         )}
       </section>
