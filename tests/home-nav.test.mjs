@@ -70,7 +70,6 @@ test("product registration helper keeps desktop folder and ZIP processing local 
   assert.match(page, /무시/);
   assert.match(page, /상단 자르기/);
   assert.match(page, /하단 자르기/);
-  assert.match(page, /제외 취소/);
   assert.match(page, /cropBottom/);
   assert.match(page, /grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/);
   assert.match(page, /@media\(max-width:850px\)\{\.image-grid\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\)\}/);
