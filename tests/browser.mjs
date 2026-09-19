@@ -166,7 +166,7 @@ try {
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `overflow ${path} ${size.width}`);
       assert.equal(await page.locator("[data-nextjs-dialog]").count(), 0);
       if (path === "/product-registration") {
-        await page.getByRole("heading", { name: "VVIC ZIP 정리 도우미", exact: true }).waitFor();
+        await page.getByRole("heading", { name: "VVIC 상품 이미지 정리 도우미", exact: true }).waitFor();
         await page.getByText("추가 비용 0원 · 외부 업로드 없음", { exact: true }).waitFor();
       }
       if (path === "/sourcing") {
@@ -217,7 +217,7 @@ try {
   await page.getByRole("heading", { name: "메인 썸네일 / GIF 이미지", exact: true }).waitFor();
   await page.getByRole("heading", { name: "상세페이지에 넣을 이미지", exact: true }).waitFor();
   const registrationDownload = page.waitForEvent("download");
-  await page.getByRole("button", { name: "정리 완료 ZIP 저장", exact: true }).first().click();
+  await page.getByRole("button", { name: "ZIP 저장", exact: true }).first().click();
   const registrationFile = await registrationDownload;
   const registrationEntries = parseZipEntries(new Uint8Array(await readFile(await registrationFile.path())));
   assert.equal(registrationEntries.length, 2);
