@@ -15,6 +15,7 @@ import {
 } from "../../lib/product-registration.mjs";
 
 const collator = new Intl.Collator("ko", { numeric: true, sensitivity: "base" });
+const IMAGE_FILE = /\.(?:jpe?g|png|webp|gif)$/i;
 const STATES = {
   keep: { label: "사용", tone: "ok" },
   crop: { label: "상단 자르기", tone: "crop" },
@@ -111,6 +112,7 @@ export default function ProductRegistrationHelperPage() {
   const [productJson, setProductJson] = useState("");
   const [productDraft, setProductDraft] = useState(null);
   const inputRef = useRef(null);
+  const folderInputRef = useRef(null);
   const itemsRef = useRef([]);
 
   useEffect(() => {
@@ -160,6 +162,37 @@ export default function ProductRegistrationHelperPage() {
     itemsRef.current = [];
   }
 
+  function installEntries(data, sourceName) {
+    if (!data.length) throw new Error("이미지 파일을 찾지 못했습니다.");
+
+    releaseItems();
+    const next = data
+      .map((entry, index) => ({
+        ...entry,
+        id: `${entry.name}-${index}`,
+        url: URL.createObjectURL(new Blob([entry.data], { type: mimeFromName(entry.fileName) })),
+        state: "keep",
+        cropTop: 20,
+      }))
+      .sort((a, b) => collator.compare(a.name, b.name));
+
+    const roles = {};
+    for (const entry of next) {
+      if (!(entry.folder in roles)) roles[entry.folder] = guessFolderRole(entry.folder);
+    }
+
+    itemsRef.current = next;
+    setItems(next);
+    setFolderRoles(roles);
+    setZipName(sourceName);
+    setStage("folders");
+    setProductJson("");
+    setProductDraft(null);
+    setNotice(
+      `${next.length}장의 이미지를 찾았습니다. 추천 분류를 확인하고 각 폴더의 역할을 확정해주세요.`,
+    );
+  }
+
   async function loadZip(file) {
     if (!file) return;
     if (!/\.zip$/i.test(file.name)) {
@@ -169,38 +202,46 @@ export default function ProductRegistrationHelperPage() {
     setBusy(true);
     setNotice("ZIP 안의 이미지 폴더를 읽는 중...");
     try {
-      const data = await readZipImages(await file.arrayBuffer());
-      if (!data.length) throw new Error("ZIP 안에서 이미지 파일을 찾지 못했습니다.");
-
-      releaseItems();
-      const next = data
-        .map((entry, index) => ({
-          ...entry,
-          id: `${entry.name}-${index}`,
-          url: URL.createObjectURL(new Blob([entry.data], { type: mimeFromName(entry.fileName) })),
-          state: "keep",
-          cropTop: 20,
-        }))
-        .sort((a, b) => collator.compare(a.name, b.name));
-
-      const roles = {};
-      for (const entry of next) {
-        if (!(entry.folder in roles)) roles[entry.folder] = guessFolderRole(entry.folder);
-      }
-
-      itemsRef.current = next;
-      setItems(next);
-      setFolderRoles(roles);
-      setZipName(file.name);
-      setStage("folders");
-      setNotice(
-        `${next.length}장의 이미지를 찾았습니다. 추천 분류를 확인하고 각 폴더의 역할을 확정해주세요.`,
-      );
+      installEntries(await readZipImages(await file.arrayBuffer()), file.name);
     } catch (error) {
       setNotice(error.message || "ZIP 파일을 읽지 못했습니다.");
     } finally {
       setBusy(false);
       if (inputRef.current) inputRef.current.value = "";
+    }
+  }
+
+  async function loadFolder(fileList) {
+    const files = [...(fileList || [])].filter((file) => IMAGE_FILE.test(file.name));
+    if (!files.length) {
+      setNotice("선택한 폴더에서 이미지 파일을 찾지 못했습니다.");
+      return;
+    }
+    setBusy(true);
+    setNotice("폴더 안의 이미지 구조를 읽는 중...");
+    try {
+      const firstPath = files[0].webkitRelativePath || files[0].name;
+      const sourceRoot = firstPath.split("/").filter(Boolean)[0] || "VVIC_폴더";
+      const data = [];
+      for (const file of files) {
+        const relative = (file.webkitRelativePath || file.name).replace(/\\/g, "/");
+        const parts = relative.split("/").filter(Boolean);
+        const nestedFolders = parts.slice(1, -1);
+        const recognized = nestedFolders.find((name) => guessFolderRole(name));
+        const folder = recognized || nestedFolders[0] || parts[0] || "(루트 파일)";
+        data.push({
+          name: parts.length > 1 ? parts.slice(1).join("/") : file.name,
+          folder,
+          fileName: file.name,
+          data: new Uint8Array(await file.arrayBuffer()),
+        });
+      }
+      installEntries(data, sourceRoot);
+    } catch (error) {
+      setNotice(error.message || "폴더를 읽지 못했습니다.");
+    } finally {
+      setBusy(false);
+      if (folderInputRef.current) folderInputRef.current.value = "";
     }
   }
 
@@ -246,7 +287,7 @@ export default function ProductRegistrationHelperPage() {
     }
   }
 
-  async function exportZip() {
+  async function buildOutputFiles() {
     const main = sorted(
       items.filter(
         (item) => folderRoles[item.folder] === "main" && item.state !== "exclude",
@@ -258,39 +299,72 @@ export default function ProductRegistrationHelperPage() {
       ),
     );
     if (!main.length || !detail.length) {
-      setNotice("메인·GIF용과 상세이미지에 각각 사용할 이미지가 한 장 이상 필요합니다.");
-      return;
+      throw new Error("메인·GIF용과 상세이미지에 각각 사용할 이미지가 한 장 이상 필요합니다.");
     }
 
+    const files = [];
+    for (const [list, folderName] of [
+      [main, "01_메인_GIF용"],
+      [detail, "02_상세이미지"],
+    ]) {
+      for (let index = 0; index < list.length; index += 1) {
+        const item = list[index];
+        const processed =
+          item.state === "crop"
+            ? await cropImage(item)
+            : { data: item.data, fileName: item.fileName };
+        const order = String(index + 1).padStart(2, "0");
+        files.push({
+          path: `${folderName}/${order}_${processed.fileName}`,
+          data: processed.data,
+        });
+      }
+    }
+    return { files, mainCount: main.length, detailCount: detail.length };
+  }
+
+  async function exportFolder() {
+    if (!window.showDirectoryPicker) {
+      setNotice("이 브라우저는 폴더 저장을 지원하지 않습니다. Chrome에서 사용하거나 ZIP 저장을 이용해주세요.");
+      return;
+    }
+    try {
+      const root = await window.showDirectoryPicker({ mode: "readwrite" });
+      setBusy(true);
+      setNotice("정리한 이미지를 선택한 폴더에 저장하는 중...");
+      const output = await buildOutputFiles();
+      for (const file of output.files) {
+        const [folderName, fileName] = file.path.split("/");
+        const folder = await root.getDirectoryHandle(folderName, { create: true });
+        const handle = await folder.getFileHandle(fileName, { create: true });
+        const writable = await handle.createWritable();
+        await writable.write(file.data);
+        await writable.close();
+      }
+      setNotice(
+        `폴더 저장 완료: 01_메인_GIF용 ${output.mainCount}장 / 02_상세이미지 ${output.detailCount}장`,
+      );
+    } catch (error) {
+      if (error?.name !== "AbortError") {
+        setNotice(error.message || "정리 폴더를 저장하지 못했습니다.");
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function exportZip() {
     setBusy(true);
     setNotice("정리한 이미지를 ZIP으로 묶는 중...");
     try {
-      const files = [];
-      for (const [role, list, folderName] of [
-        ["main", main, "01_메인_GIF용"],
-        ["detail", detail, "02_상세이미지"],
-      ]) {
-        for (let index = 0; index < list.length; index += 1) {
-          const item = list[index];
-          const processed =
-            item.state === "crop"
-              ? await cropImage(item)
-              : { data: item.data, fileName: item.fileName };
-          const order = String(index + 1).padStart(2, "0");
-          files.push({
-            path: `${folderName}/${order}_${processed.fileName}`,
-            data: processed.data,
-          });
-        }
-      }
-
-      const zip = buildStoredZip(files);
+      const output = await buildOutputFiles();
+      const zip = buildStoredZip(output.files);
       downloadBlob(
         new Blob([zip], { type: "application/zip" }),
         `${baseName(zipName) || "VVIC"}_정리완료.zip`,
       );
       setNotice(
-        `정리 완료 ZIP을 만들었습니다. 메인·GIF용 ${main.length}장 / 상세이미지 ${detail.length}장만 들어갑니다.`,
+        `정리 완료 ZIP을 만들었습니다. 메인·GIF용 ${output.mainCount}장 / 상세이미지 ${output.detailCount}장만 들어갑니다.`,
       );
     } catch (error) {
       setNotice(error.message || "정리 ZIP을 만들지 못했습니다.");
@@ -418,10 +492,10 @@ export default function ProductRegistrationHelperPage() {
       <header>
         <div>
           <span className="eyebrow">상품 등록 · 이미지 정리</span>
-          <h1>VVIC ZIP 정리 도우미</h1>
+          <h1>VVIC 상품 이미지 정리 도우미</h1>
           <p>
-            VVIC에서 받은 압축파일을 그대로 넣고, 폴더 역할만 사람이 한 번 확인합니다.
-            이후 메인·GIF용과 상세 이미지만 정리해서 새 ZIP으로 받을 수 있습니다.
+            PC에서 압축을 풀어둔 상품 폴더를 통째로 열거나, VVIC ZIP을 그대로 열 수 있습니다.
+            사람이 이미지를 확인한 뒤 메인·GIF용과 상세이미지 두 폴더로 바로 저장합니다.
           </p>
         </div>
         <div className="privacy">추가 비용 0원 · 외부 업로드 없음</div>
@@ -442,6 +516,19 @@ export default function ProductRegistrationHelperPage() {
 
       <section className="uploader">
         <input
+          ref={folderInputRef}
+          id="vvic-folder"
+          type="file"
+          webkitdirectory=""
+          directory=""
+          multiple
+          onChange={(event) => loadFolder(event.target.files)}
+        />
+        <label className="primary-input" htmlFor="vvic-folder">
+          <strong>{busy ? "처리 중..." : items.length ? "다른 상품 폴더 열기" : "압축 푼 상품 폴더 열기"}</strong>
+          <span>PC 작업 기본 방식 · 하위 폴더 구조를 그대로 읽습니다.</span>
+        </label>
+        <input
           ref={inputRef}
           id="vvic-zip"
           type="file"
@@ -449,8 +536,8 @@ export default function ProductRegistrationHelperPage() {
           onChange={(event) => loadZip(event.target.files?.[0])}
         />
         <label htmlFor="vvic-zip">
-          <strong>{busy ? "처리 중..." : items.length ? "다른 VVIC ZIP 열기" : "VVIC ZIP 그대로 열기"}</strong>
-          <span>압축 해제부터 이미지 처리까지 이 브라우저 안에서만 진행됩니다.</span>
+          <strong>ZIP 그대로 열기</strong>
+          <span>아직 압축을 풀지 않은 경우에만 사용합니다.</span>
         </label>
         {items.length > 0 && <button className="secondary" onClick={resetAll}>초기화</button>}
       </section>
@@ -530,9 +617,10 @@ export default function ProductRegistrationHelperPage() {
           <div className="edit-actions">
             <button className="secondary" onClick={() => setStage("folders")}>← 폴더 분류 다시 보기</button>
             <div className="action-pair">
-              <button className="export" onClick={exportZip} disabled={busy}>
-                {busy ? "ZIP 만드는 중..." : "정리 완료 ZIP 저장"}
+              <button className="export" onClick={exportFolder} disabled={busy}>
+                {busy ? "저장 중..." : "정리 폴더 저장"}
               </button>
+              <button className="secondary" onClick={exportZip} disabled={busy}>ZIP 저장</button>
               <button onClick={openProductInfo}>상품정보 생성 준비 →</button>
             </div>
           </div>
@@ -581,9 +669,10 @@ export default function ProductRegistrationHelperPage() {
               <span>제외 이미지는 빠지고, 크롭 이미지는 수정본으로 교체됩니다.</span>
             </div>
             <div className="action-pair">
-              <button className="export" onClick={exportZip} disabled={busy}>
-                {busy ? "ZIP 만드는 중..." : "정리 완료 ZIP 저장"}
+              <button className="export" onClick={exportFolder} disabled={busy}>
+                {busy ? "저장 중..." : "정리 폴더 저장"}
               </button>
+              <button className="secondary" onClick={exportZip} disabled={busy}>ZIP 저장</button>
               <button onClick={openProductInfo}>상품정보 생성 준비 →</button>
             </div>
           </section>
@@ -703,8 +792,8 @@ export default function ProductRegistrationHelperPage() {
 
       {!items.length && (
         <section className="empty">
-          <b>압축을 풀 필요 없습니다.</b>
-          <p>VVIC에서 내려받은 ZIP 파일을 그대로 올리면 폴더와 이미지를 먼저 보여줍니다.</p>
+          <b>PC에서는 폴더 작업을 기본으로 사용합니다.</b>
+          <p>이미 압축을 풀어 확인 중인 상품 폴더를 그대로 선택하면 됩니다. ZIP 열기도 보조로 남겨둡니다.</p>
         </section>
       )}
 
@@ -713,7 +802,8 @@ export default function ProductRegistrationHelperPage() {
         <p><b>폴더명으로 자동 확정하지 않음:</b> 공급처마다 이름이 달라 사람이 한 번 확인합니다.</p>
         <p><b>색상·옵션 이미지는 보통 무시:</b> 중국어 제거와 비율 보정에 시간을 쓰지 않습니다.</p>
         <p><b>사이즈 이미지는 참고자료:</b> 작업 중 확인할 수 있지만 최종 이미지 ZIP에는 넣지 않습니다.</p>
-        <p><b>유료 API 없음:</b> ZIP 해제, 크롭, 새 ZIP 생성까지 전부 현재 브라우저에서 처리합니다.</p>
+        <p><b>PC 폴더 우선:</b> 압축 푼 폴더를 바로 읽고, 정리 결과도 01_메인_GIF용 / 02_상세이미지 폴더로 로컬 저장합니다.</p>
+        <p><b>유료 API 없음:</b> 폴더 읽기, ZIP 해제, 크롭, 폴더·ZIP 저장까지 전부 현재 브라우저에서 처리합니다.</p>
         <p><b>AI는 반자동 연결:</b> OARS가 외부 AI API를 호출하지 않고, ChatGPT 요청문 복사와 결과 붙여넣기만 지원합니다.</p>
       </section>
 
@@ -723,7 +813,7 @@ export default function ProductRegistrationHelperPage() {
         h1{font-size:32px;margin:6px 0 9px}h2{margin:5px 0 7px}.eyebrow{font-size:13px;color:#aeb7bb;font-weight:800}
         header p,.section-head p{max-width:780px;color:#b9c1c4;line-height:1.65;margin:0}.privacy{padding:10px 12px;border:1px solid #3d494d;border-radius:12px;background:#182022;white-space:nowrap;font-size:13px;font-weight:800}
         .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:22px 0}.flow>div{display:flex;align-items:center;gap:9px;padding:12px;border:1px solid #343e42;border-radius:13px;background:#171c1e;color:#aab3b7}.flow b{display:grid;place-items:center;width:27px;height:27px;border-radius:999px;background:#293033}.flow small{margin-left:auto;color:#747f83}.flow .active{border-color:#77878e;background:#20282b;color:#fff}.flow .active b{background:#f3f6f7;color:#161b1d}
-        .uploader{display:flex;align-items:center;gap:10px;padding:15px;border:1px solid #3a4448;background:#181e20;border-radius:15px}.uploader input{position:absolute;opacity:0;pointer-events:none}.uploader label{flex:1;display:flex;flex-direction:column;gap:4px;padding:17px;border:1px dashed #69777d;border-radius:12px;cursor:pointer;background:#121719}.uploader label span{font-size:13px;color:#9da8ac}.secondary{background:#242c2f}.notice{padding:11px 13px;background:#20282b;border-radius:10px;color:#dce3e5}
+        .uploader{display:flex;align-items:center;gap:10px;padding:15px;border:1px solid #3a4448;background:#181e20;border-radius:15px}.uploader input{position:absolute;opacity:0;pointer-events:none}.uploader label{flex:1;display:flex;flex-direction:column;gap:4px;padding:17px;border:1px dashed #69777d;border-radius:12px;cursor:pointer;background:#121719}.uploader label.primary-input{border-style:solid;border-color:#8d9ca2;background:#20282b}.uploader label span{font-size:13px;color:#9da8ac}.secondary{background:#242c2f}.notice{padding:11px 13px;background:#20282b;border-radius:10px;color:#dce3e5}
         .section-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-end;margin:28px 0 14px}.section-head>b{color:#b5bec1;max-width:360px;text-align:right;overflow-wrap:anywhere}.section-head.compact{align-items:center;margin-top:34px}
         .folder-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.folder-card{border:1px solid #364044;border-radius:15px;background:#171c1e;padding:14px}.folder-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.folder-top>div{display:flex;gap:8px;align-items:center}.folder-top>div span{color:#9da8ac;font-size:12px}.recommend{font-size:12px;padding:5px 8px;border:1px solid #3f4a4e;border-radius:999px;color:#cad1d3}
         .samples{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:12px 0}.samples img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;background:#0f1314}.role-select{display:flex;justify-content:space-between;align-items:center;gap:10px}.role-select span{color:#aeb7bb;font-size:13px}.role-select select{min-width:160px;padding:8px;border-radius:9px}
