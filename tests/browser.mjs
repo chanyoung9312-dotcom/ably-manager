@@ -6,6 +6,8 @@ import * as XLSX from "xlsx";
 import { buildCommerce } from "../lib/commerce.mjs";
 import { analyze } from "../lib/md.mjs";
 import { shippingSnapshot } from "../lib/shipping.mjs";
+import { buildLiveSourcingDiagnostics } from "../lib/sourcing-live.mjs";
+import { buildSourcingView } from "../lib/sourcing-view.mjs";
 const port = 3123,
   base = `http://127.0.0.1:${port}`,
   user = "test",
@@ -56,6 +58,7 @@ try {
   d.coverageStart = "2026-01-01";
   d.mdProducts = [{ productNo: "p1", product: "테스트 원피스", registeredAt: "2026-08-01", leadDays: 7, incoming: 0, reserved: 0 }];
   const report = analyze(d, { today: "2026-09-17" });
+  const sourcingReport = buildSourcingView(buildLiveSourcingDiagnostics(d, { today: "2026-09-17" }));
   if (process.env.AGENT_BROWSER_CLI) {
     const cli = (...args) => execFileSync(process.execPath, [process.env.AGENT_BROWSER_CLI, ...args], { env: { ...process.env, AGENT_BROWSER_EXECUTABLE_PATH: process.env.BROWSER_EXECUTABLE_PATH }, encoding: "utf8", timeout: 30000 });
     try {
@@ -81,6 +84,7 @@ try {
   async function applyFont() { if (fontCss) { await page.addStyleTag({ content: fontCss }); await page.evaluate(() => document.fonts.ready); } }
   await page.route("**/api/oars-analysis", (r) => r.fulfill({ json: { report } }));
   await page.route("**/api/dashboard-data", (r) => r.fulfill({ json: d }));
+  await page.route("**/api/sourcing-signals", (r) => r.fulfill({ json: { report: sourcingReport } }));
   const ship = { productOrderNo: "po0", orderNo: "order1", name: "테스트고객", phone: "01000000000", zip: "01234", address: "서울시 테스트로 10", detail: ".", rowNumber: 2, shipping: "우체국 배송" };
   ship.snapshot = shippingSnapshot(ship);
   await page.route("**/api/google-orders", (r) => r.fulfill({ json: { rows: [ship] } }));
@@ -92,7 +96,7 @@ try {
   await page.route("**/api/cafe24/prepare", async (r) => { prepareBody = r.request().postDataJSON(); await r.fulfill({ json: { ok: true } }); });
   for (const size of [{ width: 375, height: 812 }, { width: 1280, height: 900 }]) {
     await page.setViewportSize(size);
-    for (const path of ["/", "/dashboard", "/products", "/product-reaction", "/analysis", "/today", "/reactions", "/product-match"]) {
+    for (const path of ["/", "/dashboard", "/products", "/product-reaction", "/analysis", "/sourcing", "/today", "/reactions", "/product-match"]) {
       await page.goto(base + path); await applyFont(); await page.waitForLoadState("networkidle");
       assert.ok((await page.locator("body").innerText()).length > 60, path);
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `overflow ${path} ${size.width}`);
