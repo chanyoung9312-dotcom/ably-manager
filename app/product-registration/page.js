@@ -445,18 +445,24 @@ export default function ProductRegistrationHelperPage() {
     try {
       const root = await window.showDirectoryPicker({ mode: "readwrite" });
       setBusy(true);
-      setNotice("정리한 이미지를 선택한 폴더에 저장하는 중...");
+      const productFolderName = baseName(zipName).trim() || "VVIC";
+      setNotice(`${productFolderName} 폴더에 정리 이미지를 저장하는 중...`);
       const output = await buildOutputFiles();
+      const productFolder = await root.getDirectoryHandle(productFolderName, {
+        create: true,
+      });
       for (const file of output.files) {
         const [folderName, fileName] = file.path.split("/");
-        const folder = await root.getDirectoryHandle(folderName, { create: true });
+        const folder = await productFolder.getDirectoryHandle(folderName, {
+          create: true,
+        });
         const handle = await folder.getFileHandle(fileName, { create: true });
         const writable = await handle.createWritable();
         await writable.write(file.data);
         await writable.close();
       }
       setNotice(
-        `폴더 저장 완료: 01_메인_GIF용 ${output.mainCount}장 / 02_상세이미지 ${output.detailCount}장`,
+        `폴더 저장 완료: ${productFolderName} / 01_메인_GIF용 ${output.mainCount}장 / 02_상세이미지 ${output.detailCount}장`,
       );
     } catch (error) {
       if (error?.name !== "AbortError") {
