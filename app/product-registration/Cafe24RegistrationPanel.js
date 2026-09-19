@@ -157,9 +157,11 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
     setResult(null);
     setConnectUrl("");
     setStatus(
-      parsed.productName
-        ? "상품정보를 채웠습니다. 아래 내용과 가격을 확인한 뒤 등록하세요."
-        : "상품명을 찾지 못했습니다. 등록용 블록 형식을 확인해주세요.",
+      !parsed.hasRegistrationBlock
+        ? "[OARS 등록용] 블록을 찾지 못했습니다. ChatGPT 답변에 등록용 블록이 포함되어 있는지 확인해주세요."
+        : parsed.productName
+          ? "상품정보를 채웠습니다. 아래 내용과 가격을 확인한 뒤 등록하세요."
+          : "상품명을 찾지 못했습니다. 등록용 블록 형식을 확인해주세요.",
     );
   }
 

@@ -317,6 +317,17 @@ try {
   await page.getByText("3. ChatGPT에서 상품정보 정리", { exact: true }).waitFor();
   await page.getByRole("heading", { name: "카페24 등록", exact: true }).waitFor();
 
+  await page.getByLabel("ChatGPT 상품정보 붙여넣기").fill(`오어즈 등록용으로 바로 넣을 수 있게 정리했어.
+추천 상품명: 1번
+색상: 블랙 / 브라운 / 차콜
+사이즈: S / M / L / XL
+목표 순마진: 7000`);
+  await page.getByRole("button", { name: "내용 채우기", exact: true }).click();
+  await page.getByText(/\[OARS 등록용\] 블록을 찾지 못했습니다/, { exact: false }).waitFor();
+  assert.equal(await page.getByLabel("카페24 상품명").inputValue(), "");
+  assert.equal(await page.getByLabel("카페24 색상 옵션").inputValue(), "");
+  assert.equal(await page.getByLabel("카페24 사이즈 옵션").inputValue(), "");
+
   let productImageUploadCount = 0, productRegistrationBody;
   await page.route("**/api/cafe24/product-image", async (r) => {
     productImageUploadCount += 1;
@@ -336,7 +347,12 @@ try {
       },
     });
   });
-  await page.getByLabel("ChatGPT 상품정보 붙여넣기").fill(`[OARS 등록용]
+  await page.getByLabel("ChatGPT 상품정보 붙여넣기").fill(`상품명 추천
+상품명 1: 1번
+사이즈: S, M, L, XL, 신축성: 없음, 두께감: 적당함
+해시태그: 잘못된태그
+
+[OARS 등록용]
 상품명 1: 슬림 골지 니트 A
 상품명 2: 슬림 골지 니트 B
 상품명 3: 슬림 골지 니트 C
@@ -348,7 +364,10 @@ try {
 상세페이지 문구:
 부드럽게 떨어지는 골지 라인이 포인트예요.
 데일리로 가볍게 입기 좋아요.
-[OARS 끝]`);
+[OARS 끝]
+
+상품명 1: 이 뒤도 무시
+사이즈: XXL`);
   await page.getByRole("button", { name: "내용 채우기", exact: true }).click();
   assert.equal(await page.getByLabel("카페24 상품명").inputValue(), "슬림 골지 니트 A");
   assert.equal(await page.getByLabel("중국 원가 위안").inputValue(), "53");
