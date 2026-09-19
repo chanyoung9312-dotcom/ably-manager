@@ -10,6 +10,7 @@ const featurePages = [
   "../app/product-reaction/page.js",
   "../app/product-match/page.js",
   "../app/analysis/page.js",
+  "../app/sourcing/page.js",
 ].map((path) => fs.readFileSync(new URL(path, import.meta.url), "utf8"));
 
 test("global navigation always exposes a direct home action", () => {
