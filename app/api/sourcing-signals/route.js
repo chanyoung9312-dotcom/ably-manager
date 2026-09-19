@@ -8,6 +8,8 @@ import { buildSourcingCandidateEvidence } from "../../../lib/sourcing-evidence.m
 import { buildSourcingReviewBriefs } from "../../../lib/sourcing-briefs.mjs";
 import { buildSourcingReviewBriefView } from "../../../lib/sourcing-brief-view.mjs";
 import { resolveSourcingValidation } from "../../../lib/sourcing-validation.mjs";
+import { buildSourcingResearchPlan } from "../../../lib/sourcing-research-plan.mjs";
+import { buildSourcingResearchPlanView } from "../../../lib/sourcing-research-view.mjs";
 
 export const dynamic = "force-dynamic";
 
@@ -24,8 +26,10 @@ async function handleGET() {
       products: dashboard.mdProducts || [],
     });
     const candidateReport = buildSourcingCandidateView(candidates, evidence);
-    const briefReport = buildSourcingReviewBriefView(
-      buildSourcingReviewBriefs({ candidates, evidence }),
+    const briefResult = buildSourcingReviewBriefs({ candidates, evidence });
+    const briefReport = buildSourcingReviewBriefView(briefResult);
+    const researchPlan = buildSourcingResearchPlanView(
+      buildSourcingResearchPlan({ briefResult }),
     );
     return Response.json(
       {
@@ -33,7 +37,8 @@ async function handleGET() {
         validationReport,
         candidateReport,
         briefReport,
-        source: "live-taxonomy-commerce-sourcing-signals-candidates-briefs",
+        researchPlan,
+        source: "live-taxonomy-commerce-sourcing-signals-candidates-briefs-research",
         ai: false,
       },
       { headers: { "Cache-Control": "private, no-store" } },
