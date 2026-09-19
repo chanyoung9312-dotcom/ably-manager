@@ -4,6 +4,7 @@ import { buildLiveSourcingDiagnostics } from "../../../lib/sourcing-live.mjs";
 import { buildSourcingView } from "../../../lib/sourcing-view.mjs";
 import { buildSourcingCandidates } from "../../../lib/sourcing-candidates.mjs";
 import { buildSourcingCandidateView } from "../../../lib/sourcing-candidate-view.mjs";
+import { buildSourcingCandidateEvidence } from "../../../lib/sourcing-evidence.mjs";
 
 export const dynamic = "force-dynamic";
 
@@ -12,9 +13,13 @@ async function handleGET() {
     const dashboard = await loadDashboard();
     const diagnostics = buildLiveSourcingDiagnostics(dashboard);
     const report = buildSourcingView(diagnostics);
-    const candidateReport = buildSourcingCandidateView(
-      buildSourcingCandidates({ diagnostics }),
-    );
+    const candidates = buildSourcingCandidates({ diagnostics });
+    const evidence = buildSourcingCandidateEvidence({
+      diagnostics,
+      candidates,
+      products: dashboard.mdProducts || [],
+    });
+    const candidateReport = buildSourcingCandidateView(candidates, evidence);
     return Response.json(
       {
         report,
