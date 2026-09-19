@@ -54,4 +54,6 @@ test("상품번호 매칭 화면은 에이블리 상품등록일을 별도 검�
   assert.match(productMatchRoute, /registrationWritten/);
   assert.match(productMatchRoute, /상품등록일 재확인 실패/);
   assert.match(productMatchRoute, /dateKey/);
+  assert.match(productMatch, /setGoods\(all\.filter/);
+  assert.doesNotMatch(productMatch, /new Map\(\s*all\.filter/);
 });
