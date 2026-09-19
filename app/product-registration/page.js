@@ -410,7 +410,7 @@ export default function ProductRegistrationHelperPage() {
     setStage("folders");
     setProductJson("");
     setProductDraft(null);
-    setNotice("새 VVIC ZIP을 올려주세요.");
+    setNotice("새 상품 폴더를 열거나 VVIC ZIP을 선택해주세요.");
   }
 
   function ImageCard({ item }) {
