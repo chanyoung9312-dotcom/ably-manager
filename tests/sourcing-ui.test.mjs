@@ -160,7 +160,8 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
   assert.match(route, /buildSourcingView/);
   assert.doesNotMatch(route, /fixtures\/sourcing-signals/);
   assert.doesNotMatch(page, /추천순|비추천|BEST/);
-  assert.equal(view.notice, "추천 점수나 자동 소싱 결정이 아닌 관측 데이터입니다.");\n  assert.match(page, /report\\.notice/);
+  assert.equal(view.notice, "추천 점수나 자동 소싱 결정이 아닌 관측 데이터입니다.");
+  assert.match(page, /report\.notice/);
 });
 
 test("the screen exposes details, shared evidence, filters, and mobile one-column cards", () => {
