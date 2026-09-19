@@ -11,6 +11,7 @@ import { buildSourcingView } from "../lib/sourcing-view.mjs";
 import { buildSourcingCandidates } from "../lib/sourcing-candidates.mjs";
 import { buildSourcingCandidateView } from "../lib/sourcing-candidate-view.mjs";
 import { buildSourcingCandidateEvidence } from "../lib/sourcing-evidence.mjs";
+import { buildStoredZip, parseZipEntries } from "../lib/local-zip.mjs";
 const port = 3123,
   base = `http://127.0.0.1:${port}`,
   user = "test",
@@ -159,11 +160,15 @@ try {
   await page.route("**/api/cafe24/prepare", async (r) => { prepareBody = r.request().postDataJSON(); await r.fulfill({ json: { ok: true } }); });
   for (const size of [{ width: 375, height: 812 }, { width: 1280, height: 900 }]) {
     await page.setViewportSize(size);
-    for (const path of ["/", "/dashboard", "/products", "/product-reaction", "/analysis", "/sourcing", "/today", "/reactions", "/product-match"]) {
+    for (const path of ["/", "/dashboard", "/products", "/product-reaction", "/analysis", "/sourcing", "/today", "/reactions", "/product-match", "/product-registration"]) {
       await page.goto(base + path); await applyFont(); await page.waitForLoadState("networkidle");
       assert.ok((await page.locator("body").innerText()).length > 60, path);
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `overflow ${path} ${size.width}`);
       assert.equal(await page.locator("[data-nextjs-dialog]").count(), 0);
+      if (path === "/product-registration") {
+        await page.getByRole("heading", { name: "VVIC ZIP 정리 도우미", exact: true }).waitFor();
+        await page.getByText("추가 비용 0원 · 외부 업로드 없음", { exact: true }).waitFor();
+      }
       if (path === "/sourcing") {
         await page.getByText("판정 준비 상태", { exact: true }).waitFor();
         await page.getByText("판정 준비 상태", { exact: true }).click();
@@ -189,6 +194,38 @@ try {
       }
     }
   }
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto(base + "/product-registration"); await applyFont();
+  const tinyPng = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9Z0iUAAAAASUVORK5CYII=", "base64");
+  const registrationZip = buildStoredZip([
+    { path: "商品主图/商品主图_1.png", data: tinyPng },
+    { path: "商品详情图/商品详情图_1.png", data: tinyPng },
+    { path: "颜色属性图/颜色属性图_1.png", data: tinyPng },
+    { path: "尺码图/尺码图_1.png", data: tinyPng },
+  ]);
+  await page.locator("#vvic-zip").setInputFiles({
+    name: "fixture-vvic.zip",
+    mimeType: "application/zip",
+    buffer: Buffer.from(registrationZip),
+  });
+  await page.getByText("4장의 이미지를 찾았습니다.", { exact: false }).waitFor();
+  assert.equal(await page.getByLabel("商品主图 분류").inputValue(), "main");
+  assert.equal(await page.getByLabel("商品详情图 분류").inputValue(), "detail");
+  assert.equal(await page.getByLabel("颜色属性图 분류").inputValue(), "ignore");
+  assert.equal(await page.getByLabel("尺码图 분류").inputValue(), "size");
+  await page.getByRole("button", { name: "이 분류로 이미지 정리 시작", exact: true }).click();
+  await page.getByRole("heading", { name: "메인 썸네일 / GIF 이미지", exact: true }).waitFor();
+  await page.getByRole("heading", { name: "상세페이지에 넣을 이미지", exact: true }).waitFor();
+  const registrationDownload = page.waitForEvent("download");
+  await page.getByRole("button", { name: "정리 완료 ZIP 저장", exact: true }).first().click();
+  const registrationFile = await registrationDownload;
+  const registrationEntries = parseZipEntries(new Uint8Array(await readFile(await registrationFile.path())));
+  assert.equal(registrationEntries.length, 2);
+  assert.ok(registrationEntries.some((entry) => entry.name.startsWith("01_메인_GIF용/")));
+  assert.ok(registrationEntries.some((entry) => entry.name.startsWith("02_상세이미지/")));
+  assert.equal(registrationEntries.some((entry) => entry.name.includes("颜色属性图")), false);
+  assert.equal(registrationEntries.some((entry) => entry.name.includes("尺码图")), false);
+
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto(base); await applyFont();
   await page.getByRole("heading", { name: "오늘 할 일", exact: true }).waitFor();
