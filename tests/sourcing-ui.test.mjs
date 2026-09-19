@@ -173,6 +173,7 @@ test("the screen exposes details, shared evidence, filters, and mobile one-colum
   assert.match(page, />자세히 보기</);
   assert.match(page, />근거 상품 공유</);
   assert.match(page, /최근 활성 상품 수/);
+  assert.doesNotMatch(page, /stateOrder/);
   assert.match(page, /@media\(max-width:760px\)/);
   assert.match(page, /\.card-grid\{grid-template-columns:1fr\}/);
   assert.match(page, /INITIAL_VISIBLE = 18/);
