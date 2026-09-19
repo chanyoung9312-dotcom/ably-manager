@@ -5,6 +5,8 @@ import fs from "node:fs";
 const reaction = fs.readFileSync(new URL("../app/product-reaction/page.js", import.meta.url), "utf8");
 const products = fs.readFileSync(new URL("../app/products/page.js", import.meta.url), "utf8");
 const analysis = fs.readFileSync(new URL("../app/analysis/page.js", import.meta.url), "utf8");
+const productMatch = fs.readFileSync(new URL("../app/product-match/page.js", import.meta.url), "utf8");
+const productMatchRoute = fs.readFileSync(new URL("../app/api/md-product-match/route.js", import.meta.url), "utf8");
 
 test("상품 반응 화면은 상태·핵심 수치·할 일 중심으로 구성한다", () => {
   assert.match(reaction, />현재 상태</);
@@ -41,4 +43,15 @@ test("상품 분석 화면은 취소를 발주 전후로 나누지 않고 취소
   assert.doesNotMatch(analysis, /발주 전 취소/);
   assert.doesNotMatch(analysis, /발주 후 취소/);
   assert.doesNotMatch(analysis, /구분 확인/);
+});
+
+
+test("상품번호 매칭 화면은 에이블리 상품등록일을 별도 검증 후 빈 MD 셀에만 입력한다", () => {
+  assert.match(productMatch, /상품등록일 포함/);
+  assert.match(productMatch, /상품등록일 입력 미리보기/);
+  assert.match(productMatch, /기존 날짜는 덮어쓰지 않습니다/);
+  assert.match(productMatch, /approvedRegistration/);
+  assert.match(productMatchRoute, /registrationWritten/);
+  assert.match(productMatchRoute, /상품등록일 재확인 실패/);
+  assert.match(productMatchRoute, /dateKey/);
 });
