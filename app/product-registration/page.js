@@ -7,12 +7,6 @@ import {
   readZipImages,
   roleLabel,
 } from "../../lib/local-zip.mjs";
-import {
-  buildProductInfoPrompt,
-  formatHashtags,
-  formatSizeRows,
-  parseProductInfoDraft,
-} from "../../lib/product-registration.mjs";
 
 const collator = new Intl.Collator("ko", { numeric: true, sensitivity: "base" });
 const IMAGE_FILE = /\.(?:jpe?g|png|webp|gif)$/i;
@@ -109,8 +103,6 @@ export default function ProductRegistrationHelperPage() {
   const [stage, setStage] = useState("folders");
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
-  const [productJson, setProductJson] = useState("");
-  const [productDraft, setProductDraft] = useState(null);
   const inputRef = useRef(null);
   const folderInputRef = useRef(null);
   const itemsRef = useRef([]);
@@ -186,8 +178,6 @@ export default function ProductRegistrationHelperPage() {
     setFolderRoles(roles);
     setZipName(sourceName);
     setStage("folders");
-    setProductJson("");
-    setProductDraft(null);
     setNotice(
       `${next.length}장의 이미지를 찾았습니다. 추천 분류를 확인하고 각 폴더의 역할을 확정해주세요.`,
     );
@@ -373,43 +363,12 @@ export default function ProductRegistrationHelperPage() {
     }
   }
 
-  async function copyText(text, label) {
-    try {
-      await navigator.clipboard.writeText(text);
-      setNotice(`${label} 복사했습니다.`);
-    } catch {
-      setNotice("복사하지 못했습니다. 내용을 직접 선택해 복사해주세요.");
-    }
-  }
-
-  function openProductInfo() {
-    setStage("info");
-    setNotice("정리 완료 ZIP과 아래 요청문을 ChatGPT에 전달한 뒤 결과 JSON을 다시 붙여넣어주세요.");
-  }
-
-  function applyProductJson() {
-    try {
-      const draft = parseProductInfoDraft(productJson);
-      setProductDraft(draft);
-      const tagNotice =
-        draft.hashtags.length === 30
-          ? ""
-          : ` · 해시태그 ${draft.hashtags.length}개(30개인지 확인 필요)`;
-      setNotice(`상품정보를 불러왔습니다${tagNotice}.`);
-    } catch (error) {
-      setProductDraft(null);
-      setNotice(error.message || "상품정보 결과를 읽지 못했습니다.");
-    }
-  }
-
   function resetAll() {
     releaseItems();
     setItems([]);
     setFolderRoles({});
     setZipName("");
     setStage("folders");
-    setProductJson("");
-    setProductDraft(null);
     setNotice("새 상품 폴더를 열거나 VVIC ZIP을 선택해주세요.");
   }
 
@@ -478,14 +437,7 @@ export default function ProductRegistrationHelperPage() {
   const mainItems = activeItems.filter((item) => item.role === "main");
   const detailItems = activeItems.filter((item) => item.role === "detail");
   const sizeItems = items.filter((item) => folderRoles[item.folder] === "size");
-  const productPrompt = buildProductInfoPrompt({
-    zipName: `${baseName(zipName) || "VVIC"}_정리완료.zip`,
-    mainCount: counts.main,
-    detailCount: counts.detail,
-    hasSizeReference: sizeItems.length > 0,
-  });
-  const productHashtags = productDraft ? formatHashtags(productDraft.hashtags) : "";
-  const productSizes = productDraft ? formatSizeRows(productDraft.sizeRows) : "";
+
 
   return (
     <main className="registration-helper">
@@ -508,10 +460,8 @@ export default function ProductRegistrationHelperPage() {
         <div className={stage === "edit" ? "active" : ""}>
           <b>2</b><span>이미지 정리</span>
         </div>
-        <div className={stage === "info" ? "active" : ""}>
-          <b>3</b><span>상품정보 생성</span>{stage !== "info" && <small>다음 단계</small>}
-        </div>
-        <div><b>4</b><span>카페24 입력</span><small>다음 단계</small></div>
+        <div><b>3</b><span>ChatGPT 분석</span><small>정리 후</small></div>
+        <div><b>4</b><span>카페24 등록</span><small>마지막</small></div>
       </section>
 
       <section className="uploader">
@@ -621,7 +571,6 @@ export default function ProductRegistrationHelperPage() {
                 {busy ? "저장 중..." : "정리 폴더 저장"}
               </button>
               <button className="secondary" onClick={exportZip} disabled={busy}>ZIP 저장</button>
-              <button onClick={openProductInfo}>상품정보 생성 준비 →</button>
             </div>
           </div>
 
@@ -673,120 +622,16 @@ export default function ProductRegistrationHelperPage() {
                 {busy ? "저장 중..." : "정리 폴더 저장"}
               </button>
               <button className="secondary" onClick={exportZip} disabled={busy}>ZIP 저장</button>
-              <button onClick={openProductInfo}>상품정보 생성 준비 →</button>
             </div>
           </section>
-        </>
-      )}
 
-      {items.length > 0 && stage === "info" && (
-        <>
-          <section className="section-head">
-            <div>
-              <span className="eyebrow">3. 추가 비용 없는 AI 연결</span>
-              <h2>ChatGPT에서 상품정보 만들기</h2>
-              <p>
-                OARS가 유료 AI API를 호출하지 않습니다. 정리한 ZIP과 요청문을 지금 사용하는
-                ChatGPT에 직접 전달하고, 결과만 다시 붙여넣는 반자동 방식입니다.
-              </p>
-            </div>
-            <button className="secondary" onClick={() => setStage("edit")}>← 이미지 정리로 돌아가기</button>
+          <section className="next-stage">
+            <b>다음은 지금 하던 방식 그대로</b>
+            <span>
+              정리한 메인·상세 이미지를 ChatGPT에 올리면 상품명 3개, 상세페이지 문구,
+              해시태그, 색상·사이즈 정보를 바로 정리합니다. 그 결과를 카페24에 등록하면 됩니다.
+            </span>
           </section>
-
-          <section className="handoff-grid">
-            <article className="handoff-card">
-              <span className="step-chip">1</span>
-              <h3>정리 ZIP 준비</h3>
-              <p>
-                먼저 <b>{baseName(zipName)}_정리완료.zip</b>을 저장한 뒤 ChatGPT 대화에 첨부합니다.
-                사이즈 참고 이미지는 최종 ZIP에 포함되지 않으므로 필요하면 이 화면의 참고 이미지를 같이 전달합니다.
-              </p>
-              <button className="export" onClick={exportZip} disabled={busy}>
-                {busy ? "ZIP 만드는 중..." : "정리 완료 ZIP 저장"}
-              </button>
-            </article>
-
-            <article className="handoff-card prompt-card">
-              <span className="step-chip">2</span>
-              <h3>요청문 복사</h3>
-              <p>에이블리 등록 형식과 추측 금지 규칙까지 포함된 요청문입니다.</p>
-              <textarea readOnly value={productPrompt} aria-label="ChatGPT 상품정보 요청문" />
-              <button onClick={() => copyText(productPrompt, "ChatGPT 요청문을")}>요청문 복사</button>
-            </article>
-
-            <article className="handoff-card result-card">
-              <span className="step-chip">3</span>
-              <h3>ChatGPT 결과 붙여넣기</h3>
-              <p>ChatGPT가 반환한 JSON 전체를 그대로 붙여넣으면 OARS가 등록 항목별로 나눕니다.</p>
-              <textarea
-                value={productJson}
-                onChange={(event) => setProductJson(event.target.value)}
-                placeholder='{"productNames":["..."],"detailText":"..."}'
-                aria-label="ChatGPT 상품정보 결과"
-              />
-              <button onClick={applyProductJson}>상품정보 불러오기</button>
-            </article>
-          </section>
-
-          {productDraft && (
-            <section className="product-draft">
-              <div className="section-head compact">
-                <div>
-                  <span className="eyebrow">사람이 최종 확인</span>
-                  <h2>카페24 등록용 상품정보</h2>
-                  <p>AI 결과를 바로 등록하지 않고, 아래 내용을 확인한 뒤 필요한 항목만 복사합니다.</p>
-                </div>
-              </div>
-
-              <div className="draft-grid">
-                <article>
-                  <h3>추천 상품명 3개</h3>
-                  {productDraft.productNames.map((name, index) => (
-                    <div className="copy-row" key={`${name}-${index}`}>
-                      <span><b>{index + 1}</b>{name}</span>
-                      <button onClick={() => copyText(name, `상품명 ${index + 1}을`)}>복사</button>
-                    </div>
-                  ))}
-                </article>
-
-                <article>
-                  <h3>색상 / 옵션</h3>
-                  <div className="copy-box">{productDraft.colors.join(", ") || "확인된 색상 정보 없음"}</div>
-                  {productDraft.colors.length > 0 && (
-                    <button onClick={() => copyText(productDraft.colors.join(", "), "색상 정보를")}>복사</button>
-                  )}
-                </article>
-
-                <article className="wide">
-                  <h3>상세페이지 문구</h3>
-                  <textarea readOnly value={productDraft.detailText} aria-label="등록용 상세페이지 문구" />
-                  <button onClick={() => copyText(productDraft.detailText, "상세페이지 문구를")}>복사</button>
-                </article>
-
-                <article className="wide">
-                  <h3>해시태그 <small>{productDraft.hashtags.length}개</small></h3>
-                  <textarea readOnly value={productHashtags} aria-label="등록용 해시태그" />
-                  <button onClick={() => copyText(productHashtags, "해시태그를")}>복사</button>
-                </article>
-
-                <article>
-                  <h3>사이즈표 입력용</h3>
-                  <pre>{productSizes}</pre>
-                  <button onClick={() => copyText(productSizes, "사이즈 정보를")}>복사</button>
-                </article>
-
-                <article>
-                  <h3>확인 메모</h3>
-                  <div className="copy-box">{productDraft.notes || "추가 확인 메모 없음"}</div>
-                </article>
-              </div>
-
-              <section className="next-stage">
-                <b>다음 단계: 카페24 일반등록 반자동 입력</b>
-                <span>여기서 검수한 값을 기준으로 카페24 입력 화면에 옮기는 부분을 이어서 붙입니다.</span>
-              </section>
-            </section>
-          )}
         </>
       )}
 
@@ -804,7 +649,7 @@ export default function ProductRegistrationHelperPage() {
         <p><b>사이즈 이미지는 참고자료:</b> 작업 중 확인할 수 있지만 최종 이미지 ZIP에는 넣지 않습니다.</p>
         <p><b>PC 폴더 우선:</b> 압축 푼 폴더를 바로 읽고, 정리 결과도 01_메인_GIF용 / 02_상세이미지 폴더로 로컬 저장합니다.</p>
         <p><b>유료 API 없음:</b> 폴더 읽기, ZIP 해제, 크롭, 폴더·ZIP 저장까지 전부 현재 브라우저에서 처리합니다.</p>
-        <p><b>AI는 반자동 연결:</b> OARS가 외부 AI API를 호출하지 않고, ChatGPT 요청문 복사와 결과 붙여넣기만 지원합니다.</p>
+        <p><b>다음 작업은 ChatGPT:</b> 정리한 이미지를 지금 사용하는 ChatGPT 대화에 올리면 상품명·상세페이지 문구·해시태그·사이즈 정보를 바로 정리합니다. OARS에 다시 붙여넣는 단계는 없습니다.</p>
       </section>
 
       <style jsx>{`
@@ -822,9 +667,9 @@ export default function ProductRegistrationHelperPage() {
         .image-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.image-card{overflow:hidden;border:1px solid #354044;border-radius:16px;background:#171c1e}.image-card.crop{border-color:#8a7546}.image-card.bad{border-color:#694549}.image-wrap{position:relative;aspect-ratio:4/5;background:#0e1213;display:flex;align-items:center;justify-content:center;overflow:hidden}.image-wrap img{width:100%;height:100%;object-fit:contain}.crop-mask{position:absolute;left:0;top:0;width:100%;display:grid;place-items:center;background:rgba(190,135,24,.46);border-bottom:2px dashed #ffd981;font-weight:900;color:white;text-shadow:0 1px 2px #000}.exclude-mask{position:absolute;inset:0;display:grid;place-items:center;background:rgba(64,20,24,.62);font-size:24px;font-weight:900}
         .card-body{padding:12px}.file-name{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}.state-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}.state-buttons button{padding:9px 5px;min-height:40px;font-size:12px}.state-buttons button.selected{background:#eef2f3;color:#121719;border-color:#eef2f3;font-weight:900}.crop-control{border-top:1px solid #333d41;margin-top:12px;padding-top:12px}.crop-control>div:first-child{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.crop-control span{font-size:11px;color:#919ca0;text-align:right}.crop-control input{width:100%;margin:12px 0}.presets{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}.presets button{padding:6px 4px;min-height:34px;font-size:11px}.save{width:100%;margin-top:8px;background:#e9eef0;color:#111719;font-weight:900}
         .size-reference{margin-top:26px;padding:15px;border:1px solid #394448;border-radius:14px;background:#151a1c}.size-reference summary{cursor:pointer;font-weight:900}.size-reference p{color:#aeb7bb}.reference-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.reference-grid img{width:100%;max-height:360px;object-fit:contain;border-radius:10px;background:#0e1213}
-        .handoff-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.handoff-card,.draft-grid article{border:1px solid #364044;border-radius:15px;background:#171c1e;padding:15px}.handoff-card h3,.draft-grid h3{margin:9px 0}.handoff-card p{color:#aeb7bb;line-height:1.55;font-size:13px}.step-chip{display:grid;place-items:center;width:28px;height:28px;border-radius:999px;background:#edf1f2;color:#111719;font-weight:900}.handoff-card textarea,.draft-grid textarea{width:100%;min-height:210px;resize:vertical;background:#0f1416;color:#eef2f3;border:1px solid #3c474b;border-radius:10px;padding:10px;line-height:1.55;box-sizing:border-box}.prompt-card textarea{min-height:330px}.result-card textarea{min-height:330px}.handoff-card button,.draft-grid button{margin-top:10px}.product-draft{margin-top:28px}.draft-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.draft-grid .wide{grid-column:1/-1}.copy-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #2e373a}.copy-row:last-child{border-bottom:0}.copy-row span{display:flex;align-items:flex-start;gap:8px}.copy-row span>b{display:grid;place-items:center;min-width:24px;height:24px;border-radius:999px;background:#293235}.copy-row button{margin-top:0}.copy-box{padding:12px;background:#111617;border-radius:10px;min-height:46px;line-height:1.6;color:#d7dddf}.draft-grid pre{white-space:pre-wrap;margin:0;padding:12px;background:#111617;border-radius:10px;color:#d7dddf;min-height:78px;font-family:inherit;line-height:1.6}.draft-grid h3 small{color:#8f9a9e;font-weight:700}.next-stage{display:flex;flex-direction:column;gap:5px;margin-top:14px;padding:16px;border:1px dashed #4b585d;border-radius:14px;background:#151a1c}.next-stage span{color:#aeb7bb;font-size:13px}.empty{padding:48px 20px;text-align:center;border:1px dashed #465256;border-radius:16px;color:#bac2c5;margin-top:18px}.empty p{margin-bottom:0}.guide{margin-top:22px;padding:18px;border:1px solid #333d41;border-radius:15px;background:#151a1c}.guide h2{margin-top:0;font-size:18px}.guide p{margin:7px 0;color:#b4bdc0;line-height:1.6}
-        @media(max-width:850px){.image-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.flow{grid-template-columns:repeat(2,1fr)}.folder-list{grid-template-columns:1fr}.handoff-grid{grid-template-columns:1fr}.draft-grid{grid-template-columns:1fr}.draft-grid .wide{grid-column:auto}}
-        @media(max-width:560px){.registration-helper{padding:20px 12px 60px}header{display:block}h1{font-size:27px}.privacy{display:inline-block;margin-top:14px}.flow{grid-template-columns:1fr 1fr}.flow>div{padding:10px}.flow small{display:none}.uploader{align-items:stretch;flex-direction:column}.section-head{display:block}.section-head>b{display:block;text-align:left;margin-top:8px}.samples{grid-template-columns:repeat(4,1fr)}.role-select{align-items:stretch;flex-direction:column}.role-select select{width:100%}.confirm-bar{align-items:stretch;flex-direction:column}.confirm-bar button{width:100%}.summary{grid-template-columns:1fr 1fr}.edit-actions{flex-direction:column}.edit-actions button,.action-pair{width:100%}.action-pair{flex-direction:column}.action-pair button{width:100%}.image-grid{grid-template-columns:1fr}.crop-control>div:first-child{display:block}.crop-control span{display:block;text-align:left;margin-top:4px}.reference-grid{grid-template-columns:1fr 1fr}.handoff-card textarea{min-height:260px}.copy-row{align-items:flex-start}.copy-row button{flex:0 0 auto}}
+        .next-stage{display:flex;flex-direction:column;gap:5px;margin-top:14px;padding:16px;border:1px dashed #4b585d;border-radius:14px;background:#151a1c}.next-stage span{color:#aeb7bb;font-size:13px}.empty{padding:48px 20px;text-align:center;border:1px dashed #465256;border-radius:16px;color:#bac2c5;margin-top:18px}.empty p{margin-bottom:0}.guide{margin-top:22px;padding:18px;border:1px solid #333d41;border-radius:15px;background:#151a1c}.guide h2{margin-top:0;font-size:18px}.guide p{margin:7px 0;color:#b4bdc0;line-height:1.6}
+        @media(max-width:850px){.image-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.flow{grid-template-columns:repeat(2,1fr)}.folder-list{grid-template-columns:1fr}}
+        @media(max-width:560px){.registration-helper{padding:20px 12px 60px}header{display:block}h1{font-size:27px}.privacy{display:inline-block;margin-top:14px}.flow{grid-template-columns:1fr 1fr}.flow>div{padding:10px}.flow small{display:none}.uploader{align-items:stretch;flex-direction:column}.section-head{display:block}.section-head>b{display:block;text-align:left;margin-top:8px}.samples{grid-template-columns:repeat(4,1fr)}.role-select{align-items:stretch;flex-direction:column}.role-select select{width:100%}.confirm-bar{align-items:stretch;flex-direction:column}.confirm-bar button{width:100%}.summary{grid-template-columns:1fr 1fr}.edit-actions{flex-direction:column}.edit-actions button,.action-pair{width:100%}.action-pair{flex-direction:column}.action-pair button{width:100%}.image-grid{grid-template-columns:1fr}.crop-control>div:first-child{display:block}.crop-control span{display:block;text-align:left;margin-top:4px}.reference-grid{grid-template-columns:1fr 1fr}}
       `}</style>
     </main>
   );
