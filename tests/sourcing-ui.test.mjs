@@ -161,6 +161,7 @@ test("readiness metadata is translated without activating strong or weak sourcin
     readiness: assessSourcingReadiness({
       asOf: "2026-09-19",
       coverageStart: "2026-04-15",
+      coverageThrough: "2026-09-19",
       periods: fixture.snapshot.periods,
       products: fixture.products,
       issues: [],
