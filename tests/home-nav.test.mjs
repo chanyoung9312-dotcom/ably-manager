@@ -72,8 +72,8 @@ test("product registration helper keeps desktop folder and ZIP processing local 
   assert.match(page, /Cafe24RegistrationPanel/);
   assert.match(registrationPanel, /ChatGPT 상품정보 붙여넣기/);
   assert.match(registrationPanel, /내용 채우기/);
-  assert.match(registrationPanel, /카페24 임시등록/);
-  assert.match(registrationPanel, /진열안함 · 판매안함/);
+  assert.match(registrationPanel, /카페24 등록/);
+  assert.match(registrationPanel, /진열함 · 판매함/);
   assert.match(registrationPanel, /카페24 권한 다시 연결/);
   assert.match(registrationPanel, /window\.open\("\/api\/cafe24\/connect"/);
   assert.match(registrationPanel, /\/api\/cafe24\/product-image/);
