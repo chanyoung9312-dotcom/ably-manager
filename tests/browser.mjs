@@ -336,7 +336,12 @@ try {
       },
     });
   });
-  await page.getByLabel("ChatGPT 상품정보 붙여넣기").fill(`[OARS 등록용]
+  await page.getByLabel("ChatGPT 상품정보 붙여넣기").fill(`상품명 추천
+상품명 1: 1번
+사이즈: S, M, L, XL, 신축성: 없음, 두께감: 적당함
+해시태그: 잘못된태그
+
+[OARS 등록용]
 상품명 1: 슬림 골지 니트 A
 상품명 2: 슬림 골지 니트 B
 상품명 3: 슬림 골지 니트 C
@@ -348,7 +353,10 @@ try {
 상세페이지 문구:
 부드럽게 떨어지는 골지 라인이 포인트예요.
 데일리로 가볍게 입기 좋아요.
-[OARS 끝]`);
+[OARS 끝]
+
+상품명 1: 이 뒤도 무시
+사이즈: XXL`);
   await page.getByRole("button", { name: "내용 채우기", exact: true }).click();
   assert.equal(await page.getByLabel("카페24 상품명").inputValue(), "슬림 골지 니트 A");
   assert.equal(await page.getByLabel("중국 원가 위안").inputValue(), "53");
