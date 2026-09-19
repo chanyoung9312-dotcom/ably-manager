@@ -138,7 +138,7 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
       body: JSON.stringify(body),
     });
     const data = await response.json().catch(() => ({}));
-    if (response.status === 401 && data.connectUrl) {
+    if (data.connectUrl) {
       setConnectUrl(data.connectUrl);
       const error = new Error("카페24 다시 연결이 필요합니다.");
       error.connectRequired = true;
@@ -248,6 +248,16 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
           </p>
         </div>
         <span className="safe">항상 진열안함 · 판매안함</span>
+      </div>
+
+      <div className="connection-row">
+        <span>첫 배포 후에는 상품 쓰기 권한을 받기 위해 카페24를 한 번 다시 연결합니다.</span>
+        <button
+          type="button"
+          onClick={() => window.open("/api/cafe24/connect", "_blank", "noopener,noreferrer")}
+        >
+          카페24 권한 다시 연결
+        </button>
       </div>
 
       <label className="paste-box">
@@ -373,10 +383,10 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
           className="reconnect"
           type="button"
           onClick={() => {
-            location.href = connectUrl;
+            window.open(connectUrl, "_blank", "noopener,noreferrer");
           }}
         >
-          카페24 다시 연결
+          카페24 권한 다시 연결
         </button>
       )}
 
@@ -413,6 +423,7 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
         label{display:flex;flex-direction:column;gap:7px}label>span{font-size:13px;font-weight:800;color:#dfe5e7}
         textarea,input,select{width:100%;box-sizing:border-box;border:1px solid #414d51;background:#101516;color:#f4f7f8;border-radius:10px;padding:11px;font:inherit}
         textarea{resize:vertical;line-height:1.55}.paste-box textarea{min-height:190px}
+        .connection-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 14px;padding:10px 12px;border:1px solid #374247;border-radius:10px;background:#121719}.connection-row span{font-size:12px;color:#9eaaae}.connection-row button{white-space:nowrap;background:#293235;font-weight:800}
         .apply{margin:10px 0 18px;background:#293235;font-weight:900}
         .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.wide{grid-column:1/-1}.wide select{margin-bottom:2px}.wide small{color:#879397}
         .review{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}.review>div{padding:12px;border:1px solid #354044;border-radius:11px;background:#121719}.review span{display:block;font-size:12px;color:#8f9b9f}.review b{display:block;margin-top:4px;font-size:13px}
@@ -420,7 +431,7 @@ export default function Cafe24RegistrationPanel({ buildOutputFiles, sourceName }
         .reconnect{width:100%;margin:0 0 10px;background:#3a3030;font-weight:900}.result{display:flex;flex-direction:column;gap:4px;padding:14px;border-radius:12px;margin:10px 0}.result.success{border:1px solid #52675d;background:#18221e}.result.partial{border:1px solid #8a7546;background:#282216}.result span{font-size:13px;color:#c2cbce}
         .register{width:100%;margin-top:14px;padding:14px;background:#edf1f2;color:#111719;font-weight:900;font-size:15px}.register:disabled{opacity:.55;cursor:not-allowed}
         .footnote{font-size:12px;color:#8e999d;line-height:1.55;margin:10px 2px 0}
-        @media(max-width:680px){.panel-head{display:block}.safe{display:inline-block;margin-top:10px}.form-grid,.review{grid-template-columns:1fr}.wide{grid-column:auto}}
+        @media(max-width:680px){.connection-row{align-items:stretch;flex-direction:column}.connection-row button{width:100%}.panel-head{display:block}.safe{display:inline-block;margin-top:10px}.form-grid,.review{grid-template-columns:1fr}.wide{grid-column:auto}}
       `}</style>
     </section>
   );
