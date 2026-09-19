@@ -2,6 +2,8 @@ import { secure } from "../../../lib/access.mjs";
 import { loadDashboard } from "../../../lib/dashboard.mjs";
 import { buildLiveSourcingDiagnostics } from "../../../lib/sourcing-live.mjs";
 import { buildSourcingView } from "../../../lib/sourcing-view.mjs";
+import { buildSourcingCandidates } from "../../../lib/sourcing-candidates.mjs";
+import { buildSourcingCandidateView } from "../../../lib/sourcing-candidate-view.mjs";
 
 export const dynamic = "force-dynamic";
 
@@ -10,10 +12,14 @@ async function handleGET() {
     const dashboard = await loadDashboard();
     const diagnostics = buildLiveSourcingDiagnostics(dashboard);
     const report = buildSourcingView(diagnostics);
+    const candidateReport = buildSourcingCandidateView(
+      buildSourcingCandidates({ diagnostics }),
+    );
     return Response.json(
       {
         report,
-        source: "live-taxonomy-commerce-sourcing-signals",
+        candidateReport,
+        source: "live-taxonomy-commerce-sourcing-signals-candidates",
         ai: false,
       },
       { headers: { "Cache-Control": "private, no-store" } },

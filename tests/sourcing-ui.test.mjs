@@ -180,19 +180,28 @@ test("readiness metadata is translated without activating strong or weak sourcin
 test("the UI fetches live diagnostics and avoids recommendation ranking language", () => {
   const page = fs.readFileSync(new URL("../app/sourcing/page.js", import.meta.url), "utf8");
   const route = fs.readFileSync(new URL("../app/api/sourcing-signals/route.js", import.meta.url), "utf8");
+  const candidateView = fs.readFileSync(new URL("../lib/sourcing-candidate-view.mjs", import.meta.url), "utf8");
   assert.match(page, /fetch\("\/api\/sourcing-signals"/);
   assert.match(route, /loadDashboard\(\)/);
   assert.match(route, /buildLiveSourcingDiagnostics/);
   assert.match(route, /buildSourcingView/);
+  assert.match(route, /buildSourcingCandidates/);
+  assert.match(route, /buildSourcingCandidateView/);
   assert.doesNotMatch(route, /fixtures\/sourcing-signals/);
   assert.doesNotMatch(page, /추천순|비추천|BEST/);
   assert.equal(view.notice, "추천 점수나 자동 소싱 결정이 아닌 관측 데이터입니다.");
   assert.match(page, /report\.notice/);
   assert.match(page, /주문 수집 완전성·노출수·테스트 기간/);
   assert.match(page, /판정 준비 상태/);
+  assert.match(page, /소싱 검토 분류/);
+  assert.match(candidateView, /소싱 검토 후보/);
+  assert.match(candidateView, /히트 구조 참고/);
+  assert.match(candidateView, /추가 관찰/);
+  assert.match(candidateView, /데이터 보류/);
   assert.match(page, /현재 판매 가능 여부/);
-  assert.doesNotMatch(page, /사입 판단용 수량/);
+  assert.doesNotMatch(page, /사입 판단용 수량|사입 판단용 반복 상품/);
   assert.match(page, /판단 반영 수량/);
+  assert.match(page, /판단 반영 반복 상품/);
 });
 
 test("the screen exposes details, shared evidence, filters, and mobile one-column cards", () => {
@@ -205,6 +214,8 @@ test("the screen exposes details, shared evidence, filters, and mobile one-colum
   assert.match(page, /@media\(max-width:760px\)/);
   assert.match(page, /\.card-grid\{grid-template-columns:1fr\}/);
   assert.match(page, /INITIAL_VISIBLE = 18/);
+  assert.match(page, /candidate-grid/);
+  assert.match(page, /품목 안의 조합 관측/);
 });
 
 test("global navigation exposes the sourcing diagnostics page", () => {
