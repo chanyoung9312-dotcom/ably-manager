@@ -206,6 +206,11 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
   assert.match(page, /소싱 검토 분류/);
   assert.match(page, /SourcingBriefBoard/);
   assert.match(page, /ResearchPlanBoard/);
+  assert.ok(
+    page.indexOf("<ResearchPlanBoard researchPlan={researchPlan} />") <
+      page.indexOf("<ReadinessPanel readiness={report.readiness} />"),
+    "추천 검색 키워드가 판정 준비 상태보다 먼저 보여야 함",
+  );
   assert.match(researchView, /다음 소싱 검색 키워드/);
   assert.match(researchView, /외부 인기 검색어가 아니라 우리 판매 데이터/);
   assert.match(briefView, /이번 소싱 검토 브리프/);
