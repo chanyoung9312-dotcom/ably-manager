@@ -131,6 +131,10 @@ test("Cafe24 product image upload sends browser image data", async () => {
       cafe24UploadedImagePath(result.data),
       "/web/product/oars.jpg",
     );
+    assert.equal(
+      cafe24UploadedImagePath({ resource: { path: "/web/product/current.jpg" } }),
+      "/web/product/current.jpg",
+    );
   } finally {
     global.fetch = old;
   }
