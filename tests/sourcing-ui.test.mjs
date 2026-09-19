@@ -200,6 +200,7 @@ test("the UI fetches live diagnostics and avoids recommendation ranking language
   assert.doesNotMatch(route, /fixtures\/sourcing-signals/);
   assert.doesNotMatch(page, /추천순|비추천|BEST/);
   assert.equal(view.notice, "추천 점수나 자동 소싱 결정이 아닌 관측 데이터입니다.");
+  assert.match(page, /advanced-notice/);
   assert.match(page, /report\.notice/);
   assert.match(page, /주문 수집 완전성·노출수·테스트 기간/);
   assert.match(page, /판정 준비 상태/);
@@ -247,9 +248,14 @@ test("the screen exposes details, shared evidence, filters, and mobile one-colum
   assert.match(researchView, /공급처 링크/);
   assert.match(page, /research-keywords/);
   assert.match(researchView, /추천 검색 키워드/);
+  assert.match(page, /소싱 키워드 추천/);
+  assert.match(page, /지금 찾아볼 키워드/);
   assert.match(page, /전체 복사/);
-  assert.match(page, /왜 이 키워드인가요/);
-  assert.match(page, /템플릿 복사/);
+  assert.match(page, /왜 추천됐는지 보기/);
+  assert.match(page, /상세 진단 보기/);
+  assert.match(page, /advanced-sourcing/);
+  assert.doesNotMatch(page, /찾은 상품에서 확인할 것/);
+  assert.doesNotMatch(page, /템플릿 복사/);
   assert.match(page, /상품번호/);
   assert.match(page, /판단 반영/);
 });
