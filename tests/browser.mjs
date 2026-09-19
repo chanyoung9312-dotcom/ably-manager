@@ -227,7 +227,7 @@ try {
   assert.equal(registrationEntries.some((entry) => entry.name.includes("尺码图")), false);
 
   await page.getByText("3. ChatGPT에서 상품정보 정리", { exact: true }).waitFor();
-  await page.getByRole("heading", { name: "카페24 임시등록", exact: true }).waitFor();
+  await page.getByRole("heading", { name: "카페24 등록", exact: true }).waitFor();
 
   let productImageUploadCount = 0, productRegistrationBody;
   await page.route("**/api/cafe24/product-image", async (r) => {
@@ -243,8 +243,8 @@ try {
         ok: true,
         productCreated: true,
         productNo: "4321",
-        display: "F",
-        selling: "F",
+        display: "T",
+        selling: "T",
       },
     });
   });
@@ -266,8 +266,8 @@ try {
   assert.equal(await page.getByLabel("카페24 판매가").inputValue(), "29900");
   assert.equal(await page.getByLabel("카페24 공급가").inputValue(), "12000");
   await page.getByLabel("추천 상품명 선택").selectOption({ label: "슬림 골지 니트 B" });
-  await page.getByRole("button", { name: "카페24 임시등록", exact: true }).click();
-  await page.getByText(/카페24 임시등록 완료 · 상품번호 4321/, { exact: false }).waitFor();
+  await page.getByRole("button", { name: "카페24 등록", exact: true }).click();
+  await page.getByText(/카페24 등록 완료 · 상품번호 4321/, { exact: false }).waitFor();
   assert.equal(productImageUploadCount, 2);
   assert.equal(productRegistrationBody.productName, "슬림 골지 니트 B");
   assert.equal(productRegistrationBody.price, 29900);
@@ -279,7 +279,7 @@ try {
   assert.deepEqual(productRegistrationBody.tags, ["골지니트", "가을니트"]);
   assert.deepEqual(productRegistrationBody.mainImagePaths, ["/web/product/oars-1.png"]);
   assert.deepEqual(productRegistrationBody.detailImagePaths, ["/web/product/oars-2.png"]);
-  assert.equal(await page.getByRole("button", { name: "카페24 임시등록", exact: true }).isDisabled(), true);
+  assert.equal(await page.getByRole("button", { name: "카페24 등록", exact: true }).isDisabled(), true);
   await page.getByText("카페24 상품번호 4321", { exact: true }).waitFor();
 
 
